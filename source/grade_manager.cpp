@@ -4,106 +4,10 @@
 #include <array>
 #include <vector>
 
+#include "Course.h" // 과목 구조체
+
 // 출력 결과 std::cout부분의 경우 gemini로 작성 (보다 직관적이로 이쁘게 출력하게 하기 위함)
 #include <iomanip>      // <--- 이 부분 추가해야 setw, left 등 사용 가능
-
-
-// 전공 분류
-enum MajorClassification
-{
-  MajorRequired   = 0,  // 전선 (전공 필수 - Major Required)
-  DoubleMajor     = 1,  // 복전 (복수 전공 - Double Major)
-  Minor           = 2,  // 부전 (부전공 - Minor)
-  Division        = 3,  // 계열 (계열 필수/선택 - Division)
-  GeneralElective = 4,  // 교양 (교양 - General Elective)
-  Elective        = 5,  // 자선 (자유 선택 - Elective)
-  OtherMajor      = 6   // 타전 (타 전공 - Other Major)
-};
-
-
-
-/* ---------- 과목 구조체, 사용자 정의 규칙 정렬, 숫자점수->문자점수 변환 ---------- */
-struct Course
-{
-  std::string courseName; // 컴퓨터구조
-  int credits;            // 3 (학점)
-  double grade;           // 4.5 (A+)
-  int category;           // 0 (전공선택)
-
-  // 정보 출력
-  void printCourse()
-  {
-    std::cout << "  - " << std::left << std::setw(50) << courseName // 과목명 (20칸 좌측 정렬)
-              << " | 학점: " << std::setw(10) << credits       // 이수학점 (2칸)
-              << " | 점수: " << std::setw(10) << convertToGrade() // 점수 (4칸)
-              << " | 분류: " << std::left << std::setw(20) << convertToCategory() // 분류 (10칸 좌측 정렬)
-              << std::endl;
-  }
-
-  std::string convertToGrade();
-  std::string convertToCategory();
-
-	bool operator<(const Course& otherCourse) const 
-  {
-	    return grade < otherCourse.grade;
-	}
-};
-std::string Course::convertToGrade()
-{
-  std::string g[9] = {"A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"};
-  int index = 0;
-
-  for (double i = 4.5; i>=0.5; i-=0.5)
-  {
-    if (grade >= i) 
-    {
-      return g[index];
-    }
-    index++;
-  }
-  return "X";
-}
-std::string Course::convertToCategory()
-{
-  switch (category)
-  {
-  case MajorRequired:
-    return "전공선택";
-    break;
-
-  case DoubleMajor:
-    return "복수전공";
-    break;
-
-  case Minor:
-    return "부전공";
-    break;
-
-  case Division:
-    return "계열";
-    break;
-
-  case GeneralElective:
-    return "교양";
-    break;
-
-  case Elective:
-    return "자선";
-    break;
-
-  case OtherMajor:
-    return "타전공";
-    break;
-  
-  default:
-    return "ERROR";
-    break;
-  }
-}
-bool courseCompare(const Course& lhs, const Course& rhs)
-{
-  return lhs.grade < rhs.grade;
-}
 
 
 
@@ -148,7 +52,7 @@ void Semester::printCourses()
 
     for (std::vector<Course>::iterator it = courses.begin(); it != courses.end(); it++)
     {
-      it->printCourse();
+      printCourse(*it);
     }
     
     std::cout << "----------------------------------------------------" << std::endl;
@@ -365,7 +269,7 @@ void Semester::fixCourses()
     Course& fixC = courses.at(--choiceFixCourse);
 
     std::cout << "\n--- 수정할 과목의 정보 ---" << std::endl;
-    fixC.printCourse();
+    printCourse(fixC);
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "수정할 데이터를 선택하세요" << std::endl;
     std::cout << "1. 과목명\n2. 이수학점\n3. 점수\n4. 전공분류\n>>> ";
@@ -406,7 +310,7 @@ void Semester::fixCourses()
     }
 
     std::cout << "\n--- 수정된 과목의 정보 ---" << std::endl;
-    fixC.printCourse();
+    printCourse(fixC);
     std::cout << "----------------------------------------" << std::endl;
   }
 }
