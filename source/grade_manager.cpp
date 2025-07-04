@@ -17,7 +17,7 @@ class Semester
   private:
     int year;
     int semester; 
-    std::vector<Course> courses;
+    std::vector<Course::Course> courses;
 
   public:
     Semester(int year, int semester) : year(year), semester(semester) 
@@ -50,9 +50,9 @@ void Semester::printCourses()
               << std::endl;
     std::cout << "----------------------------------------------------" << std::endl;
 
-    for (std::vector<Course>::iterator it = courses.begin(); it != courses.end(); it++)
+    for (std::vector<Course::Course>::iterator it = courses.begin(); it != courses.end(); it++)
     {
-      printCourse(*it);
+      Course::printCourse(*it);
     }
     
     std::cout << "----------------------------------------------------" << std::endl;
@@ -182,7 +182,7 @@ void Semester::addCourses()
     break;
   };
 
-  Course c = {courseName, credits, grade, --category};
+  Course::Course c = {courseName, credits, grade, --category};
   courses.push_back(c);
   std::cout << "✅ [" << courses.back().courseName << "] 과목이 성공적으로 추가되었습니다! ✅" << std::endl;
 }
@@ -202,7 +202,7 @@ void Semester::removeCourses()
 
     int choiceRemoveCourse;
     int i=1;
-    for (const Course& c : courses)
+    for (const Course::Course& c : courses)
     {
       std::cout << i++ << ". " << c.courseName << '\n';
     }
@@ -258,7 +258,7 @@ void Semester::fixCourses()
 
     int choiceFixCourse;
     int i=1;
-    for (const Course& c : courses)
+    for (const Course::Course& c : courses)
     {
       std::cout << i++ << ". " << c.courseName << '\n';
     }
@@ -266,10 +266,10 @@ void Semester::fixCourses()
     std::cin >> choiceFixCourse;
 
     int choiceFixValue;
-    Course& fixC = courses.at(--choiceFixCourse);
+    Course::Course& fixC = courses.at(--choiceFixCourse);
 
     std::cout << "\n--- 수정할 과목의 정보 ---" << std::endl;
-    printCourse(fixC);
+    Course::printCourse(fixC);
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "수정할 데이터를 선택하세요" << std::endl;
     std::cout << "1. 과목명\n2. 이수학점\n3. 점수\n4. 전공분류\n>>> ";
@@ -281,28 +281,28 @@ void Semester::fixCourses()
       std::cout << "변경할 과목명을 입력하세요 >>> ";
       std::string fixName;
       std::cin >> fixName;
-      fixC.courseName = fixName;
+      Course::setCourseName(fixC, fixName);
     }
     else if (choiceFixValue == 2)
     {
       std::cout << "변경할 이수학점을 입력하세요 >>> ";
       int fixCredits;
       std::cin >> fixCredits;
-      fixC.credits = fixCredits;
+      Course::setCredits(fixC, fixCredits);
     }
     else if (choiceFixValue == 3)
     {
       std::cout << "변경할 점수를 입력하세요 >>> ";
       double fixGrade;
       std::cin >> fixGrade;
-      fixC.grade = fixGrade;
+      Course::setGrade(fixC, fixGrade);
     }
     else if (choiceFixValue == 4)
     {
       std::cout << "변경할 전공분류를 입력하세요 >>> ";
       int fixCategory;
       std::cin >> fixCategory;
-      fixC.category = fixCategory;
+      Course::setCategory(fixC, fixCategory);
     }
     else
     {
@@ -310,7 +310,7 @@ void Semester::fixCourses()
     }
 
     std::cout << "\n--- 수정된 과목의 정보 ---" << std::endl;
-    printCourse(fixC);
+    Course::printCourse(fixC);
     std::cout << "----------------------------------------" << std::endl;
   }
 }
