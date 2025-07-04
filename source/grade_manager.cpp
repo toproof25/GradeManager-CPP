@@ -4,6 +4,10 @@
 #include <array>
 #include <vector>
 
+// 출력 결과 std::cout부분의 경우 gemini로 작성 (보다 직관적이로 이쁘게 출력하게 하기 위함)
+#include <iomanip>      // <--- 이 부분 추가해야 setw, left 등 사용 가능
+
+
 // 전공 분류
 enum MajorClassification
 {
@@ -29,8 +33,13 @@ struct Course
   // 정보 출력
   void printCourse()
   {
-    std::cout << "과목명 : " + courseName << ", 이수학점 : " << credits << ", 점수 : " << convertToGrade() << ", 분류 : " << convertToCategory() << std::endl;
+    std::cout << "  - " << std::left << std::setw(50) << courseName // 과목명 (20칸 좌측 정렬)
+              << " | 학점: " << std::setw(10) << credits       // 이수학점 (2칸)
+              << " | 점수: " << std::setw(10) << convertToGrade() // 점수 (4칸)
+              << " | 분류: " << std::left << std::setw(20) << convertToCategory() // 분류 (10칸 좌측 정렬)
+              << std::endl;
   }
+
   std::string convertToGrade();
   std::string convertToCategory();
 
@@ -91,7 +100,6 @@ std::string Course::convertToCategory()
     break;
   }
 }
-
 bool courseCompare(const Course& lhs, const Course& rhs)
 {
   return lhs.grade < rhs.grade;
@@ -110,7 +118,7 @@ class Semester
   public:
     Semester(int year, int semester) : year(year), semester(semester) 
     {
-      std::cout << year << "학년 " << semester << "학기 데이터가 생성되었습니다" << std::endl;
+      std::cout << "✨ " << year << "학년 " << semester << "학기 데이터가 생성되었습니다! ✨" << std::endl;
     }
 
     
@@ -126,15 +134,26 @@ void Semester::printCourses()
 {
   if (courses.size() > 0)
   {
-    std::cout << year << "학년 " << semester << "학기 과목을 조회합니다" << std::endl;
+    std::cout << "\n--- " << year << "학년 " << semester << "학기 과목 목록 ---" << std::endl;
+    std::cout << "  " << std::left << std::setw(50) << "과목명" // 과목명 헤더
+              << " | " << std::setw(10) << "학점" // 이수학점 헤더
+              << " | " << std::setw(10) << "점수" // 점수 헤더
+              << " | " << std::left << std::setw(20) << "분류" // 분류 헤더
+              << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
+
     for (std::vector<Course>::iterator it = courses.begin(); it != courses.end(); it++)
     {
       it->printCourse();
     }
+    
+    std::cout << "----------------------------------------------------" << std::endl;
   }
   else
   {
-    std::cout << year << "학년 " << semester << "학기에는 조회할 과목이 없습니다" << std::endl;
+    std::cout << "\n--- " << year << "학년 " << semester << "학기 ---" << std::endl;
+    std::cout << "  ❗ 이 학기에는 등록된 과목이 없습니다. ❗" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl; // 구분선
   }
 }
 
@@ -146,24 +165,26 @@ void Semester::addCourses()
   double grade;           // 최종점수
   int category;           // 전공분류
 
+  std::cout << "\n--- 새 과목 추가 ---" << std::endl;
+
   // 과목명 입력
   while (true)
   {
     try
     {
-      std::cout << "과목명을 입력하세요 ex) 컴퓨터구조 >>> ";
+      std::cout << "🏷️ 과목명을 입력하세요 (예: 컴퓨터구조) >>> ";
       std::cin >> courseName;
     
       if (std::cin.fail()) 
       {
         std::cin.clear(); // 입력 스트림의 상태를 초기화
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("입력값이 이상합니다!");
+        throw std::invalid_argument("❌ 오류: 입력값이 올바르지 않습니다!");
       }
     }
     catch(const std::exception& e)
     {
-      std::cerr << e.what() << '\n';
+      std::cerr << e.what() << std::endl;
       continue;
     }
     break;
@@ -174,23 +195,23 @@ void Semester::addCourses()
   {
     try
     {
-      std::cout << "이수학점을 입력하세요 ex) 3 >>> ";
+      std::cout << "🔢 이수학점을 입력하세요 (예: 3) >>> ";
       std::cin >> credits;
 
       if (std::cin.fail()) 
       {
         std::cin.clear(); // 입력 스트림의 상태를 초기화
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("숫자를 입력해주세요!");
+        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
       }
       else if (credits < 0 || credits > 3)
       {
-      throw std::invalid_argument("0~3학점 범위 내에서 입력해주세요!");
+        throw std::invalid_argument("⚠️ 오류: 학점은 0~3점 범위 내에서 입력해주세요!");
       }
     }
     catch(const std::exception& e)
     {
-      std::cerr << e.what() << '\n';
+      std::cerr << e.what() << std::endl;
       continue;
     }
     break;
@@ -202,23 +223,23 @@ void Semester::addCourses()
   {
     try
     {
-      std::cout << "최종점수를 입력하세요 ex) 1.0, 4.5 >>> ";
+      std::cout << "💯 최종점수를 입력하세요 (예: 1.0, 4.5) >>> ";
       std::cin >> grade;
 
       if (std::cin.fail()) 
       {
         std::cin.clear(); // 입력 스트림의 상태를 초기화
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("실수를 입력해주세요!");
+        throw std::invalid_argument("❌ 오류: 실수를 입력해주세요!");
       }
       else if (grade < 0.0 || grade > 4.5)
       {
-      throw std::invalid_argument("0.0~4.5점수 범위 내에서 입력해주세요!");
+        throw std::invalid_argument("⚠️ 오류: 점수는 0.0~4.5점 범위 내에서 입력해주세요!");
       }
     }
     catch(const std::exception& e)
     {
-      std::cerr << e.what() << '\n';
+      std::cerr << e.what() << std::endl;
       continue;
     }
     break;
@@ -230,24 +251,24 @@ void Semester::addCourses()
   {
     try
     {
-      std::cout << "전송분류를 선택하세요" << std::endl;
-      std::cout << "1.전공선택  2.복수전공  3.부전공  4.계열  5.교양  6.자선  7.타전공\n>>> ";
+      std::cout << "📚 전공 분류를 선택하세요:" << std::endl;
+      std::cout << "  1. 전공 필수    2. 복수 전공    3. 부전공   4. 계열   5. 교양  6. 자유 선택   7. 타 전공\n>>> ";
       std::cin >> category;
 
       if (std::cin.fail()) 
       {
         std::cin.clear(); // 입력 스트림의 상태를 초기화
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("숫자를 입력해주세요!");
+        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
       }
       else if (category <= 0 || category >=8)
       {
-      throw std::invalid_argument("1~7숫자 범위 내에서 입력해주세요!");
+        throw std::invalid_argument("⚠️ 오류: 1~7 사이의 유효한 분류 번호를 입력해주세요!");
       }
     }
     catch(const std::exception& e)
     {
-      std::cerr << e.what() << '\n';
+      std::cerr << e.what() << std::endl;
       continue;
     }
     break;
@@ -255,7 +276,7 @@ void Semester::addCourses()
 
   Course c = {courseName, credits, grade, --category};
   courses.push_back(c);
-  std::cout << "[" << courses.back().courseName << "] 과목을 성공적으로 추가하였습니다" << std::endl;
+  std::cout << "✅ [" << courses.back().courseName << "] 과목이 성공적으로 추가되었습니다! ✅" << std::endl;
 }
 
 // 과목 제거
@@ -263,40 +284,45 @@ void Semester::removeCourses()
 {
   if (courses.size() <= 0)
   {
-    std::cout << "제거할 과목이 없습니다" << '\n';
+    std::cout << "\n❌ 제거할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌" << std::endl;
   }
   else
   {
-    int choiceRemoveCourse;
+    std::cout << "\n--- 제거할 과목을 선택하세요 ---" << std::endl;
+    std::cout << "  [번호] 과목명" << std::endl;
+    std::cout << "----------------------------------------" << std::endl;
 
-    std::cout << "----------제거할 과목을 선택하세요----------" << '\n'; 
+    int choiceRemoveCourse;
     int i=1;
     for (const Course& c : courses)
     {
-      std::cout << i << ". " << c.courseName << '\n';
+      std::cout << i++ << ". " << c.courseName << '\n';
     }
+    std::cout << "----------------------------------------" << std::endl;
 
     // 제거할 과목 선택
     while (true)
     {
       try
       {
+        std::cout << ">>> ";
         std::cin >> choiceRemoveCourse;
 
         if (std::cin.fail()) 
         {
           std::cin.clear(); 
           std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-          throw std::invalid_argument("숫자를 입력해주세요");
+          throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
         }
         else if (choiceRemoveCourse < 1 || choiceRemoveCourse > courses.size())
         {
-          throw std::invalid_argument("제시된 범위에서 선택하세요");
+          throw std::invalid_argument("⚠️ 오류: 제시된 범위 내에서 과목 번호를 선택하세요.");
         }
       }
       catch(const std::exception& e)
       {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << std::endl;
+        std::cout << "다시 시도해주세요." << std::endl;
         continue;
       }
       break;
@@ -305,7 +331,7 @@ void Semester::removeCourses()
     --choiceRemoveCourse;
     std::string removeName = (courses.begin() + choiceRemoveCourse)->courseName;
     courses.erase(courses.begin() + choiceRemoveCourse);
-    std::cout << "[" << removeName << "] 과목이 성공적으로 제거되었습니다" << '\n';
+    std::cout << "\n✅ [" << removeName << "] 과목이 성공적으로 제거되었습니다! ✅" << std::endl;
   }
 }
 
@@ -335,7 +361,13 @@ int main()
   int choice;
   while (true)
   {
-    std::cout << "선택 1. 조회, 2. 추가, 3. 제거" << '\n' << ">>> ";
+    std::cout << "\n--- 메뉴를 선택하세요 ---" << std::endl;
+    std::cout << "1. 과목 조회" << std::endl;
+    std::cout << "2. 과목 추가" << std::endl;
+    std::cout << "3. 과목 제거" << std::endl;
+    std::cout << "0. 프로그램 종료" << std::endl; // 종료 옵션 추가
+    std::cout << "-----------------------" << std::endl;
+    std::cout << ">>> ";
     std::cin >> choice;
     
     switch (choice)
@@ -353,18 +385,12 @@ int main()
       break;
     
     default:
+        std::cout << "\n프로그램을 종료합니다. 안녕히 계세요! 👋" << std::endl;
+        return 0;
       break;
     }
   }
   
-  semesters[0].addCourses();
-  semesters[0].printCourses();
-
-  
-
-  Course c1 = {"컴퓨터구조", 3, 1.0, MajorRequired};
-  c1.printCourse();
-
   return 0;
 }
 
