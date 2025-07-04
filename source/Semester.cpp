@@ -3,9 +3,59 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <stdexcept> // 예외가 정의된 헤더파일
+#include <limits>
 
 #include "Course.h"
 #include "Semester.h"
+
+// 과목 목록에서 제거할 conrse index를 입력 후 반환
+int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
+{
+  std::cout << "  [번호] 과목명" << std::endl;
+  std::cout << "----------------------------------------" << std::endl;
+
+  int choiceRemoveCourse;
+  int i=1;
+  for (const Course::Course& c : courses)
+  {
+    std::cout << i++ << ". " << c.courseName << '\n';
+  }
+  std::cout << "----------------------------------------" << std::endl;
+
+  // 제거할 과목 선택
+  while (true)
+  {
+    try
+    {
+      std::cout << ">>> ";
+      std::cin >> choiceRemoveCourse;
+
+      if (std::cin.fail()) 
+      {
+        std::cin.clear(); 
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
+      }
+      else if (choiceRemoveCourse < 1 || choiceRemoveCourse > courses.size())
+      {
+        throw std::invalid_argument("⚠️ 오류: 제시된 범위 내에서 과목 번호를 선택하세요.");
+      }
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << std::endl;
+      std::cout << "다시 시도해주세요." << std::endl;
+      continue;
+    }
+    break;
+  };
+
+  return --choiceRemoveCourse;
+}
+
+
+
 
 // 과목 조회
 void Semester::printCourses()
@@ -117,7 +167,7 @@ void Semester::fixCourses()
     }
 
     std::cout << "\n--- 수정된 과목의 정보 ---" << std::endl;
-    Course::printCourse(*fixC);
+    Course::printCourse(fixC);
     std::cout << "----------------------------------------" << std::endl;
   }
 }
@@ -244,50 +294,5 @@ Course::Course getAddCourse()
 
   Course::Course c = {courseName, credits, grade, --category};
   return c;
-}
-
-// 과목 목록에서 제거할 conrse index를 입력 후 반환
-int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
-{
-  std::cout << "  [번호] 과목명" << std::endl;
-  std::cout << "----------------------------------------" << std::endl;
-
-  int choiceRemoveCourse;
-  int i=1;
-  for (const Course::Course& c : courses)
-  {
-    std::cout << i++ << ". " << c.courseName << '\n';
-  }
-  std::cout << "----------------------------------------" << std::endl;
-
-  // 제거할 과목 선택
-  while (true)
-  {
-    try
-    {
-      std::cout << ">>> ";
-      std::cin >> choiceRemoveCourse;
-
-      if (std::cin.fail()) 
-      {
-        std::cin.clear(); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
-      }
-      else if (choiceRemoveCourse < 1 || choiceRemoveCourse > courses.size())
-      {
-        throw std::invalid_argument("⚠️ 오류: 제시된 범위 내에서 과목 번호를 선택하세요.");
-      }
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-      std::cout << "다시 시도해주세요." << std::endl;
-      continue;
-    }
-    break;
-  };
-
-  return --choiceRemoveCourse;
 }
 
