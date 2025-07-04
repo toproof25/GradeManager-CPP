@@ -118,14 +118,18 @@ class Semester
   public:
     Semester(int year, int semester) : year(year), semester(semester) 
     {
-      std::cout << "✨ " << year << "학년 " << semester << "학기 데이터가 생성되었습니다! ✨" << std::endl;
+      //std::cout << "✨ " << year << "학년 " << semester << "학기 데이터가 생성되었습니다! ✨" << std::endl;
+    }
+    
+    void semesterInfo()
+    {
+      std::cout << year << "학년 " << semester << "학기 " << std::endl;
     }
 
-    
     void printCourses();    // 모든 과목 조회
     void addCourses();      // 과목 추가
     void removeCourses();
-    
+    void fixCourses();
 
 };
 
@@ -335,7 +339,102 @@ void Semester::removeCourses()
   }
 }
 
+// 과목 수정
+void Semester::fixCourses()
+{
+  if (courses.size() <= 0)
+  {
+    std::cout << "\n❌ 수정할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌" << std::endl;
+  }
+  else
+  {
+    std::cout << "\n--- 수정할 과목을 선택하세요 ---" << std::endl;
+    std::cout << "  [번호] 과목명" << std::endl;
+    std::cout << "----------------------------------------" << std::endl;
 
+    int choiceFixCourse;
+    int i=1;
+    for (const Course& c : courses)
+    {
+      std::cout << i++ << ". " << c.courseName << '\n';
+    }
+    std::cout << "----------------------------------------\n>>> " << std::endl;
+    std::cin >> choiceFixCourse;
+
+    int choiceFixValue;
+    Course& fixC = courses.at(--choiceFixCourse);
+
+    std::cout << "\n--- 수정할 과목의 정보 ---" << std::endl;
+    fixC.printCourse();
+    std::cout << "----------------------------------------" << std::endl;
+    std::cout << "수정할 데이터를 선택하세요" << std::endl;
+    std::cout << "1. 과목명\n2. 이수학점\n3. 점수\n4. 전공분류\n>>> ";
+
+    std::cin >> choiceFixValue;
+
+    if (choiceFixValue == 1)
+    {
+      std::cout << "변경할 과목명을 입력하세요 >>> ";
+      std::string fixName;
+      std::cin >> fixName;
+      fixC.courseName = fixName;
+    }
+    else if (choiceFixValue == 2)
+    {
+      std::cout << "변경할 이수학점을 입력하세요 >>> ";
+      int fixCredits;
+      std::cin >> fixCredits;
+      fixC.credits = fixCredits;
+    }
+    else if (choiceFixValue == 3)
+    {
+      std::cout << "변경할 점수를 입력하세요 >>> ";
+      double fixGrade;
+      std::cin >> fixGrade;
+      fixC.grade = fixGrade;
+    }
+    else if (choiceFixValue == 4)
+    {
+      std::cout << "변경할 전공분류를 입력하세요 >>> ";
+      int fixCategory;
+      std::cin >> fixCategory;
+      fixC.category = fixCategory;
+    }
+    else
+    {
+      std::cout << "잘못입력했습니다..." << std::endl;
+    }
+
+    std::cout << "\n--- 수정된 과목의 정보 ---" << std::endl;
+    fixC.printCourse();
+    std::cout << "----------------------------------------" << std::endl;
+  }
+}
+
+
+void choiseReturnSemester(std::array<Semester, 8>& semesters ,int& choiceSemester)
+{
+  while(true)
+  {
+    std::cout << "\n--- 학기를 선택하세요 ---" << std::endl;
+
+    for (int i=0; i<semesters.size(); ++i)
+    {
+      std::cout << i+1 << ". ";
+      semesters[i].semesterInfo();
+    }
+
+    std::cout << "-----------------------" << std::endl;
+    std::cout << ">>> ";
+    std::cin >> choiceSemester;
+    
+    if (choiceSemester < 1 || choiceSemester > 8)
+      continue;
+    break;
+  }
+
+  choiceSemester--;
+}
 
 
 
@@ -358,39 +457,58 @@ int main()
   };
 
 
-  int choice;
+  int menu = 1;
+  int choiceSemester;
+  int choiceCourse;
+
   while (true)
   {
-    std::cout << "\n--- 메뉴를 선택하세요 ---" << std::endl;
-    std::cout << "1. 과목 조회" << std::endl;
-    std::cout << "2. 과목 추가" << std::endl;
-    std::cout << "3. 과목 제거" << std::endl;
-    std::cout << "0. 프로그램 종료" << std::endl; // 종료 옵션 추가
-    std::cout << "-----------------------" << std::endl;
-    std::cout << ">>> ";
-    std::cin >> choice;
-    
-    switch (choice)
+    if (menu == 1) // 학기 선택
     {
-    case 1:
-      semesters[0].printCourses();
-      break;
-
-    case 2:
-      semesters[0].addCourses();
-      break;
-    case 3:
-
-      semesters[0].removeCourses();
-      break;
-    
-    default:
+      choiseReturnSemester(semesters, choiceSemester);
+      menu = 2;
+    }
+    else if (menu == 2) // 학기 관리
+    {
+      std::cout << "\n--- 메뉴를 선택하세요 ---" << std::endl;
+      std::cout << "0. 학기 선택" << std::endl;
+      std::cout << "1. 과목 조회" << std::endl;
+      std::cout << "2. 과목 추가" << std::endl;
+      std::cout << "3. 과목 제거" << std::endl;
+      std::cout << "4. 과목 수정" << std::endl;
+      std::cout << "-----------------------" << std::endl;
+      std::cout << ">>> ";
+      std::cin >> choiceCourse;
+      
+      if (choiceCourse == 0)
+      {
+        menu = 1;
+      }
+      else if (choiceCourse == 1) 
+      {
+        semesters.at(choiceSemester).printCourses();
+      }
+      else if (choiceCourse == 2) 
+      {
+        semesters.at(choiceSemester).addCourses();
+      }
+      else if (choiceCourse == 3) 
+      {
+        semesters.at(choiceSemester).removeCourses();
+      }
+      else if (choiceCourse == 4)
+      {
+        semesters.at(choiceSemester).fixCourses();
+      }
+      else
+      {
         std::cout << "\n프로그램을 종료합니다. 안녕히 계세요! 👋" << std::endl;
         return 0;
-      break;
+      }  
     }
   }
-  
+
+
   return 0;
 }
 
