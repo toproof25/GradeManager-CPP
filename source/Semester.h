@@ -1,10 +1,5 @@
 #pragma once // 헤더 중복되지 않게 하는 설정
-#include <string>
 #include <vector>
-#include <iostream>
-#include <string>
-#include <iomanip>
-
 #include "Course.h"
 
 /* ---------- 학기 클래스 ---------- */
@@ -34,5 +29,5 @@ class Semester
 
 };
 
-Course::Course getAddCourse(); // 각 데이터 입력받아서 Course구조체를 반환
+
 int getChoiceCourseIndex(); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
