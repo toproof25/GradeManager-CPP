@@ -1,13 +1,14 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <string>
 #include <iomanip>
 #include <stdexcept> // 예외가 정의된 헤더파일
 #include <limits>
 
 #include "Course.h"
 #include "Semester.h"
+
+
 
 // 과목 목록에서 제거할 conrse index를 입력 후 반환
 int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
@@ -54,9 +55,6 @@ int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
   return --choiceRemoveCourse;
 }
 
-
-
-
 // 과목 조회
 void Semester::printCourses()
 {
@@ -88,7 +86,7 @@ void Semester::printCourses()
 // 과목 추가
 void Semester::addCourses()
 {
-  Course::Course c = getAddCourse();
+  Course::Course c = Course::getAddCourse();
   courses.push_back(c);
   std::cout << "✅ [" << courses.back().courseName << "] 과목이 성공적으로 추가되었습니다! ✅" << std::endl;
 }
@@ -175,124 +173,7 @@ void Semester::fixCourses()
 
 
 
-// 입력을 받아 Course를 생성 후 반환
-Course::Course getAddCourse()
-{
-  std::string courseName; // 과목명
-  int credits;            // 이수학점
-  double grade;           // 최종점수
-  int category;           // 전공분류
 
-  std::cout << "\n--- 추가할 과목 데이터 입력 ---" << std::endl;
 
-  // 과목명 입력
-  while (true)
-  {
-    try
-    {
-      std::cout << "🏷️ 과목명을 입력하세요 (예: 컴퓨터구조) >>> ";
-      std::cin >> courseName;
-    
-      if (std::cin.fail()) 
-      {
-        std::cin.clear(); // 입력 스트림의 상태를 초기화
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("❌ 오류: 입력값이 올바르지 않습니다!");
-      }
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-      continue;
-    }
-    break;
-  };
 
-  // 이수학점 정수 입력
-  while (true)
-  {
-    try
-    {
-      std::cout << "🔢 이수학점을 입력하세요 (예: 3) >>> ";
-      std::cin >> credits;
-
-      if (std::cin.fail()) 
-      {
-        std::cin.clear(); // 입력 스트림의 상태를 초기화
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
-      }
-      else if (credits < 0 || credits > 3)
-      {
-        throw std::invalid_argument("⚠️ 오류: 학점은 0~3점 범위 내에서 입력해주세요!");
-      }
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-      continue;
-    }
-    break;
-  };
-
-    
-  // 최종점수 실수 입력
-  while (true)
-  {
-    try
-    {
-      std::cout << "💯 최종점수를 입력하세요 (예: 1.0, 4.5) >>> ";
-      std::cin >> grade;
-
-      if (std::cin.fail()) 
-      {
-        std::cin.clear(); // 입력 스트림의 상태를 초기화
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("❌ 오류: 실수를 입력해주세요!");
-      }
-      else if (grade < 0.0 || grade > 4.5)
-      {
-        throw std::invalid_argument("⚠️ 오류: 점수는 0.0~4.5점 범위 내에서 입력해주세요!");
-      }
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-      continue;
-    }
-    break;
-  };
-
-    
-  // 전공분류 정수 입력
-  while (true)
-  {
-    try
-    {
-      std::cout << "📚 전공 분류를 선택하세요:" << std::endl;
-      std::cout << "  1. 전공 필수    2. 복수 전공    3. 부전공   4. 계열   5. 교양  6. 자유 선택   7. 타 전공\n>>> ";
-      std::cin >> category;
-
-      if (std::cin.fail()) 
-      {
-        std::cin.clear(); // 입력 스트림의 상태를 초기화
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
-        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
-      }
-      else if (category <= 0 || category >=8)
-      {
-        throw std::invalid_argument("⚠️ 오류: 1~7 사이의 유효한 분류 번호를 입력해주세요!");
-      }
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-      continue;
-    }
-    break;
-  };
-
-  Course::Course c = {courseName, credits, grade, --category};
-  return c;
-}
 
