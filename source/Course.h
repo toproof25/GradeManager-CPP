@@ -50,6 +50,9 @@ namespace Course
   void setGrade(Course& c, double grade);
   void setCategory(Course& c, int category);
 
+  Course getAddCourse(); // 각 데이터 입력받아서 완성된 Course구조체를 반환
+
   bool courseCompare(const Course& lhs, const Course& rhs);
+
 
 }
