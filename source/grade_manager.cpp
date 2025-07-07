@@ -1,16 +1,16 @@
 #include <iostream>
-#include <stdexcept> // 예외가 정의된 헤더파일
+#include <stdexcept>
 #include <limits>
 #include <array>
 #include <vector>
+#include <iomanip>
 
 #include "Course.h" // 과목 구조체
-#include "Semester.h" // 과목 구조체
-
-// 출력 결과 std::cout부분의 경우 gemini로 작성 (보다 직관적이로 이쁘게 출력하게 하기 위함)
-#include <iomanip>      // <--- 이 부분 추가해야 setw, left 등 사용 가능
+#include "Semester.h" // 학기 클래스
 
 
+
+// 학기 목록 중 선택
 void choiseReturnSemester(std::array<Semester, 8>& semesters ,int& choiceSemester)
 {
   while(true)
@@ -36,6 +36,12 @@ void choiseReturnSemester(std::array<Semester, 8>& semesters ,int& choiceSemeste
 }
 
 
+// 메뉴
+enum Menu
+{
+  SemesterChoise   = 1, // 학기 선택
+  CourseChoise     = 2, // 학기 내 과목
+};
 
 int main()
 {
@@ -62,12 +68,12 @@ int main()
 
   while (true)
   {
-    if (menu == 1) // 학기 선택
+    if (menu == Menu::SemesterChoise) // 학기 선택
     {
       choiseReturnSemester(semesters, choiceSemester);
       menu = 2;
     }
-    else if (menu == 2) // 학기 관리
+    else if (menu == Menu::CourseChoise) // 학기 관리 (과목)
     {
       std::cout << "\n--- 메뉴를 선택하세요 ---" << std::endl;
       std::cout << "0. 학기 선택" << std::endl;
