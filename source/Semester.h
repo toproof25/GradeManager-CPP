@@ -23,11 +23,12 @@ class Semester
     }
 
     void printCourses();    // 모든 과목 조회
-    void addCourses();      // 과목 추가 - 따로 Course구조체를 받아와서 push_back만 하도록
-    void removeCourses();   // 선택한 과목을 vector에서 erase로 제거
-    void fixCourses();      // 선택한 과목 데이터를 수정 - 수정은 다른 함수로 책임 넘기기
+    void addCourses(Course::Course c);      // 과목 추가 - 따로 Course구조체를 받아와서 push_back만 하도록
+    void removeCourses(int removeIndex);   // 선택한 과목을 vector에서 erase로 제거
+    // void fixCourses();      
+
+    std::vector<Course::Course>& getCourses() { return courses; }
 
 };
 
-
-int getChoiceCourseIndex(); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
+int getChoiceCourseIndex(const std::vector<Course::Course>& courses); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
