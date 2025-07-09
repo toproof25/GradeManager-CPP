@@ -22,50 +22,7 @@ void Semester::removeCourses(int removeIndex)
   courses.erase(courses.begin() + removeIndex);
 }
 
-// 과목 목록에서 수정/제거 시 특정 conrse index를 입력 후 반환
-int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
-{
-  std::cout << "  [번호] 과목명" << std::endl;
-  std::cout << "----------------------------------------" << std::endl;
 
-  int choiceRemoveCourse;
-  int i=1;
-  for (const Course::Course& c : courses)
-  {
-    std::cout << i++ << ". " << c.courseName << '\n';
-  }
-  std::cout << "----------------------------------------" << std::endl;
-
-  // 제거할 과목 선택
-  while (true)
-  {
-    try
-    {
-      std::cout << ">>> ";
-      std::cin >> choiceRemoveCourse;
-
-      if (std::cin.fail()) 
-      {
-        std::cin.clear(); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
-      }
-      else if (choiceRemoveCourse < 1 || choiceRemoveCourse > courses.size())
-      {
-        throw std::invalid_argument("⚠️ 오류: 제시된 범위 내에서 과목 번호를 선택하세요.");
-      }
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-      std::cout << "다시 시도해주세요." << std::endl;
-      continue;
-    }
-    break;
-  };
-
-  return --choiceRemoveCourse;
-}
 
 
 

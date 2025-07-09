@@ -31,4 +31,3 @@ class Semester
 
 };
 
-int getChoiceCourseIndex(const std::vector<Course::Course>& courses); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
