@@ -1,6 +1,7 @@
 #include <string>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include "Course.h"
 
 namespace Course 
@@ -92,10 +93,10 @@ namespace Course
   void setCategory(Course& c, int category) { c.category = category; }
 
   // 정렬을 위한 사용자 정의 규칙
-  bool courseCompare(const Course& lhs, const Course& rhs)
-  {
-    return lhs.grade < rhs.grade;
-  }
+  bool courseNameCompare(const Course& lhs, const Course& rhs) { return lhs.courseName < rhs.courseName; }
+  bool courseCreditsCompare(const Course& lhs, const Course& rhs) { return lhs.credits < rhs.credits; }
+  bool courseGradeCompare(const Course& lhs, const Course& rhs) { return lhs.grade < rhs.grade; }
+  bool courseCategoryCompare(const Course& lhs, const Course& rhs) { return lhs.category < rhs.category; }
 
   // 입력을 받아 Course를 생성 후 반환
   Course getAddCourse()
