@@ -22,11 +22,11 @@ class Semester
       std::cout << year << "학년 " << semester << "학기 " << std::endl;
     }
 
-    void printCourses();    // 모든 과목 조회
     void addCourses(Course::Course c);      // 과목 추가 - 따로 Course구조체를 받아와서 push_back만 하도록
-    void removeCourses(int removeIndex);   // 선택한 과목을 vector에서 erase로 제거
-    // void fixCourses();      
+    void removeCourses(int removeIndex);   // 선택한 과목을 vector에서 erase로 제거   
 
+    int getYear() { return year; }
+    int getSemester() { return semester; }
     std::vector<Course::Course>& getCourses() { return courses; }
 
 };

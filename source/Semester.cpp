@@ -10,35 +10,6 @@
 
 
 
-
-// 과목 조회
-void Semester::printCourses()
-{
-  if (courses.size() > 0)
-  {
-    std::cout << "\n--- " << year << "학년 " << semester << "학기 과목 목록 ---" << std::endl;
-    std::cout << "  " << std::left << std::setw(50) << "과목명" // 과목명 헤더
-              << " | " << std::setw(10) << "학점" // 이수학점 헤더
-              << " | " << std::setw(10) << "점수" // 점수 헤더
-              << " | " << std::left << std::setw(20) << "분류" // 분류 헤더
-              << std::endl;
-    std::cout << "----------------------------------------------------" << std::endl;
-
-    for (std::vector<Course::Course>::iterator it = courses.begin(); it != courses.end(); it++)
-    {
-      Course::printCourse(*it);
-    }
-    
-    std::cout << "----------------------------------------------------" << std::endl;
-  }
-  else
-  {
-    std::cout << "\n--- " << year << "학년 " << semester << "학기 ---" << std::endl;
-    std::cout << "  ❗ 이 학기에는 등록된 과목이 없습니다. ❗" << std::endl;
-    std::cout << "----------------------------------------------------" << std::endl; // 구분선
-  }
-}
-
 // 과목 추가
 void Semester::addCourses(Course::Course c)
 {
@@ -51,8 +22,7 @@ void Semester::removeCourses(int removeIndex)
   courses.erase(courses.begin() + removeIndex);
 }
 
-
-// 과목 목록에서 수정할 conrse index를 입력 후 반환
+// 과목 목록에서 수정/제거 시 특정 conrse index를 입력 후 반환
 int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
 {
   std::cout << "  [번호] 과목명" << std::endl;
