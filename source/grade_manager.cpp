@@ -9,12 +9,18 @@
 #include "Course.h" // 과목 구조체
 #include "Semester.h" // 학기 클래스
 
-void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu);
-void fixCourses(std::vector<Course::Course>& courses);
+void printCourses(Semester& s);
 int choiceFixValue(const Course::Course& fixC);
+int getChoiceCourseIndex(const std::vector<Course::Course>& courses); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
+void fixCourses(std::vector<Course::Course>& courses);
+void sortCourse(std::vector<Course::Course>& courses, int choiceSort);
+void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu);
 void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& choiceCourse, int& menu);
-
-
+void handleAddCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
+void handleRemoveCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
+void handleFixCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
+void handleSortCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
+std::vector<Course::Course> allCourseVector(std::array<Semester, 8>& semesters);
 
 enum Menu // 메뉴
 {
@@ -55,7 +61,7 @@ void printCourses(Semester& s)
   }
 }
 
-// 과목 목록에서 하나 선택 후 반환
+// 수정할 과목 목록에서 하나 선택 후 반환
 int choiceFixValue(const Course::Course& fixC)
 {
   int choiceFixValue;
@@ -90,6 +96,51 @@ int choiceFixValue(const Course::Course& fixC)
   }
 
   return choiceFixValue;
+}
+
+// 과목 목록에서 수정/제거 시 특정 conrse index를 입력 후 반환
+int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
+{
+  std::cout << "  [번호] 과목명" << std::endl;
+  std::cout << "----------------------------------------" << std::endl;
+
+  int choiceRemoveCourse;
+  int i=1;
+  for (const Course::Course& c : courses)
+  {
+    std::cout << i++ << ". " << c.courseName << '\n';
+  }
+  std::cout << "----------------------------------------" << std::endl;
+
+  // 제거할 과목 선택
+  while (true)
+  {
+    try
+    {
+      std::cout << ">>> ";
+      std::cin >> choiceRemoveCourse;
+
+      if (std::cin.fail()) 
+      {
+        std::cin.clear(); 
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        throw std::invalid_argument("❌ 오류: 숫자를 입력해주세요!");
+      }
+      else if (choiceRemoveCourse < 1 || choiceRemoveCourse > courses.size())
+      {
+        throw std::invalid_argument("⚠️ 오류: 제시된 범위 내에서 과목 번호를 선택하세요.");
+      }
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << std::endl;
+      std::cout << "다시 시도해주세요." << std::endl;
+      continue;
+    }
+    break;
+  };
+
+  return --choiceRemoveCourse;
 }
 
 // 과목 수정 - 클래스 내부가 아닌 외부 함수로 구현하여 클래스 책임을 줄임
@@ -146,6 +197,7 @@ void fixCourses(std::vector<Course::Course>& courses)
   }
 }
 
+// 정렬할 과목 벡터와 정렬 번호를 통해 정렬
 void sortCourse(std::vector<Course::Course>& courses, int choiceSort)
 {
   if (choiceSort == 1)
@@ -157,7 +209,6 @@ void sortCourse(std::vector<Course::Course>& courses, int choiceSort)
   else if (choiceSort == 4)
     std::sort(courses.begin(), courses.end(), Course::courseCategoryCompare);
 }
-
 
 // 학기 선택 메뉴 함수
 void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu)
@@ -207,6 +258,53 @@ void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int
   }
 }
 
+
+void handleAddCourse(std::array<Semester, 8>& semesters, int& choiceSemester) 
+{
+  Course::Course c = Course::getAddCourse();
+  semesters.at(choiceSemester).addCourses(c);
+  std::cout << "✅ [" << c.courseName << "] 과목이 성공적으로 추가되었습니다! ✅" << std::endl;
+}
+void handleRemoveCourse(std::array<Semester, 8>& semesters, int& choiceSemester)  
+{
+  Semester& s = semesters.at(choiceSemester);
+  const std::vector<Course::Course>& courses = s.getCourses();
+
+  if (courses.size() <= 0)
+  {
+    std::cout << "\n❌ 제거할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌" << std::endl;
+  }
+  else
+  {
+    std::cout << "\n--- 제거할 과목을 선택하세요 ---" << std::endl;
+    int removeIndex = getChoiceCourseIndex(courses);
+    std::string removeName = (courses.begin() + removeIndex)->courseName;
+    semesters.at(choiceSemester).removeCourses(removeIndex); // 실제 제거 부분
+    std::cout << "\n✅ [" << removeName << "] 과목이 성공적으로 제거되었습니다! ✅" << std::endl;
+  }
+}
+void handleFixCourse(std::array<Semester, 8>& semesters, int& choiceSemester)  
+{
+  Semester& s = semesters.at(choiceSemester);
+  std::vector<Course::Course>& courses = s.getCourses();
+  fixCourses(courses);
+}
+void handleSortCourse(std::array<Semester, 8>& semesters, int& choiceSemester)  
+{
+  Semester& s = semesters.at(choiceSemester);
+  
+  int choiceSort;
+  std::cout << "1. 과목 이름순 정렬" << std::endl;
+  std::cout << "2. 과목 학점순 정렬" << std::endl;
+  std::cout << "3. 과목 점수순 정렬" << std::endl;
+  std::cout << "4. 과목 분류순 정렬" << std::endl;
+  std::cout << ">>> ";
+  std::cin >> choiceSort;
+
+  sortCourse(s.getCourses(), choiceSort);
+}
+
+
 // 과목 메뉴 선택
 void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& choiceCourse, int& menu)
 {
@@ -242,64 +340,23 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
   
   // 학기 선택으로 돌아가기
   if (choiceCourse == 0)
-  {
     menu = Menu::SemesterChoise;
-  }
   // 과목 조회
   else if (choiceCourse == 1) 
-  {
     printCourses(semesters.at(choiceSemester));
-  }
   // 과목 추가
   else if (choiceCourse == 2) 
-  {
-    Course::Course c = Course::getAddCourse();
-    semesters.at(choiceSemester).addCourses(c);
-    std::cout << "✅ [" << c.courseName << "] 과목이 성공적으로 추가되었습니다! ✅" << std::endl;
-  }
+    handleAddCourse(semesters, choiceSemester);
   // 과목 제거
   else if (choiceCourse == 3) 
-  {
-    Semester& s = semesters.at(choiceSemester);
-    const std::vector<Course::Course>& courses = s.getCourses();
-
-    if (courses.size() <= 0)
-    {
-      std::cout << "\n❌ 제거할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌" << std::endl;
-    }
-    else
-    {
-      std::cout << "\n--- 제거할 과목을 선택하세요 ---" << std::endl;
-      int removeIndex = getChoiceCourseIndex(courses);
-      std::string removeName = (courses.begin() + removeIndex)->courseName;
-      semesters.at(choiceSemester).removeCourses(removeIndex); // 실제 제거 부분
-      std::cout << "\n✅ [" << removeName << "] 과목이 성공적으로 제거되었습니다! ✅" << std::endl;
-    }
-  }
+    handleRemoveCourse(semesters, choiceSemester);
   // 과목 수정
   else if (choiceCourse == 4)
-  {
-    Semester& s = semesters.at(choiceSemester);
-    std::vector<Course::Course>& courses = s.getCourses();
-    fixCourses(courses);
-  }
+    handleFixCourse(semesters, choiceSemester);
   // 과목 정렬
   else if (choiceCourse == 5)
-  {
-    Semester& s = semesters.at(choiceSemester);
-    
-    int choiceSort;
-    std::cout << "1. 과목 이름순 정렬" << std::endl;
-    std::cout << "2. 과목 학점순 정렬" << std::endl;
-    std::cout << "3. 과목 점수순 정렬" << std::endl;
-    std::cout << "4. 과목 분류순 정렬" << std::endl;
-    std::cout << ">>> ";
-    std::cin >> choiceSort;
-
-    sortCourse(s.getCourses(), choiceSort);
-  }
+    handleSortCourse(semesters, choiceSemester);
 }
-
 
 
 // 전체 학기 array에서 모든 과목을 추출하고 저장한 vector를 반환
