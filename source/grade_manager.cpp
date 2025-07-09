@@ -4,6 +4,7 @@
 #include <array>
 #include <vector>
 #include <iomanip>
+#include <algorithm>
 
 #include "Course.h" // 과목 구조체
 #include "Semester.h" // 학기 클래스
@@ -63,13 +64,6 @@ void choiseReturnSemester(std::array<Semester, 8>& semesters ,int& choiceSemeste
   }
 
   choiceSemester--;
-}
-
-// 학기 선택 메뉴 함수
-void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu)
-{
-  choiseReturnSemester(semesters, choiceSemester);
-  menu = Menu::CourseChoise;
 }
 
 // 과목 목록에서 하나 선택 후 반환
@@ -163,6 +157,15 @@ void fixCourses(std::vector<Course::Course>& courses)
   }
 }
 
+
+
+// 학기 선택 메뉴 함수
+void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu)
+{
+  choiseReturnSemester(semesters, choiceSemester);
+  menu = Menu::CourseChoise;
+}
+
 // 과목 메뉴 선택
 void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& choiceCourse, int& menu)
 {
@@ -172,6 +175,7 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
   std::cout << "2. 과목 추가" << std::endl;
   std::cout << "3. 과목 제거" << std::endl;
   std::cout << "4. 과목 수정" << std::endl;
+  std::cout << "5. 과목 정렬" << std::endl;
   std::cout << "-----------------------" << std::endl;
   std::cout << ">>> ";
 
@@ -184,9 +188,9 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       throw std::invalid_argument("❌ 오류: 입력값이 올바르지 않습니다!");
     }
-    else if (choiceCourse < 0 || choiceCourse > 4)
+    else if (choiceCourse < 0 || choiceCourse > 5)
     {
-      throw std::invalid_argument("❌ 오류: 0~4 범위 내에서 입력하세요");
+      throw std::invalid_argument("❌ 오류: 0~5 범위 내에서 입력하세요");
     }
   }
   catch(const std::exception& e)
@@ -195,24 +199,24 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
     return;
   }
   
-  
+  // 학기 선택으로 돌아가기
   if (choiceCourse == 0)
   {
     menu = Menu::SemesterChoise;
   }
-
+  // 과목 조회
   else if (choiceCourse == 1) 
   {
     semesters.at(choiceSemester).printCourses();
   }
-
+  // 과목 추가
   else if (choiceCourse == 2) 
   {
     Course::Course c = Course::getAddCourse();
     semesters.at(choiceSemester).addCourses(c);
     std::cout << "✅ [" << c.courseName << "] 과목이 성공적으로 추가되었습니다! ✅" << std::endl;
   }
-
+  // 과목 제거
   else if (choiceCourse == 3) 
   {
     Semester& s = semesters.at(choiceSemester);
@@ -231,16 +235,38 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
       std::cout << "\n✅ [" << removeName << "] 과목이 성공적으로 제거되었습니다! ✅" << std::endl;
     }
   }
-
+  // 과목 수정
   else if (choiceCourse == 4)
   {
     Semester& s = semesters.at(choiceSemester);
     std::vector<Course::Course>& courses = s.getCourses();
     fixCourses(courses);
   }
+  // 과목 정렬
+  else if (choiceCourse == 5)
+  {
+    Semester& s = semesters.at(choiceSemester);
+    std::vector<Course::Course>& courses = s.getCourses();
+    
+    int choiceSort;
+    std::cout << "1. 과목 이름순 정렬" << std::endl;
+    std::cout << "2. 과목 학점순 정렬" << std::endl;
+    std::cout << "3. 과목 점수순 정렬" << std::endl;
+    std::cout << "4. 과목 분류순 정렬" << std::endl;
+    std::cout << ">>> ";
+    std::cin >> choiceSort;
+
+    if (choiceSort == 1)
+      std::sort(courses.begin(), courses.end(), Course::courseNameCompare);
+    else if (choiceSort == 2)
+      std::sort(courses.begin(), courses.end(), Course::courseCreditsCompare);
+    else if (choiceSort == 3)
+      std::sort(courses.begin(), courses.end(), Course::courseGradeCompare);
+    else if (choiceSort == 4)
+      std::sort(courses.begin(), courses.end(), Course::courseCategoryCompare);
+
+  }
 }
-
-
 
 
 
