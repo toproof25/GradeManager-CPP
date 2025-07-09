@@ -9,65 +9,54 @@
 #include "Course.h" // 과목 구조체
 #include "Semester.h" // 학기 클래스
 
-void choiseReturnSemester(std::array<Semester, 8>& semesters ,int& choiceSemester);
 void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu);
 void fixCourses(std::vector<Course::Course>& courses);
-int choiceFixValue(Course::Course& fixC);
+int choiceFixValue(const Course::Course& fixC);
 void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& choiceCourse, int& menu);
 
 
 
 enum Menu // 메뉴
 {
+  MainChoise       = 0, // 학기 선택 or 모든 과목 정렬
   SemesterChoise   = 1, // 학기 선택
   CourseChoise     = 2, // 학기 내 과목
+  CourseSort       = 3, // 모든 과목 조회 및 정렬
 };
 
-
-
-// 학기 목록 중 선택
-void choiseReturnSemester(std::array<Semester, 8>& semesters ,int& choiceSemester)
+// 학기 내 과목 조회
+void printCourses(Semester& s)
 {
-  while(true)
+  std::vector<Course::Course>& courses = s.getCourses();
+  
+  if (courses.size() > 0)
   {
-    std::cout << "\n--- 학기를 선택하세요 ---" << std::endl;
+    std::cout << "\n--- " << s.getYear() << "학년 " << s.getSemester() << "학기 과목 목록 ---" << std::endl;
+    std::cout << "  " << std::left << std::setw(50) << "과목명" // 과목명 헤더
+              << " | " << std::setw(10) << "학점" // 이수학점 헤더
+              << " | " << std::setw(10) << "점수" // 점수 헤더
+              << " | " << std::left << std::setw(20) << "분류" // 분류 헤더
+              << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
 
-    for (int i=0; i<semesters.size(); ++i)
+    
+    for (std::vector<Course::Course>::iterator it = courses.begin(); it != courses.end(); it++)
     {
-      std::cout << i+1 << ". ";
-      semesters[i].semesterInfo();
+      Course::printCourse(*it);
     }
-
-    std::cout << "-----------------------" << std::endl;
-    std::cout << ">>> ";
-
-    try
-    {
-      std::cin >> choiceSemester;
-      if (std::cin.fail()) 
-      {
-        std::cin.clear(); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        throw std::invalid_argument("❌ 오류: 입력값이 올바르지 않습니다!");
-      }
-      else if (choiceSemester < 1 || choiceSemester > 8)
-      {
-        throw std::invalid_argument("❌ 오류: 1~8 범위 내에서 입력하세요");
-      }
-    }
-    catch(const std::exception& e)
-    {
-      std::cerr << e.what() << '\n';
-      continue;
-    }
-    break;
+    
+    std::cout << "----------------------------------------------------" << std::endl;
   }
-
-  choiceSemester--;
+  else
+  {
+    std::cout << "\n--- " << s.getYear() << "학년 " << s.getSemester() << "학기 ---" << std::endl;
+    std::cout << "  ❗ 이 학기에는 등록된 과목이 없습니다. ❗" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl; // 구분선
+  }
 }
 
 // 과목 목록에서 하나 선택 후 반환
-int choiceFixValue(Course::Course& fixC)
+int choiceFixValue(const Course::Course& fixC)
 {
   int choiceFixValue;
   std::cout << "\n--- 수정할 과목의 정보 ---" << std::endl;
@@ -157,13 +146,65 @@ void fixCourses(std::vector<Course::Course>& courses)
   }
 }
 
+void sortCourse(std::vector<Course::Course>& courses, int choiceSort)
+{
+  if (choiceSort == 1)
+    std::sort(courses.begin(), courses.end(), Course::courseNameCompare);
+  else if (choiceSort == 2)
+    std::sort(courses.begin(), courses.end(), Course::courseCreditsCompare);
+  else if (choiceSort == 3)
+    std::sort(courses.begin(), courses.end(), Course::courseGradeCompare);
+  else if (choiceSort == 4)
+    std::sort(courses.begin(), courses.end(), Course::courseCategoryCompare);
+}
 
 
 // 학기 선택 메뉴 함수
 void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu)
 {
-  choiseReturnSemester(semesters, choiceSemester);
-  menu = Menu::CourseChoise;
+  while(true)
+  {
+    std::cout << "\n--- 학기를 선택하세요 ---" << std::endl;
+
+    std::cout << "0. 모든 과목 조회 및 정렬 조회" << std::endl;
+    for (int i=0; i<semesters.size(); ++i)
+    {
+      std::cout << i+1 << ". ";
+      semesters[i].semesterInfo();
+    }
+
+    std::cout << "-----------------------" << std::endl;
+    std::cout << ">>> ";
+
+    try
+    {
+      std::cin >> choiceSemester;
+      if (std::cin.fail()) 
+      {
+        std::cin.clear(); 
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        throw std::invalid_argument("❌ 오류: 입력값이 올바르지 않습니다!");
+      }
+      else if (choiceSemester < 0 || choiceSemester > 8)
+      {
+        throw std::invalid_argument("❌ 오류: 0~8 범위 내에서 입력하세요");
+      }
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+      continue;
+    }
+    break;
+  }
+
+  if (choiceSemester == 0){
+    menu = Menu::CourseSort;
+  }
+  else{
+    menu = Menu::CourseChoise;
+    choiceSemester--;
+  }
 }
 
 // 과목 메뉴 선택
@@ -207,7 +248,7 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
   // 과목 조회
   else if (choiceCourse == 1) 
   {
-    semesters.at(choiceSemester).printCourses();
+    printCourses(semesters.at(choiceSemester));
   }
   // 과목 추가
   else if (choiceCourse == 2) 
@@ -246,7 +287,6 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
   else if (choiceCourse == 5)
   {
     Semester& s = semesters.at(choiceSemester);
-    std::vector<Course::Course>& courses = s.getCourses();
     
     int choiceSort;
     std::cout << "1. 과목 이름순 정렬" << std::endl;
@@ -256,19 +296,23 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
     std::cout << ">>> ";
     std::cin >> choiceSort;
 
-    if (choiceSort == 1)
-      std::sort(courses.begin(), courses.end(), Course::courseNameCompare);
-    else if (choiceSort == 2)
-      std::sort(courses.begin(), courses.end(), Course::courseCreditsCompare);
-    else if (choiceSort == 3)
-      std::sort(courses.begin(), courses.end(), Course::courseGradeCompare);
-    else if (choiceSort == 4)
-      std::sort(courses.begin(), courses.end(), Course::courseCategoryCompare);
-
+    sortCourse(s.getCourses(), choiceSort);
   }
 }
 
 
+
+// 전체 학기 array에서 모든 과목을 추출하고 저장한 vector를 반환
+std::vector<Course::Course> allCourseVector(std::array<Semester, 8>& semesters)
+{
+  std::vector<Course::Course> allCourse;
+  for (Semester& s : semesters)
+  {
+    for (Course::Course& c : s.getCourses())
+      allCourse.push_back(c);
+  }
+  return allCourse;
+} 
 
 int main()
 {
@@ -304,6 +348,33 @@ int main()
 
       case Menu::CourseChoise:
         selectCourse(semesters, choiceSemester, choiceCourse, menu);
+        break;
+
+      case Menu::CourseSort:
+        // 모든 과목을 담을 벡터 생성 후 가져오기
+        std::vector<Course::Course> allCourse = allCourseVector(semesters);
+
+        std::cout << "*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬전----------*\n" << std::endl;
+        for (Course::Course& c : allCourse)
+          Course::printCourse(c);
+
+        int choiceSort;
+        std::cout << "1. 과목 이름순 정렬" << std::endl;
+        std::cout << "2. 과목 학점순 정렬" << std::endl;
+        std::cout << "3. 과목 점수순 정렬" << std::endl;
+        std::cout << "4. 과목 분류순 정렬" << std::endl;
+        std::cout << ">>> ";
+        std::cin >> choiceSort;
+
+        sortCourse(allCourse, choiceSort);
+
+        std::cout << "*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬후----------*\n" << std::endl;
+        for (Course::Course& c : allCourse)
+          Course::printCourse(c);
+
+        // 메인 메뉴로 돌아가기
+        menu = Menu::SemesterChoise;
+
         break;
     }
   }
