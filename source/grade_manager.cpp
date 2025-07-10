@@ -9,18 +9,7 @@
 #include "Course.h" // 과목 구조체
 #include "Semester.h" // 학기 클래스
 
-void printCourses(Semester& s);
-int choiceFixValue(const Course::Course& fixC);
-int getChoiceCourseIndex(const std::vector<Course::Course>& courses); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
-void fixCourses(std::vector<Course::Course>& courses);
-void sortCourse(std::vector<Course::Course>& courses, int choiceSort);
-void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu);
-void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& choiceCourse, int& menu);
-void handleAddCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
-void handleRemoveCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
-void handleFixCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
-void handleSortCourse(std::array<Semester, 8>& semesters, int& choiceSemester);
-std::vector<Course::Course> allCourseVector(std::array<Semester, 8>& semesters);
+
 
 enum Menu // 메뉴
 {
@@ -30,8 +19,97 @@ enum Menu // 메뉴
   CourseSort       = 3, // 모든 과목 조회 및 정렬
 };
 
+class GradeManager
+{
+  private:
+    // 1학년 1학기 ~ 4학년 2학기
+    std::array<Semester, 8> semesters = {
+      Semester(1, 1), // 1학년 1학기
+      Semester(1, 2), // 1학년 2학기 
+
+      Semester(2, 1), // 2학년 1학기 
+      Semester(2, 2), // 2학년 2학기 
+
+      Semester(3, 1), // 3학년 1학기 
+      Semester(3, 2), // 3학년 2학기 
+
+      Semester(4, 1), // 4학년 1학기 
+      Semester(4, 2), // 4학년 2학기 
+    };
+
+    // 메뉴 선택, 학기 선택, 과목 선택 변수
+    int menu = 1;
+    int choiceSemester = 1;
+    int choiceCourse = 1;
+
+  public:
+    GradeManager()
+    {
+      std::cout << "*----------학점 관리 프로그램----------*" << std::endl;
+    }
+
+    void printCourses(Semester& s);
+    int choiceFixValue(const Course::Course& fixC);
+    int getChoiceCourseIndex(const std::vector<Course::Course>& courses); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
+    void fixCourses(std::vector<Course::Course>& courses);
+    void sortCourse(std::vector<Course::Course>& courses, int choiceSort);
+    void selectSemester();
+    void selectCourse();
+    void handleAddCourse();
+    void handleRemoveCourse();
+    void handleFixCourse();
+    void handleSortCourse();
+    std::vector<Course::Course> allCourseVector();
+
+    void run()
+    {
+      while (true)
+      {
+        switch(menu)
+        {
+          case Menu::SemesterChoise:
+            selectSemester();
+            break;
+
+          case Menu::CourseChoise:
+            selectCourse();
+            break;
+
+          case Menu::CourseSort:
+            // 모든 과목을 담을 벡터 생성 후 가져오기
+            std::vector<Course::Course> allCourse = allCourseVector();
+
+            std::cout << "*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬전----------*\n" << std::endl;
+            for (Course::Course& c : allCourse)
+              Course::printCourse(c);
+
+            int choiceSort;
+            std::cout << "1. 과목 이름순 정렬" << std::endl;
+            std::cout << "2. 과목 학점순 정렬" << std::endl;
+            std::cout << "3. 과목 점수순 정렬" << std::endl;
+            std::cout << "4. 과목 분류순 정렬" << std::endl;
+            std::cout << ">>> ";
+            std::cin >> choiceSort;
+
+            sortCourse(allCourse, choiceSort);
+
+            std::cout << "*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬후----------*\n" << std::endl;
+            for (Course::Course& c : allCourse)
+              Course::printCourse(c);
+
+            // 메인 메뉴로 돌아가기
+            menu = Menu::SemesterChoise;
+
+            break;
+        }
+      }
+    }
+
+};
+
+
 // 학기 내 과목 조회
-void printCourses(Semester& s)
+void GradeManager::printCourses(Semester& s)
 {
   std::vector<Course::Course>& courses = s.getCourses();
   
@@ -62,7 +140,7 @@ void printCourses(Semester& s)
 }
 
 // 수정할 과목 목록에서 하나 선택 후 반환
-int choiceFixValue(const Course::Course& fixC)
+int GradeManager::choiceFixValue(const Course::Course& fixC)
 {
   int choiceFixValue;
   std::cout << "\n--- 수정할 과목의 정보 ---" << std::endl;
@@ -99,7 +177,7 @@ int choiceFixValue(const Course::Course& fixC)
 }
 
 // 과목 목록에서 수정/제거 시 특정 conrse index를 입력 후 반환
-int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
+int GradeManager::getChoiceCourseIndex(const std::vector<Course::Course>& courses)
 {
   std::cout << "  [번호] 과목명" << std::endl;
   std::cout << "----------------------------------------" << std::endl;
@@ -144,7 +222,7 @@ int getChoiceCourseIndex(const std::vector<Course::Course>& courses)
 }
 
 // 과목 수정 - 클래스 내부가 아닌 외부 함수로 구현하여 클래스 책임을 줄임
-void fixCourses(std::vector<Course::Course>& courses)
+void GradeManager::fixCourses(std::vector<Course::Course>& courses)
 {
   if (courses.size() <= 0)
   {
@@ -198,7 +276,7 @@ void fixCourses(std::vector<Course::Course>& courses)
 }
 
 // 정렬할 과목 벡터와 정렬 번호를 통해 정렬
-void sortCourse(std::vector<Course::Course>& courses, int choiceSort)
+void GradeManager::sortCourse(std::vector<Course::Course>& courses, int choiceSort)
 {
   if (choiceSort == 1)
     std::sort(courses.begin(), courses.end(), Course::courseNameCompare);
@@ -211,7 +289,7 @@ void sortCourse(std::vector<Course::Course>& courses, int choiceSort)
 }
 
 // 학기 선택 메뉴 함수
-void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int& menu)
+void GradeManager::selectSemester()
 {
   while(true)
   {
@@ -259,13 +337,13 @@ void selectSemester(std::array<Semester, 8>& semesters ,int& choiceSemester, int
 }
 
 
-void handleAddCourse(std::array<Semester, 8>& semesters, int& choiceSemester) 
+void GradeManager::handleAddCourse() 
 {
   Course::Course c = Course::getAddCourse();
   semesters.at(choiceSemester).addCourses(c);
   std::cout << "✅ [" << c.courseName << "] 과목이 성공적으로 추가되었습니다! ✅" << std::endl;
 }
-void handleRemoveCourse(std::array<Semester, 8>& semesters, int& choiceSemester)  
+void GradeManager::handleRemoveCourse()  
 {
   Semester& s = semesters.at(choiceSemester);
   const std::vector<Course::Course>& courses = s.getCourses();
@@ -283,13 +361,13 @@ void handleRemoveCourse(std::array<Semester, 8>& semesters, int& choiceSemester)
     std::cout << "\n✅ [" << removeName << "] 과목이 성공적으로 제거되었습니다! ✅" << std::endl;
   }
 }
-void handleFixCourse(std::array<Semester, 8>& semesters, int& choiceSemester)  
+void GradeManager::handleFixCourse()  
 {
   Semester& s = semesters.at(choiceSemester);
   std::vector<Course::Course>& courses = s.getCourses();
   fixCourses(courses);
 }
-void handleSortCourse(std::array<Semester, 8>& semesters, int& choiceSemester)  
+void GradeManager::handleSortCourse()  
 {
   Semester& s = semesters.at(choiceSemester);
   
@@ -306,7 +384,7 @@ void handleSortCourse(std::array<Semester, 8>& semesters, int& choiceSemester)
 
 
 // 과목 메뉴 선택
-void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& choiceCourse, int& menu)
+void GradeManager::selectCourse()
 {
   std::cout << "\n--- 메뉴를 선택하세요 ---" << std::endl;
   std::cout << "0. 학기 선택" << std::endl;
@@ -346,21 +424,21 @@ void selectCourse(std::array<Semester, 8>& semesters ,int& choiceSemester, int& 
     printCourses(semesters.at(choiceSemester));
   // 과목 추가
   else if (choiceCourse == 2) 
-    handleAddCourse(semesters, choiceSemester);
+    handleAddCourse();
   // 과목 제거
   else if (choiceCourse == 3) 
-    handleRemoveCourse(semesters, choiceSemester);
+    handleRemoveCourse();
   // 과목 수정
   else if (choiceCourse == 4)
-    handleFixCourse(semesters, choiceSemester);
+    handleFixCourse();
   // 과목 정렬
   else if (choiceCourse == 5)
-    handleSortCourse(semesters, choiceSemester);
+    handleSortCourse();
 }
 
 
 // 전체 학기 array에서 모든 과목을 추출하고 저장한 vector를 반환
-std::vector<Course::Course> allCourseVector(std::array<Semester, 8>& semesters)
+std::vector<Course::Course> GradeManager::allCourseVector()
 {
   std::vector<Course::Course> allCourse;
   for (Semester& s : semesters)
@@ -373,68 +451,8 @@ std::vector<Course::Course> allCourseVector(std::array<Semester, 8>& semesters)
 
 int main()
 {
-  // 1학년 1학기 ~ 4학년 2학기
-  std::array<Semester, 8> semesters = {
-    Semester(1, 1), // 1학년 1학기
-    Semester(1, 2), // 1학년 2학기 
-
-    Semester(2, 1), // 2학년 1학기 
-    Semester(2, 2), // 2학년 2학기 
-
-    Semester(3, 1), // 3학년 1학기 
-    Semester(3, 2), // 3학년 2학기 
-
-    Semester(4, 1), // 4학년 1학기 
-    Semester(4, 2), // 4학년 2학기 
-  };
-
-  // 메뉴 선택, 학기 선택, 과목 선택 변수
-  int menu = 1;
-  int choiceSemester = 1;
-  int choiceCourse = 1;
-
-  std::cout << "*----------학점 관리 프로그램----------*" << std::endl;
-
-  while (true)
-  {
-    switch(menu)
-    {
-      case Menu::SemesterChoise:
-        selectSemester(semesters, choiceSemester, menu);
-        break;
-
-      case Menu::CourseChoise:
-        selectCourse(semesters, choiceSemester, choiceCourse, menu);
-        break;
-
-      case Menu::CourseSort:
-        // 모든 과목을 담을 벡터 생성 후 가져오기
-        std::vector<Course::Course> allCourse = allCourseVector(semesters);
-
-        std::cout << "*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬전----------*\n" << std::endl;
-        for (Course::Course& c : allCourse)
-          Course::printCourse(c);
-
-        int choiceSort;
-        std::cout << "1. 과목 이름순 정렬" << std::endl;
-        std::cout << "2. 과목 학점순 정렬" << std::endl;
-        std::cout << "3. 과목 점수순 정렬" << std::endl;
-        std::cout << "4. 과목 분류순 정렬" << std::endl;
-        std::cout << ">>> ";
-        std::cin >> choiceSort;
-
-        sortCourse(allCourse, choiceSort);
-
-        std::cout << "*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬후----------*\n" << std::endl;
-        for (Course::Course& c : allCourse)
-          Course::printCourse(c);
-
-        // 메인 메뉴로 돌아가기
-        menu = Menu::SemesterChoise;
-
-        break;
-    }
-  }
+  GradeManager gm;
+  gm.run();
 
   return 0;
 }
