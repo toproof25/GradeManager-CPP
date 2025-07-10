@@ -10,18 +10,18 @@
 #include "Semester.h" // 학기 클래스
 
 
-
-enum Menu // 메뉴
-{
-  MainChoise       = 0, // 학기 선택 or 모든 과목 정렬
-  SemesterChoise   = 1, // 학기 선택
-  CourseChoise     = 2, // 학기 내 과목
-  CourseSort       = 3, // 모든 과목 조회 및 정렬
-};
-
 class GradeManager
 {
   private:
+
+    enum Menu // 메뉴
+    {
+      MainChoise       = 0, // 학기 선택 or 모든 과목 정렬
+      SemesterChoise   = 1, // 학기 선택
+      CourseChoise     = 2, // 학기 내 과목
+      CourseSort       = 3, // 모든 과목 조회 및 정렬
+    };
+
     // 1학년 1학기 ~ 4학년 2학기
     std::array<Semester, 8> semesters = {
       Semester(1, 1), // 1학년 1학기
@@ -42,24 +42,28 @@ class GradeManager
     int choiceSemester = 1;
     int choiceCourse = 1;
 
+    int choiceFixValue(const Course::Course& fixC);
+    int getChoiceCourseIndex(const std::vector<Course::Course>& courses); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
+
+    std::vector<Course::Course> allCourseVector();
+
+    void printCourses(Semester& s);
+    void fixCourses(std::vector<Course::Course>& courses);
+    void sortCourse(std::vector<Course::Course>& courses, int choiceSort);
+    void selectSemester();
+    void selectCourse();
+
+    void handleAddCourse();
+    void handleRemoveCourse();
+    void handleFixCourse();
+    void handleSortCourse();
+
   public:
     GradeManager()
     {
       std::cout << "*----------학점 관리 프로그램----------*" << std::endl;
     }
 
-    void printCourses(Semester& s);
-    int choiceFixValue(const Course::Course& fixC);
-    int getChoiceCourseIndex(const std::vector<Course::Course>& courses); // 과목 목록에서 선택한 couesrs index를 받아오는 함수
-    void fixCourses(std::vector<Course::Course>& courses);
-    void sortCourse(std::vector<Course::Course>& courses, int choiceSort);
-    void selectSemester();
-    void selectCourse();
-    void handleAddCourse();
-    void handleRemoveCourse();
-    void handleFixCourse();
-    void handleSortCourse();
-    std::vector<Course::Course> allCourseVector();
 
     void run()
     {
@@ -226,7 +230,7 @@ void GradeManager::fixCourses(std::vector<Course::Course>& courses)
 {
   if (courses.size() <= 0)
   {
-    std::cout << "\n❌ 제거할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌" << std::endl;
+    std::cout << "\n❌ 수정할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌" << std::endl;
   }
   else
   {
@@ -453,6 +457,7 @@ int main()
 {
   GradeManager gm;
   gm.run();
+  
 
   return 0;
 }
