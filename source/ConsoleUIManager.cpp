@@ -240,7 +240,7 @@ void ConsoleUIManager::displayMessage(const std::string& message)
 }
 
 // Course 정보 출력
-void displayCourse(const Course::Course& c)
+void ConsoleUIManager::displayCourse(const Course::Course& c)
 {
   std::cout << "  - " << std::left << std::setw(50) << c.courseName // 과목명 (20칸 좌측 정렬)
             << " | 학점: " << std::setw(10) << c.credits       // 이수학점 (2칸)
