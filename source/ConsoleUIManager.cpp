@@ -253,12 +253,12 @@ void ConsoleUIManager::displayCourse(const Course::Course& c)
 
 std::string ConsoleUIManager::promptFixString(const std::string& promptMessage)
 {
-  std::cout << promptMessage << std::endl;
-  std::cout << "[exit -> 입력 종료] ";
-  std::cout << ">>> ";
   std::string value;
   while (true)
   {
+    std::cout << promptMessage << std::endl;
+    std::cout << "[exit -> 입력 종료] ";
+    std::cout << ">>> ";
     try
     {
       std::cin >> value;
@@ -284,12 +284,12 @@ std::string ConsoleUIManager::promptFixString(const std::string& promptMessage)
 }
 int ConsoleUIManager::promptFixInt(const std::string& promptMessage, int min, int max)
 {
-  std::cout << promptMessage << std::endl;
-  std::cout << "[-1 -> 입력 종료] ";
-  std::cout << ">>> ";
   int value;
   while (true)
   {
+    std::cout << promptMessage << std::endl;
+    std::cout << "[-1 -> 입력 종료] ";
+    std::cout << ">>> ";
     try
     {
       std::cin >> value;
@@ -319,12 +319,12 @@ int ConsoleUIManager::promptFixInt(const std::string& promptMessage, int min, in
 }
 double ConsoleUIManager::promptFixDouble(const std::string& promptMessage, double min, double max)
 {
-  std::cout << promptMessage << std::endl;
-  std::cout << "[-1 -> 입력 종료] ";
-  std::cout << ">>> ";
   double value;
   while (true)
   {
+    std::cout << promptMessage << std::endl;
+    std::cout << "[-1 -> 입력 종료] ";
+    std::cout << ">>> ";
     try
     {
       std::cin >> value;
