@@ -176,6 +176,7 @@ void GradeManager::handleSortCourse()
   Semester& s = semesters.at(choiceSemester);
   int choiceSort = consoleUIManager.displaySortChoice();
   sortCourse(s.getCourses(), choiceSort);
+  semesterJson.sortJsonData(choiceSemester, choiceSort);
 }
 
 // 전체 학기 array에서 모든 과목을 추출하고 저장한 vector를 반환
