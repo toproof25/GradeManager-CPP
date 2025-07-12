@@ -139,28 +139,28 @@ void GradeManager::handleFixCourse()
       std::string fixName;
       fixName = consoleUIManager.promptFixString("변경할 과목명을 입력하세요");
       if (fixName == "") return;
-      Course::setCourseName(fixC, fixName);
+      fixC.setCourseName(fixName);
     }
     else if (fixValue == 2)
     {
       int fixCredits;
       fixCredits = consoleUIManager.promptFixInt("변경할 이수학점을 입력하세요", 0, 3);
       if (fixCredits == -1) return;
-      Course::setCredits(fixC, fixCredits);
+      fixC.setCredits(fixCredits);
     }
     else if (fixValue == 3)
     {
       double fixGrade;
       fixGrade = consoleUIManager.promptFixInt("변경할 점수를 입력하세요", 0.0, 4.5);
       if (fixGrade == -1) return;
-      Course::setGrade(fixC, fixGrade);
+      fixC.setGrade(fixGrade);
     }
     else if (fixValue == 4)
     {
       int fixCategory;
       fixCategory = consoleUIManager.promptFixInt("변경할 전공분류를 입력하세요", 1, 7);
       if (fixCategory == -1) return;
-      Course::setCategory(fixC, fixCategory);
+      fixC.setCategory(fixCategory);
     }
 
     consoleUIManager.displayMessage("\n--- 수정된 과목의 정보 ---");

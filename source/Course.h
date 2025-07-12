@@ -25,6 +25,11 @@ namespace Course
     double grade;           // 4.5 (A+)
     int category;           // 0 (전공선택)
 
+    void setCourseName(const std::string& name);
+    void setCredits(int credits);
+    void setGrade(double grade);
+    void setCategory(int category);
+
     bool operator<(const Course& otherCourse) const 
     {
         return grade < otherCourse.grade;
@@ -34,17 +39,6 @@ namespace Course
   // 점수와 전공분류를 적절한 문자열로 반환
   std::string convertToGrade(const int& grade);
   std::string convertToCategory(const int& category);
-
-  // Course 객체의 변수값을 변경
-  // template는 과목명(string), 점수(double), 전공분류와 학점(int)
-  //template <typename T>
-  //void fixCourseValue(Course& c, int choiceFixValue, T& value);
-
-  // template가 오류가 발생하여 각 setter 함수를 제작
-  void setCourseName(Course& c, const std::string& name);
-  void setCredits(Course& c, int credits);
-  void setGrade(Course& c, double grade);
-  void setCategory(Course& c, int category);
 
   bool courseNameCompare(const Course& lhs, const Course& rhs);
   bool courseCreditsCompare(const Course& lhs, const Course& rhs);

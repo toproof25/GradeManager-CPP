@@ -60,10 +60,10 @@ namespace Course
   }
 
   // 각 데이터를 변경하는 setter함수
-  void setCourseName(Course& c, const std::string& name) { c.courseName = name; }
-  void setCredits(Course& c, int credits) { c.credits = credits; }
-  void setGrade(Course& c, double grade) { c.grade = grade; }
-  void setCategory(Course& c, int category) { c.category = category; }
+  void Course::setCourseName(const std::string& name) { this->courseName = name; }
+  void Course::setCredits(int credits) { this->credits = credits; }
+  void Course::setGrade(double grade) { this->grade = grade; }
+  void Course::setCategory(int category) { this->category = category; }
 
   // 정렬을 위한 사용자 정의 규칙
   bool courseNameCompare(const Course& lhs, const Course& rhs) { return lhs.courseName < rhs.courseName; }
