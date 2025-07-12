@@ -221,7 +221,7 @@ void ConsoleUIManager::displayCoursesInSemester(Semester& s)
     
     for (std::vector<Course::Course>::iterator it = courses.begin(); it != courses.end(); it++)
     {
-      Course::printCourse(*it);
+      displayCourse(*it);
     }
     
     std::cout << "----------------------------------------------------" << std::endl;
