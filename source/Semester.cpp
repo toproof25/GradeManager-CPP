@@ -1,14 +1,8 @@
-#include <string>
 #include <vector>
-#include <iostream>
-#include <iomanip>
-#include <stdexcept> // 예외가 정의된 헤더파일
-#include <limits>
-
 #include "Course.h"
 #include "Semester.h"
 
-
+Semester::Semester(int year, int semester) : year(year), semester(semester) {}
 
 // 과목 추가
 void Semester::addCourses(Course::Course c)

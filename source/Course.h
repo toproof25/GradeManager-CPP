@@ -3,7 +3,6 @@
 
 namespace Course 
 {
-
   // 전공 분류
   enum MajorClassification
   {
@@ -32,9 +31,6 @@ namespace Course
     }
   };
 
-  // Course 구조체를 참조하여 정보를 출력
-  void printCourse(const Course& c);
-
   // 점수와 전공분류를 적절한 문자열로 반환
   std::string convertToGrade(const int& grade);
   std::string convertToCategory(const int& category);
@@ -49,8 +45,6 @@ namespace Course
   void setCredits(Course& c, int credits);
   void setGrade(Course& c, double grade);
   void setCategory(Course& c, int category);
-
-  Course getAddCourse(); // 각 데이터 입력받아서 완성된 Course구조체를 반환
 
   bool courseNameCompare(const Course& lhs, const Course& rhs);
   bool courseCreditsCompare(const Course& lhs, const Course& rhs);

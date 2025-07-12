@@ -12,15 +12,7 @@ class Semester
     std::vector<Course::Course> courses;
 
   public:
-    Semester(int year, int semester) : year(year), semester(semester) 
-    {
-      //std::cout << "✨ " << year << "학년 " << semester << "학기 데이터가 생성되었습니다! ✨" << std::endl;
-    }
-    
-    void semesterInfo()
-    {
-      std::cout << year << "학년 " << semester << "학기 " << std::endl;
-    }
+    Semester(int year, int semester);
 
     void addCourses(Course::Course c);      // 과목 추가 - 따로 Course구조체를 받아와서 push_back만 하도록
     void removeCourses(int removeIndex);   // 선택한 과목을 vector에서 erase로 제거   
