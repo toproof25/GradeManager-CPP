@@ -39,7 +39,7 @@ void GradeManager::handleSelectSemesters()
 }
 void GradeManager::handleSelectCourse()
 {
-  choiceCourse = consoleUIManager.displayCourseChoice();
+  choiceCourse = consoleUIManager.displayCourseChoice(semesters[choiceSemester].getYear(), semesters[choiceSemester].getSemester());
   // 학기 선택으로 돌아가기
   if (choiceCourse == 0)
     menu = Menu::SemesterChoise;
@@ -82,7 +82,16 @@ void GradeManager::handleSortAllCourse()
 
 void GradeManager::handleAddCourse() 
 {
-  Course::Course c = consoleUIManager.createAddCourse();
+  Course::Course c;
+  try
+  {
+    c = consoleUIManager.createAddCourse();
+  }
+  catch(const std::exception& e)
+  {
+    std::cerr << e.what() << '\n';
+    return;
+  }
   semesters.at(choiceSemester).addCourses(c);
   consoleUIManager.displayMessage("✅ [" + c.courseName + "] 과목이 성공적으로 추가되었습니다! ✅");
 }
@@ -128,28 +137,28 @@ void GradeManager::handleFixCourse()
     if (fixValue == 1)
     {
       std::string fixName;
-      fixName = consoleUIManager.promptFixString("변경할 과목명을 입력하세요 >>> ");
+      fixName = consoleUIManager.promptFixString("변경할 과목명을 입력하세요");
       if (fixName == "") return;
       Course::setCourseName(fixC, fixName);
     }
     else if (fixValue == 2)
     {
       int fixCredits;
-      fixCredits = consoleUIManager.promptFixInt("변경할 이수학점을 입력하세요 >>> ", 0, 3);
+      fixCredits = consoleUIManager.promptFixInt("변경할 이수학점을 입력하세요", 0, 3);
       if (fixCredits == -1) return;
       Course::setCredits(fixC, fixCredits);
     }
     else if (fixValue == 3)
     {
       double fixGrade;
-      fixGrade = consoleUIManager.promptFixInt("변경할 점수를 입력하세요 >>> ", 0.0, 4.5);
+      fixGrade = consoleUIManager.promptFixInt("변경할 점수를 입력하세요", 0.0, 4.5);
       if (fixGrade == -1) return;
       Course::setGrade(fixC, fixGrade);
     }
     else if (fixValue == 4)
     {
       int fixCategory;
-      fixCategory = consoleUIManager.promptFixInt("변경할 전공분류를 입력하세요 >>> ", 1, 7);
+      fixCategory = consoleUIManager.promptFixInt("변경할 전공분류를 입력하세요", 1, 7);
       if (fixCategory == -1) return;
       Course::setCategory(fixC, fixCategory);
     }
