@@ -159,7 +159,7 @@ void GradeManager::handleFixCourse()
     else if (fixValue == 4)
     {
       int fixCategory;
-      fixCategory = consoleUIManager.promptFixInt("📚 변경할 전공 분류를 선택하세요:\n 1. 전공 선택    2. 복수 전공    3. 부전공   4. 계열   5. 교양  6. 자유 선택   7. 타 전공", 1, 7);
+      fixCategory = consoleUIManager.promptFixInt("📚 변경할 전공 분류를 선택하세요:\n 1.전공 선택  2.복수 전공   3.기초(필수)  4.일반(선택)  5.균형교양  6.계열교양  7.타전공", 1, 7);
       if (fixCategory == -1) return;
       fixC.setCategory(fixCategory);
       semesterJson.updateJsonData(choiceSemester, fixIndex, "category", fixCategory);

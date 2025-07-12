@@ -372,7 +372,7 @@ Course::Course ConsoleUIManager::createAddCourse()
   grade = promptFixDouble("💯 최종점수를 입력하세요 (예: 1.0, 4.5)", 0.0, 4.5);
   if (grade == -1.0) throw std::invalid_argument("입력을 종료하였습니다");
 
-  category = promptFixInt("📚 전공 분류를 선택하세요:\n 1. 전공 선택    2. 복수 전공    3. 부전공   4. 계열   5. 교양  6. 자유 선택   7. 타 전공", 1, 7);
+  category = promptFixInt("📚 전공 분류를 선택하세요:\n 1.전공 선택  2.복수 전공   3.기초(필수)  4.일반(선택)  5.균형교양  6.계열교양  7.타전공", 1, 7);
   if (credits == -1) throw std::invalid_argument("입력을 종료하였습니다");
     
   Course::Course c = {courseName, credits, grade, --category};

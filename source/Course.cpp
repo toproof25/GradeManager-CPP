@@ -9,10 +9,10 @@ namespace Course
 
   std::string convertToGrade(const int& grade)
   {
-    std::string g[9] = {"A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"};
+    std::string g[10] = {"A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"};
     int index = 0;
 
-    for (double i = 4.5; i>=0.5; i-=0.5)
+    for (double i = 4.5; i>=0.0; i-=0.5)
     {
       if (grade >= i) 
         return g[index];
@@ -34,19 +34,19 @@ namespace Course
       break;
 
     case Minor:
-      return "부전공";
+      return "기초(필수)";
       break;
 
     case Division:
-      return "계열";
+      return "일반(선택)";
       break;
 
     case GeneralElective:
-      return "교양";
+      return "균형교양";
       break;
 
     case Elective:
-      return "자선";
+      return "계열교양";
       break;
 
     case OtherMajor:
