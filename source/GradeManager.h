@@ -29,7 +29,7 @@ class GradeManager
     int choiceSemester = 1;
     int choiceCourse = 1;
 
-    std::vector<Course::Course> allCourseVector();
+    std::vector<Course::Course> getAllCourseVector();
 
     void sortCourse(std::vector<Course::Course>& courses, int choiceSort);
 
@@ -44,5 +44,6 @@ class GradeManager
 
   public:
     GradeManager();
+    ~GradeManager();
     void run();
 };

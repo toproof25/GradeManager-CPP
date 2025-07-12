@@ -11,6 +11,11 @@
 
 GradeManager::GradeManager() : semesters(semesterJson.loadJson()) {}
 
+GradeManager::~GradeManager()
+{
+  
+}
+
 // 정렬할 과목 벡터와 정렬 번호를 통해 정렬
 void GradeManager::sortCourse(std::vector<Course::Course>& courses, int choiceSort)
 {
@@ -58,7 +63,7 @@ void GradeManager::handleSelectCourse()
 void GradeManager::handleSortAllCourse()
 {
   // 모든 과목을 담을 벡터 생성 후 가져오기
-  std::vector<Course::Course> allCourse = allCourseVector();
+  std::vector<Course::Course> allCourse = getAllCourseVector();
 
   consoleUIManager.displayMessage("*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬전----------*\n");
   for (Course::Course& c : allCourse)
@@ -180,7 +185,7 @@ void GradeManager::handleSortCourse()
 }
 
 // 전체 학기 array에서 모든 과목을 추출하고 저장한 vector를 반환
-std::vector<Course::Course> GradeManager::allCourseVector()
+std::vector<Course::Course> GradeManager::getAllCourseVector()
 {
   std::vector<Course::Course> allCourse;
   for (Semester& s : semesters)
