@@ -34,4 +34,13 @@ class SemesterJSON
     void updateJsonData(int index, int course_index, const std::string& key, int updateValue);
     void updateJsonData(int index, int course_index, const std::string& key, double updateValue);
 
+    void sortJsonData(int index, int sort_index);
+  
+
 };
+
+// 정렬을 위한 사용자 정의 규칙
+bool courseJsonNameCompare(const nlohmann::json& lhs, const nlohmann::json& rhs); 
+bool courseJsonCreditsCompare(const nlohmann::json& lhs, const nlohmann::json& rhs);
+bool courseJsonGradeCompare(const nlohmann::json& lhs, const nlohmann::json& rhs);
+bool courseJsonCategoryCompare(const nlohmann::json& lhs, const nlohmann::json& rhs);

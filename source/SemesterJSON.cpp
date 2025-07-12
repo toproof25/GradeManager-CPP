@@ -189,3 +189,35 @@ void SemesterJSON::updateJsonData(int index, int course_index, const std::string
   update_file << json.dump(4);
   update_file.close();
 }
+
+
+void SemesterJSON::sortJsonData(int index, int sort_index)
+{
+  nlohmann::json json = getSemesterJson();
+
+  nlohmann::json& semesters_json = json.at("semesters");
+  nlohmann::json& courses_json = semesters_json.at(index)["courses"];
+
+  if (sort_index == 1)
+    std::sort(courses_json.begin(), courses_json.end(), courseJsonNameCompare);
+  else if (sort_index == 2)
+    std::sort(courses_json.begin(), courses_json.end(), courseJsonCreditsCompare);
+  else if (sort_index == 3)
+    std::sort(courses_json.begin(), courses_json.end(), courseJsonGradeCompare);
+  else if (sort_index == 4)
+    std::sort(courses_json.begin(), courses_json.end(), courseJsonCategoryCompare);
+
+  std::ofstream update_file(filename);
+  update_file << json.dump(4);
+  update_file.close();
+}
+
+
+// 정렬을 위한 사용자 정의 규칙
+bool courseJsonNameCompare(const nlohmann::json& lhs, const nlohmann::json& rhs) { return lhs["courseName"].get<std::string>() < rhs["courseName"].get<std::string>(); }
+bool courseJsonCreditsCompare(const nlohmann::json& lhs, const nlohmann::json& rhs) { return lhs["credits"].get<int>() < rhs["credits"].get<int>(); }
+bool courseJsonGradeCompare(const nlohmann::json& lhs, const nlohmann::json& rhs) { return lhs["grade"].get<double>() < rhs["grade"].get<double>(); }
+bool courseJsonCategoryCompare(const nlohmann::json& lhs, const nlohmann::json& rhs) { return lhs["category"].get<int>() < rhs["category"].get<int>(); }
+
+
+
