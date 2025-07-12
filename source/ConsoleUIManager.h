@@ -12,7 +12,7 @@ class ConsoleUIManager
 {
   public:
     int displaySemesterChoice(std::array<Semester, 8>& semesters); // 학기 선택
-    int displayCourseChoice(); // 과목 선택
+    int displayCourseChoice(int year, int semester); // 과목 선택
     int displaySortChoice();
     void displayCourse(const Course::Course& c);      // 한 과목의 정보 출력
     void displayCoursesInSemester(Semester& s);                 // 한 학기의 모든 과목 출력

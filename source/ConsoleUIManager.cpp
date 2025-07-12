@@ -57,11 +57,11 @@ int ConsoleUIManager::displaySemesterChoice(std::array<Semester, 8>& semesters)
     return --choiceSemester;
   }
 }
-int ConsoleUIManager::displayCourseChoice()
+int ConsoleUIManager::displayCourseChoice(int year, int semester)
 {
   int choiceCourse;
   
-  std::cout << "\n--- 메뉴를 선택하세요 ---" << std::endl;
+  std::cout << "\n--- ["<< year << "학년" << semester << "학기]" <<" 메뉴를 선택하세요 ---" << std::endl;
   std::cout << "0. 학기 선택" << std::endl;
   std::cout << "1. 과목 조회" << std::endl;
   std::cout << "2. 과목 추가" << std::endl;
@@ -254,7 +254,8 @@ void ConsoleUIManager::displayCourse(const Course::Course& c)
 std::string ConsoleUIManager::promptFixString(const std::string& promptMessage)
 {
   std::cout << promptMessage << std::endl;
-  std::cout << "exit -> 입력 종료" << std::endl;
+  std::cout << "[exit -> 입력 종료] ";
+  std::cout << ">>> ";
   std::string value;
   while (true)
   {
@@ -269,7 +270,6 @@ std::string ConsoleUIManager::promptFixString(const std::string& promptMessage)
       }
       else if(value == "exit")
       {
-        std::cout << "입력을 종료합니다" << std::endl;
         return "";
       }
     }
@@ -285,7 +285,8 @@ std::string ConsoleUIManager::promptFixString(const std::string& promptMessage)
 int ConsoleUIManager::promptFixInt(const std::string& promptMessage, int min, int max)
 {
   std::cout << promptMessage << std::endl;
-  std::cout << "-1 -> 입력 종료" << std::endl;
+  std::cout << "[-1 -> 입력 종료] ";
+  std::cout << ">>> ";
   int value;
   while (true)
   {
@@ -300,7 +301,6 @@ int ConsoleUIManager::promptFixInt(const std::string& promptMessage, int min, in
       }
       else if(value == -1)
       {
-        std::cout << "입력을 종료합니다" << std::endl;
         return -1;
       }
       else if (value < min || value > max)
@@ -320,7 +320,8 @@ int ConsoleUIManager::promptFixInt(const std::string& promptMessage, int min, in
 double ConsoleUIManager::promptFixDouble(const std::string& promptMessage, double min, double max)
 {
   std::cout << promptMessage << std::endl;
-  std::cout << "-1 -> 입력 종료" << std::endl;
+  std::cout << "[-1 -> 입력 종료] ";
+  std::cout << ">>> ";
   double value;
   while (true)
   {
@@ -335,7 +336,6 @@ double ConsoleUIManager::promptFixDouble(const std::string& promptMessage, doubl
       }
       else if(value == -1)
       {
-        std::cout << "입력을 종료합니다" << std::endl;
         return -1;
       }
       else if (value < min || value > max)
@@ -363,10 +363,17 @@ Course::Course ConsoleUIManager::createAddCourse()
 
   std::cout << "\n--- 추가할 과목 데이터 입력 ---" << std::endl;
 
-  courseName = promptFixString("🏷️ 과목명을 입력하세요 (예: 컴퓨터구조) >>> ");
-  credits = promptFixInt("🔢 이수학점을 입력하세요 (예: 3) >>> ", 0, 3);
-  grade = promptFixDouble("💯 최종점수를 입력하세요 (예: 1.0, 4.5) >>> ", 0.0, 4.5);
-  category = promptFixInt("📚 전공 분류를 선택하세요:\n 1. 전공 필수    2. 복수 전공    3. 부전공   4. 계열   5. 교양  6. 자유 선택   7. 타 전공\n>>> ", 1, 7);
+  courseName = promptFixString("🏷️ 과목명을 입력하세요 (예: 컴퓨터구조)");
+  if (courseName == "") throw std::invalid_argument("입력을 종료하였습니다");
+
+  credits = promptFixInt("🔢 이수학점을 입력하세요 (예: 3)", 0, 3);
+  if (credits == -1) throw std::invalid_argument("입력을 종료하였습니다");
+
+  grade = promptFixDouble("💯 최종점수를 입력하세요 (예: 1.0, 4.5)", 0.0, 4.5);
+  if (grade == -1.0) throw std::invalid_argument("입력을 종료하였습니다");
+
+  category = promptFixInt("📚 전공 분류를 선택하세요:\n 1. 전공 선택    2. 복수 전공    3. 부전공   4. 계열   5. 교양  6. 자유 선택   7. 타 전공", 1, 7);
+  if (credits == -1) throw std::invalid_argument("입력을 종료하였습니다");
     
   Course::Course c = {courseName, credits, grade, --category};
   return c;
