@@ -2,6 +2,7 @@
 #include "Semester.h"
 #include "Course.h"
 #include "ConsoleUIManager.h"
+#include "SemesterJSON.h"
 #include <array>
 #include <vector>
 
@@ -18,21 +19,10 @@ class GradeManager
     };
 
     ConsoleUIManager consoleUIManager;
+    SemesterJSON semesterJson;
 
     // 1학년 1학기 ~ 4학년 2학기
-    std::array<Semester, 8> semesters = {
-      Semester(1, 1), // 1학년 1학기
-      Semester(1, 2), // 1학년 2학기 
-
-      Semester(2, 1), // 2학년 1학기 
-      Semester(2, 2), // 2학년 2학기 
-
-      Semester(3, 1), // 3학년 1학기 
-      Semester(3, 2), // 3학년 2학기 
-
-      Semester(4, 1), // 4학년 1학기 
-      Semester(4, 2), // 4학년 2학기 
-    };
+    std::array<Semester, 8> semesters;
 
     // 메뉴 선택, 학기 선택, 과목 선택 변수
     int menu = 1;

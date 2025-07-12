@@ -2,18 +2,14 @@
 #include "Course.h"
 #include "ConsoleUIManager.h"
 #include "GradeManager.h"
+#include "SemesterJSON.h"
 
 #include <array>
 #include <vector>
 #include <algorithm>
 #include <string>
 
-#include <iostream>
-
-GradeManager::GradeManager()
-{
-  consoleUIManager.displayMessage("*----------학점 관리 프로그램----------*");
-}
+GradeManager::GradeManager() : semesters(semesterJson.loadJson()) {}
 
 // 정렬할 과목 벡터와 정렬 번호를 통해 정렬
 void GradeManager::sortCourse(std::vector<Course::Course>& courses, int choiceSort)
@@ -93,6 +89,7 @@ void GradeManager::handleAddCourse()
     return;
   }
   semesters.at(choiceSemester).addCourses(c);
+  semesterJson.createJsonData(choiceSemester, c);
   consoleUIManager.displayMessage("✅ [" + c.courseName + "] 과목이 성공적으로 추가되었습니다! ✅");
 }
 void GradeManager::handleRemoveCourse()  
@@ -110,6 +107,7 @@ void GradeManager::handleRemoveCourse()
     int removeIndex = consoleUIManager.promptChoiceCourseIndex(courses);
     std::string removeName = (courses.begin() + removeIndex)->courseName;
     semesters.at(choiceSemester).removeCourses(removeIndex); // 실제 제거 부분
+    semesterJson.deleteJsonData(choiceSemester, removeIndex);
     consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
   }
 }
@@ -137,31 +135,36 @@ void GradeManager::handleFixCourse()
     if (fixValue == 1)
     {
       std::string fixName;
-      fixName = consoleUIManager.promptFixString("변경할 과목명을 입력하세요");
+      fixName = consoleUIManager.promptFixString("🏷️ 변경할 과목명을 입력하세요 (예: 컴퓨터구조)");
       if (fixName == "") return;
       fixC.setCourseName(fixName);
+      semesterJson.updateJsonData(choiceSemester, fixIndex, "courseName", fixName);
     }
     else if (fixValue == 2)
     {
       int fixCredits;
-      fixCredits = consoleUIManager.promptFixInt("변경할 이수학점을 입력하세요", 0, 3);
+      fixCredits = consoleUIManager.promptFixInt("🔢 변경할 이수학점을 입력하세요 (예: 3)", 0, 3);
       if (fixCredits == -1) return;
       fixC.setCredits(fixCredits);
+      semesterJson.updateJsonData(choiceSemester, fixIndex, "credits", fixCredits);
     }
     else if (fixValue == 3)
     {
       double fixGrade;
-      fixGrade = consoleUIManager.promptFixInt("변경할 점수를 입력하세요", 0.0, 4.5);
+      fixGrade = consoleUIManager.promptFixDouble("💯 변경할 최종점수를 입력하세요 (예: 1.0, 4.5)", 0.0, 4.5);
       if (fixGrade == -1) return;
       fixC.setGrade(fixGrade);
+      semesterJson.updateJsonData(choiceSemester, fixIndex, "grade", fixGrade);
     }
     else if (fixValue == 4)
     {
       int fixCategory;
-      fixCategory = consoleUIManager.promptFixInt("변경할 전공분류를 입력하세요", 1, 7);
+      fixCategory = consoleUIManager.promptFixInt("📚 변경할 전공 분류를 선택하세요:\n 1. 전공 선택    2. 복수 전공    3. 부전공   4. 계열   5. 교양  6. 자유 선택   7. 타 전공", 1, 7);
       if (fixCategory == -1) return;
       fixC.setCategory(fixCategory);
+      semesterJson.updateJsonData(choiceSemester, fixIndex, "category", fixCategory);
     }
+
 
     consoleUIManager.displayMessage("\n--- 수정된 과목의 정보 ---");
     consoleUIManager.displayCourse(fixC);
