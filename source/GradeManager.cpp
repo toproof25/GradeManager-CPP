@@ -35,6 +35,8 @@ void GradeManager::handleSelectSemesters()
   choiceSemester = consoleUIManager.displaySemesterChoice(semesters);
   if (choiceSemester == -1)
     menu = Menu::CourseSort;
+  else if (choiceSemester == 8)
+    menu = Menu::TotalGPA;
   else
     menu = Menu::CourseChoise;
 }
@@ -59,6 +61,9 @@ void GradeManager::handleSelectCourse()
   // 과목 정렬
   else if (choiceCourse == 5)
     handleSortCourse();
+  // 총 학점 보기
+  else if (choiceCourse == 6)
+    handleGpaSemester();
 }
 void GradeManager::handleSortAllCourse()
 {
@@ -90,7 +95,7 @@ void GradeManager::handleAddCourse()
   }
   catch(const std::exception& e)
   {
-    std::cerr << e.what() << '\n';
+    consoleUIManager.displayMessage(e.what());
     return;
   }
   semesters.at(choiceSemester).addCourses(c);
@@ -183,6 +188,11 @@ void GradeManager::handleSortCourse()
   sortCourse(s.getCourses(), choiceSort);
   semesterJson.sortJsonData(choiceSemester, choiceSort);
 }
+void GradeManager::handleGpaSemester()
+{
+  double GPA = calculateGPA(semesters.at(choiceSemester).getCourses());
+  consoleUIManager.displayMessage("총 학점은 [" + std::to_string(GPA) + "] 입니다.");
+}
 
 // 전체 학기 array에서 모든 과목을 추출하고 저장한 vector를 반환
 std::vector<Course::Course> GradeManager::getAllCourseVector()
@@ -213,6 +223,11 @@ void GradeManager::run()
       case Menu::CourseSort:
         handleSortAllCourse();
 
+      case Menu::TotalGPA:
+        std::vector<Course::Course> c = getAllCourseVector();
+        double GPA = calculateGPA(c);
+        consoleUIManager.displayMessage("모든 학기 총 학점은 [" + std::to_string(GPA) + "] 입니다.");
+        menu = Menu::SemesterChoise;
         break;
     }
   }

@@ -18,12 +18,13 @@ int ConsoleUIManager::displaySemesterChoice(std::array<Semester, 8>& semesters)
     std::cout << "\n--- 학기를 선택하세요 ---" << std::endl;
 
     std::cout << "0. 모든 과목 조회 및 정렬 조회" << std::endl;
-    for (int i=0; i<semesters.size(); ++i)
+    int i=0;
+    for (; i<semesters.size(); ++i)
     {
       std::cout << i+1 << ". ";
       std::cout << semesters[i].getYear() << "학년 " << semesters[i].getSemester() << "학기 " << std::endl;
     }
-
+    std::cout << ++i << ". 모든 학기 점수 조회" << std::endl;
     std::cout << "-----------------------" << std::endl;
     std::cout << ">>> ";
 
@@ -36,9 +37,9 @@ int ConsoleUIManager::displaySemesterChoice(std::array<Semester, 8>& semesters)
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         throw std::invalid_argument("❌ 오류: 입력값이 올바르지 않습니다!");
       }
-      else if (choiceSemester < 0 || choiceSemester > 8)
+      else if (choiceSemester < 0 || choiceSemester > i)
       {
-        throw std::invalid_argument("❌ 오류: 0~8 범위 내에서 입력하세요");
+        throw std::invalid_argument("❌ 오류: 0~" + std::to_string(i) + " 범위 내에서 입력하세요");
       }
     }
     catch(const std::exception& e)
@@ -68,6 +69,7 @@ int ConsoleUIManager::displayCourseChoice(int year, int semester)
   std::cout << "3. 과목 제거" << std::endl;
   std::cout << "4. 과목 수정" << std::endl;
   std::cout << "5. 과목 정렬" << std::endl;
+  std::cout << "6. [" << year << "학년" << semester << "학기] 성적 조회" << std::endl;
   std::cout << "-----------------------" << std::endl;
   std::cout << ">>> ";
 
@@ -80,9 +82,9 @@ int ConsoleUIManager::displayCourseChoice(int year, int semester)
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       throw std::invalid_argument("❌ 오류: 입력값이 올바르지 않습니다!");
     }
-    else if (choiceCourse < 0 || choiceCourse > 5)
+    else if (choiceCourse < 0 || choiceCourse > 6)
     {
-      throw std::invalid_argument("❌ 오류: 0~5 범위 내에서 입력하세요");
+      throw std::invalid_argument("❌ 오류: 0~6 범위 내에서 입력하세요");
     }
   }
   catch(const std::exception& e)

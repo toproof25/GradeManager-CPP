@@ -16,6 +16,7 @@ class GradeManager
       SemesterChoise   = 1, // 학기 선택
       CourseChoise     = 2, // 학기 내 과목
       CourseSort       = 3, // 모든 과목 조회 및 정렬
+      TotalGPA         = 4, // 모든 과목 조회 및 정렬
     };
 
     ConsoleUIManager consoleUIManager;
@@ -41,6 +42,7 @@ class GradeManager
     void handleRemoveCourse();    // 과목 제거
     void handleFixCourse();       // 과목 수정
     void handleSortCourse();      // 과목 정렬
+    void handleGpaSemester();
 
   public:
     GradeManager();

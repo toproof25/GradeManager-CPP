@@ -23,3 +23,5 @@ class Semester
 
 };
 
+
+double calculateGPA(const std::vector<Course::Course>& courses);
