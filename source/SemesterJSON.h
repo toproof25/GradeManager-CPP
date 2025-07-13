@@ -3,12 +3,6 @@
 #include "json.hpp"
 #include "Semester.h"
 #include "Course.h"
-#include "ConsoleUIManager.h"
-
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <array>
 #include <string>
 
 class SemesterJSON
