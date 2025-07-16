@@ -42,7 +42,4 @@
 
 
 .vscode
-bulid
-commit_text.txt
-out
-out/*
+build/
