@@ -37,7 +37,7 @@ namespace Course
   };
 
   // 점수와 전공분류를 적절한 문자열로 반환
-  std::string convertToGrade(const int& grade);
+  std::string convertToGrade(const double& grade);
   std::string convertToCategory(const int& category);
 
   bool courseNameCompare(const Course& lhs, const Course& rhs);

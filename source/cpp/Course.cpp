@@ -7,7 +7,7 @@
 namespace Course 
 {
 
-  std::string convertToGrade(const int& grade)
+  std::string convertToGrade(const double& grade)
   {
     std::string g[10] = {"A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"};
     int index = 0;
