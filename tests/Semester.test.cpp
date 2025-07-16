@@ -86,7 +86,7 @@ Act     : Semester객체에 Course를 추가한 후 calculateGPA (성적 구하�
 Assert  : 
     - 설정된 점수의 예상한 최종점수가 일치하는지 검증
 */
-TEST(SemesterTest, CalculateGPA_GpaCalculatlryCorrectGPA) {
+TEST(SemesterTest, CalculateGPA_GpaCalculatesCorrectlyGPA) {
 
     Semester s(1, 2);
     Course::Course c = {"과목1", 3, 4.5, 1};
