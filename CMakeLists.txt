@@ -63,18 +63,24 @@ enable_testing()
 # 테스트 실행 파일 추가
 add_executable(SemesterTest tests/Semester.test.cpp)
 add_executable(CourseTest tests/Course.test.cpp)
+add_executable(SemesterJsonTest tests/SemesterJSON.test.cpp)
 
 # 테스트에서 인클루드할 헤더 경로 지정 (inc/)
 target_include_directories(SemesterTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 target_include_directories(CourseTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+target_include_directories(SemesterJsonTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 # 테스트용 바이너리에 GTest 및 프로젝트 라이브러리 링크
-target_link_libraries(SemesterTest PRIVATE
-    GTest::gtest_main
+target_link_libraries(SemesterTest PRIVATE 
+    GTest::gtest_main 
     GradeManagerLib
 )
-target_link_libraries(CourseTest PRIVATE
-    GTest::gtest_main
+target_link_libraries(CourseTest PRIVATE 
+    GTest::gtest_main 
+    GradeManagerLib
+)
+target_link_libraries(SemesterJsonTest PRIVATE 
+    GTest::gtest_main 
     GradeManagerLib
 )
 
@@ -82,3 +88,4 @@ target_link_libraries(CourseTest PRIVATE
 include(GoogleTest)
 gtest_discover_tests(SemesterTest)
 gtest_discover_tests(CourseTest)
+gtest_discover_tests(SemesterJsonTest)
