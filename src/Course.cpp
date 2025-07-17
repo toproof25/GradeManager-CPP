@@ -9,16 +9,28 @@ namespace Course
 
   std::string convertToGrade(const double& grade)
   {
-    std::string g[10] = {"A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"};
-    int index = 0;
-
-    for (double i = 4.5; i>=0.0; i-=0.5)
-    {
-      if (grade >= i) 
-        return g[index];
-      index++;
-    }
-    return "X";
+    if (grade > 4.5)
+      return "X";
+    else if (grade >= 4.5)
+      return "A+";
+    else if (grade >= 4.0)
+      return "A";
+    else if (grade >= 3.5)
+      return "B+";
+    else if (grade >= 3.0)
+      return "B";
+    else if (grade >= 2.5)
+      return "C+";
+    else if (grade >= 2.0)
+      return "C";
+    else if (grade >= 1.5)
+      return "D+";
+    else if (grade >= 1.0)
+      return "D";
+    else if (grade >= 0.0)
+      return "P";
+    else
+      return "X";
   }
 
   std::string convertToCategory(const int& category)
