@@ -28,6 +28,18 @@ protected:
       }
     }
 
+
+    std::vector<Course::Course> courses = { 
+      {"f", 3, 3.5, 7}, {"e", 2, 4.0, 6}, {"z", 1, 1.0, 4}, {"s", 0, 1.5, 2}, 
+      {"가", 1, 2.0, 1}, {"a", 2, 4.5, 3}, {"b", 3, 2.5, 5}, {"c", 2, 0.0, 0}
+    };
+
+    // 모든 데이터가 정렬된 순서로 있는 정답변수 (오름차순 정렬)
+    std::vector<Course::Course> correctCourses = {
+      {"a", 0, 0.0, 0}, {"b", 1, 1.0, 1}, {"c", 1, 1.5, 2}, {"e", 2, 2.0, 3},
+      {"f", 2, 2.5, 4}, {"s", 2, 3.5, 5}, {"z", 3, 4.0, 6}, {"가", 3, 4.5, 7}
+    };
+
 };
 
 /*
@@ -155,7 +167,7 @@ TEST_F(SemesterJsonFileTest, UpdateJson_VerifiesUpdatedCourseValue)
   // 빈 json 데이터 생성
   semesterJson->createBasicJson();
   
-  // 먼저 수정하기 위한 7개 과목을 추가
+  // 먼저 수정하기 위한 4개 과목을 추가
   semesterJson->createJsonData(semesters_index, c);
   semesterJson->createJsonData(semesters_index, c);
   semesterJson->createJsonData(semesters_index, c);
@@ -175,4 +187,133 @@ TEST_F(SemesterJsonFileTest, UpdateJson_VerifiesUpdatedCourseValue)
   ASSERT_EQ(update_credits , update_c.credits);
   ASSERT_EQ(update_grage   , update_c.grade);
   ASSERT_EQ(update_category, update_c.category);
+}
+
+
+
+/*
+Arrange : 정답 정렬과 정렬 번호(이름, 학점, 점수, 분류)를 지정
+Act     : 정렬이 안된 과목을 추가 후 정렬을 수행
+Assert  : 
+    - 미리 설정된 정렬된 과목벡터와 0부터 size만큼 값이 일치하는지 비교
+*/
+TEST_F(SemesterJsonFileTest, SortJsonName_SortVectorCorrectyCourseName)
+{
+  int sort_index = 1;
+  int semester_index = 4;
+
+  // 빈 json 데이터 생성
+  semesterJson->createBasicJson();
+
+  // 먼저 정렬하기 위한 정렬이 안되도록 8개 과목을 추가
+  semesterJson->createJsonData(semester_index, courses[0]);
+  semesterJson->createJsonData(semester_index, courses[1]);
+  semesterJson->createJsonData(semester_index, courses[2]);
+  semesterJson->createJsonData(semester_index, courses[3]);
+  semesterJson->createJsonData(semester_index, courses[4]);
+  semesterJson->createJsonData(semester_index, courses[5]);
+  semesterJson->createJsonData(semester_index, courses[6]);
+  semesterJson->createJsonData(semester_index, courses[7]);
+
+  // 과목 이름순 오름차순 정렬
+  semesterJson->sortJsonData(semester_index, sort_index);
+
+  // 정렬 후 다시 새롭게 json파일을 읽어와서 확인
+  std::array<Semester, 8> result_semesters = semesterJson->loadJson();
+  std::vector<Course::Course>& sorted_courses = result_semesters[semester_index].getCourses();
+
+  for (int i=0; i<sorted_courses.size(); ++i)
+  {
+    ASSERT_EQ(sorted_courses[i].courseName, correctCourses[i].courseName);
+  }
+}
+TEST_F(SemesterJsonFileTest, SortJsonCredits_SortVectorCorrectyCourseCredits)
+{
+  int sort_index = 2;
+  int semester_index = 4;
+
+  // 빈 json 데이터 생성
+  semesterJson->createBasicJson();
+  
+  // 먼저 정렬하기 위한 정렬이 안되도록 8개 과목을 추가
+  semesterJson->createJsonData(semester_index, courses[0]);
+  semesterJson->createJsonData(semester_index, courses[1]);
+  semesterJson->createJsonData(semester_index, courses[2]);
+  semesterJson->createJsonData(semester_index, courses[3]);
+  semesterJson->createJsonData(semester_index, courses[4]);
+  semesterJson->createJsonData(semester_index, courses[5]);
+  semesterJson->createJsonData(semester_index, courses[6]);
+  semesterJson->createJsonData(semester_index, courses[7]);
+
+  // 과목 이름순 오름차순 정렬
+  semesterJson->sortJsonData(semester_index, sort_index);
+
+  // 정렬 후 다시 새롭게 json파일을 읽어와서 확인
+  std::array<Semester, 8> result_semesters = semesterJson->loadJson();
+  std::vector<Course::Course>& sorted_courses = result_semesters[semester_index].getCourses();
+
+  for (int i=0; i<sorted_courses.size(); ++i)
+  {
+    ASSERT_EQ(sorted_courses[i].credits    , correctCourses[i].credits);
+  }
+}
+TEST_F(SemesterJsonFileTest, SortJsonGrade_SortVectorCorrectyCourseGrade)
+{
+  int sort_index = 3;
+  int semester_index = 4;
+
+  // 빈 json 데이터 생성
+  semesterJson->createBasicJson();
+  
+  // 먼저 정렬하기 위한 정렬이 안되도록 8개 과목을 추가
+  semesterJson->createJsonData(semester_index, courses[0]);
+  semesterJson->createJsonData(semester_index, courses[1]);
+  semesterJson->createJsonData(semester_index, courses[2]);
+  semesterJson->createJsonData(semester_index, courses[3]);
+  semesterJson->createJsonData(semester_index, courses[4]);
+  semesterJson->createJsonData(semester_index, courses[5]);
+  semesterJson->createJsonData(semester_index, courses[6]);
+  semesterJson->createJsonData(semester_index, courses[7]);
+
+  // 과목 이름순 오름차순 정렬
+  semesterJson->sortJsonData(semester_index, sort_index);
+
+  // 정렬 후 다시 새롭게 json파일을 읽어와서 확인
+  std::array<Semester, 8> result_semesters = semesterJson->loadJson();
+  std::vector<Course::Course>& sorted_courses = result_semesters[semester_index].getCourses();
+
+  for (int i=0; i<sorted_courses.size(); ++i)
+  {
+    ASSERT_DOUBLE_EQ(sorted_courses[i].grade    , correctCourses[i].grade);
+  }
+}
+TEST_F(SemesterJsonFileTest, SortJsonCategory_SortVectorCorrectyCourseCategory)
+{
+  int sort_index = 4;
+  int semester_index = 4;
+
+  // 빈 json 데이터 생성
+  semesterJson->createBasicJson();
+
+  // 먼저 정렬하기 위한 정렬이 안되도록 8개 과목을 추가
+  semesterJson->createJsonData(semester_index, courses[0]);
+  semesterJson->createJsonData(semester_index, courses[1]);
+  semesterJson->createJsonData(semester_index, courses[2]);
+  semesterJson->createJsonData(semester_index, courses[3]);
+  semesterJson->createJsonData(semester_index, courses[4]);
+  semesterJson->createJsonData(semester_index, courses[5]);
+  semesterJson->createJsonData(semester_index, courses[6]);
+  semesterJson->createJsonData(semester_index, courses[7]);
+
+  // 과목 이름순 오름차순 정렬
+  semesterJson->sortJsonData(semester_index, sort_index);
+
+  // 정렬 후 다시 새롭게 json파일을 읽어와서 확인
+  std::array<Semester, 8> result_semesters = semesterJson->loadJson();
+  std::vector<Course::Course>& sorted_courses = result_semesters[semester_index].getCourses();
+
+  for (int i=0; i<sorted_courses.size(); ++i)
+  {
+    ASSERT_EQ(sorted_courses[i].category    , correctCourses[i].category);
+  }
 }
