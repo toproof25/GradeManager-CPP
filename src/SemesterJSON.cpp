@@ -10,6 +10,11 @@
 #include <array>
 #include <string>
 
+
+SemesterJSON::SemesterJSON() : filename("semesters.json") {}
+SemesterJSON::SemesterJSON(std::string filename) : filename(filename) {}
+
+
 nlohmann::json SemesterJSON::getSemesterJson()
 {
   std::ifstream read_json(filename);

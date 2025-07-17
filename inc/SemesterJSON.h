@@ -16,6 +16,9 @@ class SemesterJSON
     Course::Course jsonToCourse(nlohmann::json& course_json);
 
   public:
+    SemesterJSON();
+    SemesterJSON(std::string filename);
+
     std::array<Semester, 8> loadJson();
 
     void createBasicJson();
