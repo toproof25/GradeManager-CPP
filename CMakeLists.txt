@@ -15,6 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
   # 위에서 만든 .cpp이 있는 SRC 변수에서 main함수가 포함된 grade_manager.cpp을 제거
   list(REMOVE_ITEM SRC
       "${CMAKE_CURRENT_SOURCE_DIR}/src/grade_manager.cpp"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/test_imgui.cpp"
   )
 
   # 최종적으로 src/ 에 grade_manager.cpp을 제외하고 모두 라이브러리에 등록
@@ -107,13 +108,11 @@ add_library(testGuiLib ${SRC})
 
 # 2. 헤더 파일 경로 설정
 target_include_directories(testGuiLib PUBLIC 
-        ${CMAKE_CURRENT_SOURCE_DIR}/inc 
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui
 )   
 
 # 3. 테스트로 만든 cpp 파일을 실행 파일로 만듦
-add_executable(testInGuiApp src/test_ingui.cpp)       
+add_executable(testInGuiApp src/test_imgui.cpp)       
 
 # 4. 실행 파일에 필요한 라이브러리들을 링크한다 
 target_link_libraries(testInGuiApp PRIVATE 
