@@ -101,8 +101,7 @@ gtest_discover_tests(SemesterJsonTest)
 
 # 1. imgui 라이브러리 내에 있는 모든 .cpp 파일을 SRC에 저장 후 라이브러리에 등록
 file(GLOB SRC 
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui/core/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui/backends/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui/*.cpp"
     )
 add_library(testGuiLib ${SRC})
 
@@ -110,15 +109,14 @@ add_library(testGuiLib ${SRC})
 target_include_directories(testGuiLib PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/inc 
         ${CMAKE_CURRENT_SOURCE_DIR}/lib
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui/core
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui/backends
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui
 )   
 
 # 3. 테스트로 만든 cpp 파일을 실행 파일로 만듦
-add_executable(testApp testImgui.cpp)       
+add_executable(testInGuiApp src/test_ingui.cpp)       
 
 # 4. 실행 파일에 필요한 라이브러리들을 링크한다 
-target_link_libraries(testApp PRIVATE 
+target_link_libraries(testInGuiApp PRIVATE 
     testGuiLib
     d3d11        # Direct3D 11 라이브러리
     d3dcompiler  # 셰이더 컴파일
