@@ -12,63 +12,66 @@
 
 int GradeApp::start()
 {
-  // 1) Win32 창 등록 & 생성
-  // WNDCLASSEXW: 윈도우 클래스를 정의하는 구조체
-  WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0, 0,
-                      GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr,
-                      L"MinimalImGui", nullptr };
-  ::RegisterClassExW(&wc); // 윈도우 클래스를 OS에 등록하여 CreateWindow 호출 준비
-  HWND hwnd = ::CreateWindowW(
-      wc.lpszClassName,           // 등록된 클래스 이름으로 창 생성
-      L"ImGui - Grade Manager",         // 창 제목
-      WS_OVERLAPPEDWINDOW,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
-      100, 100, 800, 600,         // 위치(100,100) 크기(800x600)
-      nullptr, nullptr, wc.hInstance, nullptr);
+    // 1) Win32 창 등록 & 생성
+    // WNDCLASSEXW: 윈도우 클래스를 정의하는 구조체
+    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0, 0,
+                        GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr,
+                        L"MinimalImGui", nullptr };
+    ::RegisterClassExW(&wc); // 윈도우 클래스를 OS에 등록하여 CreateWindow 호출 준비
+    HWND hwnd = ::CreateWindowW(
+        wc.lpszClassName,           // 등록된 클래스 이름으로 창 생성
+        L"ImGui - Grade Manager",         // 창 제목
+        WS_OVERLAPPEDWINDOW,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
+        100, 100, 800, 600,         // 위치(100,100) 크기(800x600)
+        nullptr, nullptr, wc.hInstance, nullptr);
 
-  // 2) DirectX11 초기화 (SwapChain, Device, Context, RenderTarget 생성)
-  if (!CreateDeviceD3D(hwnd))  // 장치 생성 실패 시 리턴
-      return 1;
-  ::ShowWindow(hwnd, SW_SHOWDEFAULT);  // 만든 창을 화면에 표시
-  ::UpdateWindow(hwnd);                // 윈도우의 클라이언트 영역을 바로 그리도록 업데이트
+    // 2) DirectX11 초기화 (SwapChain, Device, Context, RenderTarget 생성)
+    if (!CreateDeviceD3D(hwnd))  // 장치 생성 실패 시 리턴
+        return 1;
+    ::ShowWindow(hwnd, SW_SHOWDEFAULT);  // 만든 창을 화면에 표시
+    ::UpdateWindow(hwnd);                // 윈도우의 클라이언트 영역을 바로 그리도록 업데이트
 
-  // 3) ImGui 컨텍스트 생성 (입력·렌더링을 위한 전제)
-  IMGUI_CHECKVERSION();                  // 헤더와 라이브러리 버전 불일치 방지
-  ImGui::CreateContext();                // ImGui 내부 상태를 담을 컨텍스트 생성
-  ImGuiIO& io = ImGui::GetIO();          // 입력/출력 설정에 접근
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // 키보드 내비게이션 활성화
+    // 3) ImGui 컨텍스트 생성 (입력·렌더링을 위한 전제)
+    IMGUI_CHECKVERSION();                  // 헤더와 라이브러리 버전 불일치 방지
+    ImGui::CreateContext();                // ImGui 내부 상태를 담을 컨텍스트 생성
+    ImGuiIO& io = ImGui::GetIO();          // 입력/출력 설정에 접근
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // 키보드 내비게이션 활성화
 
-  // 한글 폰트 로드: 윈도우 기본 글꼴 gulim.ttc를 TTF처럼 로드
-  // GetGlyphRangesKorean()로 한글 글리프 범위만 텍스처에 올려 메모리 절약
-  ImFont* fontKorean = io.Fonts->AddFontFromFileTTF(
-      "C:\\Windows\\Fonts\\MalangmalangB.ttf", 16.0f, nullptr,
-      io.Fonts->GetGlyphRangesKorean()
-  );
-  io.FontDefault = fontKorean;  // 이후 PushFont 없이도 전체 UI에 적용
+    // 한글 폰트 로드: 윈도우 기본 글꼴 gulim.ttc를 TTF처럼 로드
+    // GetGlyphRangesKorean()로 한글 글리프 범위만 텍스처에 올려 메모리 절약
+    ImFont* fontKorean = io.Fonts->AddFontFromFileTTF(
+        "C:\\Windows\\Fonts\\MalangmalangB.ttf", 16.0f, nullptr,
+        io.Fonts->GetGlyphRangesKorean()
+    );
+    io.FontDefault = fontKorean;  // 이후 PushFont 없이도 전체 UI에 적용
 
-  ImGui::StyleColorsDark();              // 다크 테마 스타일 적용
+    ImGui::StyleColorsDark();              // 다크 테마 스타일 적용
 
-  // 4) 플랫폼/렌더러 백엔드 초기화
-  ImGui_ImplWin32_Init(hwnd);            // Win32 이벤트(키/마우스)를 ImGui로 전달 설정
-  ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext); // DX11에 드로우 데이터를 렌더링하도록 설정
+    // 4) 플랫폼/렌더러 백엔드 초기화
+    ImGui_ImplWin32_Init(hwnd);            // Win32 이벤트(키/마우스)를 ImGui로 전달 설정
+    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext); // DX11에 드로우 데이터를 렌더링하도록 설정
 
-  // — 앱 상태 변수 —
-  bool show_window = true;  // 체크 박스로 윈도우 On/Off 제어
-  bool show_window2 = false;  // 체크 박스로 윈도우 On/Off 제어
-  int  counter     = 0;     // 버튼 클릭 횟수를 저장하는 변수
+    // — 앱 상태 변수 —
+    bool show_window = true;  // 체크 박스로 윈도우 On/Off 제어
+    bool show_window2 = false;  // 체크 박스로 윈도우 On/Off 제어
+    int  counter     = 0;     // 버튼 클릭 횟수를 저장하는 변수
 
-  // 5) 메인 루프
-  MSG msg;
-  bool done = false;
-  run(msg, done);
 
-  // 6) 정리
-  ImGui_ImplDX11_Shutdown();         // DX11 백엔드 정리
-  ImGui_ImplWin32_Shutdown();        // Win32 백엔드 정리
-  ImGui::DestroyContext();           // ImGui 컨텍스트 제거
-  CleanupDeviceD3D();                // DirectX 리소스 해제
-  ::DestroyWindow(hwnd);             // Win32 창 제거
-  ::UnregisterClassW(wc.lpszClassName, wc.hInstance); // 클래스 등록 해제
-  return 0;
+    
+
+    // 5) 메인 루프
+    MSG msg;
+    bool done = false;
+    run(msg, done);
+
+    // 6) 정리
+    ImGui_ImplDX11_Shutdown();         // DX11 백엔드 정리
+    ImGui_ImplWin32_Shutdown();        // Win32 백엔드 정리
+    ImGui::DestroyContext();           // ImGui 컨텍스트 제거
+    CleanupDeviceD3D();                // DirectX 리소스 해제
+    ::DestroyWindow(hwnd);             // Win32 창 제거
+    ::UnregisterClassW(wc.lpszClassName, wc.hInstance); // 클래스 등록 해제
+    return 0;
 }
 
 
@@ -91,65 +94,16 @@ void GradeApp::run(MSG& msg, bool& done)
     ImGui_ImplWin32_NewFrame();  // Win32 메시지를 ImGui에 업데이트
     ImGui::NewFrame();           // ImGui 내부에서 위젯 준비 시작
 
-
+    
     std::array<Semester, 8>& semesters = gm.getSemesters();
-    displayCourses(semesters.at(0).getCourses());
-
+    semester = &semesters.at(4);
+    int year = semester->getYear();
+    int semesterNumber = semester->getSemester();
+    displayCourses(year, semesterNumber, semester->getCourses());
 
     if (courseReadWindow)
     {
         displayInfomationCourse( *course );
-    }
-
-
-    // — 간단 창 예제 —
-    if (show_window)
-    {
-        ImGui::Begin("간단 창", &show_window); // 창 시작, 닫기 버튼으로 show_window 업데이트
-        ImGui::Text("ImGui 기본 입문 예제");     // 화면에 텍스트 출력
-        if (ImGui::Button("카운터 증가"))         // 버튼을 렌더링, 클릭 시 true 반환
-            counter++;                            // 클릭이 감지되면 카운터 증가
-        ImGui::Text("클릭 횟수: %d", counter);   // 현재 카운터 값을 출력
-        ImGui::End();                             // 창 닫기 (Begin과 쌍)
-    }
-
-    // 키보드 입력 감지 (스페이스바를 누르면)
-    if (ImGui::IsKeyPressed(ImGuiKey_Space))
-    {
-        counter++;
-    }
-
-    // — 간단 창 예제 —
-    if (show_window2)
-    {
-        // 3) 입력창 + 버튼 + 리스트 표시
-        ImGui::Begin("텍스트 입력 예제", &show_window2);  
-
-            // 텍스트 입력창: 마우스로 클릭해서 포커스, 키보드 입력 가능
-            ImGui::InputText("입력", inputBuf, IM_ARRAYSIZE(inputBuf));
-            
-            // 같은 줄에 버튼을 배치
-            ImGui::SameLine();
-            if (ImGui::Button("추가") || ImGui::IsKeyPressed(ImGuiKey_Enter))
-            {
-                // 비어 있지 않은 입력만 처리
-                if (inputBuf[0] != '\0')
-                {
-                    items.emplace_back(inputBuf);  // 리스트에 추가
-                    for (char& c : inputBuf)
-                        c = '\0';
-                }
-            }
-
-            ImGui::Separator();  // 구분선
-
-            // 추가된 문자열들을 한 줄씩 표시
-            for (size_t i = 0; i < items.size(); i++)
-            {
-                ImGui::Text("%zu: %s", i + 1, items[i].c_str());
-            }
-
-        ImGui::End();
     }
 
 
@@ -165,9 +119,10 @@ void GradeApp::run(MSG& msg, bool& done)
   }
 }
 
-void GradeApp::displayCourses(std::vector<Course::Course>& courses)
+void GradeApp::displayCourses(int year, int semester, std::vector<Course::Course>& courses)
 {
-    ImGui::Begin("n학년 n학기 과목 조회");
+    std::string title = std::to_string(year) + "학년 " + std::to_string(semester) + "학기 과목 조회"; 
+    ImGui::Begin(title.c_str());
 
     if (ImGui::BeginTable("courseInfoTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
     {
@@ -183,7 +138,10 @@ void GradeApp::displayCourses(std::vector<Course::Course>& courses)
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             //ImGui::Text(c.courseName.c_str());
-            if (ImGui::Button(c.courseName.c_str()))
+
+            std::string courseTitle = c.courseName + " / " + std::to_string(c.credits) + " / " + Course::convertToGrade(c.grade) + " / " + Course::convertToCategory(c.category);
+
+            if (ImGui::Button(courseTitle.c_str()))
             {
                 courseReadWindow = true;
                 course = &c;
@@ -205,7 +163,8 @@ void GradeApp::displayCourses(std::vector<Course::Course>& courses)
 
 void GradeApp::displayInfomationCourse(const Course::Course& c)
 {
-    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Once);
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Appearing);      // 창 실행 시 위치
+    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing); // 창 실행 시 크기
     ImGui::Begin(('[' + c.courseName + "] 정보 조회").c_str(), &courseReadWindow);
 
     // 왼쪽 정렬 (기본)

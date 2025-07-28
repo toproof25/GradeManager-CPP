@@ -39,6 +39,8 @@ private:
 
   // — 앱 상태 변수 —
   bool courseReadWindow = false;
+  
+  Semester* semester = nullptr;
   Course::Course* course = nullptr;
   
   bool show_window = true;    // 체크 박스로 윈도우 On/Off 제어
@@ -56,7 +58,7 @@ public:
   // 메인 창 - json불러와서 보여짐 - 1학기~8학기로 나열되어있고, 학기 눌렀을 때 해당 학기 정보(과목, 성적)이 나타남
   // 
 
-  void displayCourses(std::vector<Course::Course>& courses);
+  void displayCourses(int year, int semester, std::vector<Course::Course>& courses);
 
   void displayInfomationCourse(const Course::Course& c);                   // 한 과목의 정보 출력
 
