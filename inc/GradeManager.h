@@ -48,4 +48,6 @@ class GradeManager
     GradeManager();
     ~GradeManager();
     void run();
+    
+    std::array<Semester, 8>& getSemesters() {return semesters;};
 };
