@@ -1,3 +1,4 @@
+#pragma once
 #include "imgui.h"                 // ImGui 핵심 API: 즉시 모드 GUI 라이브러리의 기능을 제공하는 헤더
 #include "imgui_impl_win32.h"      // Win32 플랫폼 백엔드: 윈도우 이벤트(마우스, 키보드) 입력을 ImGui로 전달
 #include "imgui_impl_dx11.h"       // DirectX11 렌더러 백엔드: ImGui가 생성한 드로우 데이터를 DX11로 렌더링
@@ -19,10 +20,6 @@ static ID3D11DeviceContext*    g_pd3dDeviceContext = nullptr;    // GPU에 렌�
 static IDXGISwapChain*         g_pSwapChain = nullptr;           // 화면에 이미지를 표시하기 위한 전/후면 버퍼 관리 객체
 static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr; // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
 
-// 1) 상태 변수 (프레임 루프 밖에 static으로 두면 좋습니다)
-static char   inputBuf[256] = "";           // 입력 텍스트 버퍼 (최대 255자)
-static std::vector<std::string> items;      // 추가된 문자열을 저장할 리스트
-
 // 함수 전방 선언
 // 구현부를 아래로 내려서 가독성을 높이기 위해 미리 선언함.
 bool CreateDeviceD3D(HWND hWnd);
@@ -32,24 +29,39 @@ void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
 
 
+
+// 과목 이름 입력 버퍼
+extern char courseNameBuffer[256];
+
+// 이수학점 인덱스, 항목 목록
+extern int creditsItem;
+extern const char* creditsitems[];
+
+// 받은 점수 인덱스, 항목 목록
+extern int gradeItem;
+extern const char* gradeItems[];
+
+
+// 전공분류 인덱스, 항목 목록
+extern int categoryItem;
+extern const char* categoryitems[];
+
+
 class GradeApp
 {
 private:
   GradeManager gm;
 
   // — 앱 상태 변수 —
+  bool coursesListWindow = false;
   bool courseReadWindow = false;
+
+  bool courseFixWindow = false;
   
   Semester* semester = nullptr;
   Course::Course* course = nullptr;
-  
-  bool show_window = true;    // 체크 박스로 윈도우 On/Off 제어
-  bool show_window2 = false;  // 체크 박스로 윈도우 On/Off 제어
-  int  counter     = 0;       // 버튼 클릭 횟수를 저장하는 변수
+  Course::Course* fixCurse = nullptr;
 
-  // 메뉴1 - 모든 학기 보기
-  // 메뉴2 - 선택한 학기 정보 보기
-  // 메뉴3 - 성적 보기
 
 public:
   int start();
@@ -58,9 +70,11 @@ public:
   // 메인 창 - json불러와서 보여짐 - 1학기~8학기로 나열되어있고, 학기 눌렀을 때 해당 학기 정보(과목, 성적)이 나타남
   // 
 
-  void displaySemesters(std::array<Semester, 8>& semesters);
+  void displaySemestersWindow(std::array<Semester, 8>& semesters);  // 모든 학기 윈도우
 
-  void displayCourses(int year, int semester, std::vector<Course::Course>& courses); // 한 학기의 과목 출력
-  void displayInfomationCourse(const Course::Course& c);                             // 한 과목의 정보 출력
+  void displayCoursesWindow(int year, int semester, std::vector<Course::Course>& courses); // 한 학기의 과목 출력
+  void displayInfomationCourseWindow(const Course::Course& c);                             // 한 과목의 정보 출력
+
+  void displayFixValueCourseWindow(Course::Course& fixCourse);
 
 };

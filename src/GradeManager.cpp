@@ -128,7 +128,7 @@ void GradeManager::handleRemoveCourse(Semester& s, Course::Course& c)
 
     /* 
     // 콘솔 UI 코드
-    
+
     consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
     //int removeIndex = consoleUIManager.promptChoiceCourseIndex(courses);
     std::string removeName = (courses.begin() + removeIndex)->courseName;

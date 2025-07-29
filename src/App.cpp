@@ -2,12 +2,28 @@
 #include "imgui.h"                 // ImGui 핵심 API: 즉시 모드 GUI 라이브러리의 기능을 제공하는 헤더
 #include "imgui_impl_win32.h"      // Win32 플랫폼 백엔드: 윈도우 이벤트(마우스, 키보드) 입력을 ImGui로 전달
 #include "imgui_impl_dx11.h"       // DirectX11 렌더러 백엔드: ImGui가 생성한 드로우 데이터를 DX11로 렌더링
+#include "Course.h"
+
 #include <d3d11.h>                 // DirectX11 장치/API: GPU 생성과 명령 전송을 위한 API
 #include <tchar.h>                 // 유니코드/멀티바이트 문자열 지원: Win32 API 호출 시 문자 집합 관리
-
 #include <vector>
 #include <string>
 #include <iostream>
+
+// 과목 이름 입력 버퍼
+char courseNameBuffer[256] = "";
+
+// 이수학점 인덱스, 항목 목록
+int creditsItem = 0;
+const char* creditsitems[] = { "0", "1", "2", "3" };
+
+// 받은 점수 인덱스, 항목 목록
+int gradeItem = 0;
+const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
+
+// 전공분류 인덱스, 항목 목록
+int categoryItem = 0;
+const char* categoryitems[] = { "전공선택", "복수전공", "부전공", "계열교양", "균형교양", "일반교양", "타전공" };
 
 
 int GradeApp::start()
@@ -75,8 +91,10 @@ int GradeApp::start()
 
 void GradeApp::run(MSG& msg, bool& done)
 {
+    // semester 초기값 설정
     std::array<Semester, 8>& semesters = gm.getSemesters();
     semester = &(semesters.at(0));
+    course = &((semester->getCourses()).at(0));
 
     while (!done)
     {
@@ -99,13 +117,16 @@ void GradeApp::run(MSG& msg, bool& done)
 
         /* ------------------------- UI 렌더링 부분 ------------------------- */
         
-        displaySemesters(semesters);
+        displaySemestersWindow(semesters);
 
-        displayCourses(semester->getYear(), semester->getSemester(), semester->getCourses());
+        if (coursesListWindow)
+            displayCoursesWindow(semester->getYear(), semester->getSemester(), semester->getCourses());
 
         if (courseReadWindow)
-            displayInfomationCourse( *course );
+            displayInfomationCourseWindow( *course );
 
+        if (courseFixWindow)
+            displayFixValueCourseWindow( *fixCurse );
 
         // — 렌더링 단계 —
         ImGui::Render();                                  // 위젯 호출 기록으로 렌더 데이터를 생성
@@ -120,7 +141,7 @@ void GradeApp::run(MSG& msg, bool& done)
 }
 
 // 모든 학기 윈도우
-void GradeApp::displaySemesters(std::array<Semester, 8>& semesters)
+void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
 {
     std::string title = "학기 조회"; 
     ImGui::Begin(title.c_str());
@@ -142,6 +163,7 @@ void GradeApp::displaySemesters(std::array<Semester, 8>& semesters)
             if (ImGui::Button(semesterTitle.c_str()))
             {
                 semester = &s;
+                coursesListWindow = true;
             }
 
             ImGui::PopID();
@@ -152,10 +174,10 @@ void GradeApp::displaySemesters(std::array<Semester, 8>& semesters)
 }
 
 // 학기 내 과목 윈도우
-void GradeApp::displayCourses(int year, int semesterNumber, std::vector<Course::Course>& courses)
+void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Course::Course>& courses)
 {
     std::string title = std::to_string(year) + "학년 " + std::to_string(semesterNumber) + "학기 과목 조회"; 
-    ImGui::Begin(title.c_str());
+    ImGui::Begin(title.c_str(), &coursesListWindow);
 
     if (ImGui::BeginTable("courseInfoTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
     {
@@ -181,11 +203,16 @@ void GradeApp::displayCourses(int year, int semesterNumber, std::vector<Course::
 
             ImGui::TableSetColumnIndex(1);
             if (ImGui::Button("수정"))
-                counter++;
+            {
+                courseFixWindow = true;
+                fixCurse = &c;
+            }
 
             ImGui::TableSetColumnIndex(2);
             if (ImGui::Button("제거")) 
+            {
                 gm.handleRemoveCourse(*this->semester, c);
+            }
 
             ImGui::PopID();
         }
@@ -195,7 +222,7 @@ void GradeApp::displayCourses(int year, int semesterNumber, std::vector<Course::
 }
 
 // 한 과목의 정보 출력 윈도우
-void GradeApp::displayInfomationCourse(const Course::Course& c)
+void GradeApp::displayInfomationCourseWindow(const Course::Course& c)
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Appearing);      // 창 실행 시 위치
     ImGui::SetNextWindowSize(ImVec2(400, 150), ImGuiCond_Appearing); // 창 실행 시 크기
@@ -262,8 +289,137 @@ void GradeApp::displayInfomationCourse(const Course::Course& c)
 }
 
 
+void GradeApp::displayFixValueCourseWindow(Course::Course& fixCourse)
+{
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Appearing);      // 창 실행 시 위치
+    ImGui::SetNextWindowSize(ImVec2(400, 150), ImGuiCond_Appearing); // 창 실행 시 크기
+    ImGui::Begin(('[' + fixCourse.courseName + "] 과목 정보 수정").c_str(), &courseFixWindow);
 
-// — DirectX11 헬퍼 함수 구현 —
+    // 왼쪽 정렬 (기본)
+    auto alignLeft = [](const char* text) {
+        // Text/TextUnformatted는 기본적으로 왼쪽 정렬입니다.
+        ImGui::TextUnformatted(text);
+    };
+
+    // 가운데 정렬
+    auto alignCenter = [](const char* text) {
+        float columnWidth = ImGui::GetColumnWidth();
+        float textWidth = ImGui::CalcTextSize(text).x;
+        // 커서를 (열 너비 - 텍스트 너비)의 절반만큼 이동시켜 가운데 정렬 효과를 냅니다.
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (columnWidth - textWidth) * 0.5f);
+        ImGui::TextUnformatted(text);
+    };
+
+
+
+    // 1. 과목명 버퍼 초기화
+    // 기존 버퍼를 0으로 깨끗하게 지우고, fixCourse의 과목명을 안전하게 복사합니다.
+    memset(courseNameBuffer, 0, sizeof(courseNameBuffer));
+    strncpy(courseNameBuffer, fixCourse.courseName.c_str(), sizeof(courseNameBuffer) - 1);
+
+    // 2. 이수학점 콤보박스 인덱스 초기화
+    // fixCourse.credits(int)를 creditsitems(const char* [])의 인덱스로 직접 사용합니다.
+    // (creditsitems가 "0", "1", "2", "3" 순서로 되어있으므로 가능)
+    if (fixCourse.credits >= 0 && fixCourse.credits < IM_ARRAYSIZE(creditsitems)) 
+    {
+        creditsItem = fixCourse.credits;
+    }
+
+    // 3. 받은 점수 콤보박스 인덱스 초기화
+    // Course::convertToGrade 함수를 사용해 double 점수를 "A+" 같은 문자열로 변환
+    std::string gradeStr = Course::convertToGrade(fixCourse.grade);
+    // 변환된 문자열과 일치하는 항목을 gradeItems 배열에서 찾아 인덱스를 설정
+    for (int i = 0; i < IM_ARRAYSIZE(gradeItems); ++i) 
+    {
+        if (gradeItems[i] == gradeStr) {
+            gradeItem = i;
+            break;
+        }
+    }
+    
+    // 4. 전공분류 콤보박스 인덱스 초기화
+    std::string categoryStr = Course::convertToCategory(fixCourse.category);
+    // 변환된 문자열과 일치하는 항목을 categoryitems 배열에서 찾아 인덱스를 설정
+    for (int i = 0; i < IM_ARRAYSIZE(categoryitems); ++i) 
+    {
+        if (categoryitems[i] == categoryStr) {
+            categoryItem = i;
+            break;
+        }
+    }
+
+
+
+    // 2열 테이블
+    if (ImGui::BeginTable("courseTable", 2))
+    {
+        // 열 너비 설정
+        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableNextRow();
+
+        // — 1행 과목명 —
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("과목명");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::PushItemWidth(-1);
+        ImGui::InputText("##CourseName", courseNameBuffer, IM_ARRAYSIZE(courseNameBuffer));
+        ImGui::PopItemWidth();
+
+        // — 2행 이수학점 —
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("이수학점");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Combo("##Credits", &creditsItem, creditsitems, IM_ARRAYSIZE(creditsitems));
+
+        // — 3행 받은 점수 —
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("받은 점수");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Combo("##Grade", &gradeItem, gradeItems, IM_ARRAYSIZE(gradeItems));
+
+        // — 4행 전공분류 —
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("전공분류");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Combo("##Category", &categoryItem, categoryitems, IM_ARRAYSIZE(categoryitems));
+
+        ImGui::EndTable();
+    }
+
+    // 저장 버튼 중앙 배치
+    const char* label = "저장";
+    float region = ImGui::GetContentRegionAvail().x;
+    float txtW = ImGui::CalcTextSize(label).x;
+    ImGui::SetCursorPosX((region - txtW) * 0.5f);
+    if (ImGui::Button(label))
+    {
+        int credit = std::stoi(creditsitems[creditsItem]);
+        double grade = Course::gradeToConvert(gradeItems[gradeItem]);
+        int category = Course::categoryToConvert(categoryitems[categoryItem]);
+
+        Course::Course fixedCourse = { courseNameBuffer, credit, grade, category };
+
+        //gm.handleFixCourse(*this->semester, *this->course, fixCourse);
+
+        std::cout << "입력된 과목명: " << fixedCourse.courseName
+                  << ", 선택 학점: " << fixedCourse.credits
+                  << ", 반은 점수: " << fixedCourse.grade
+                  << ", 전공 분류: " << fixedCourse.category
+                  << std::endl;
+        
+        courseFixWindow = false;
+    }
+
+    ImGui::End();
+}
+
+
+
+// ------------------ DirectX11 헬퍼 함수 구현 ------------------
 
 // 1) Device & SwapChain 생성, RenderTargetView 생성
 bool CreateDeviceD3D(HWND hWnd)
