@@ -15,7 +15,9 @@ class Semester
     Semester(int year, int semester);
 
     void addCourses(Course::Course c);      // 과목 추가 - 따로 Course구조체를 받아와서 push_back만 하도록
-    void removeCourses(int removeIndex);   // 선택한 과목을 vector에서 erase로 제거   
+
+    // 선택한 과목을 vector에서 erase로 반복자로 제거 
+    void removeCourses(std::vector<Course::Course>::iterator it);   
 
     int getYear() { return year; }
     int getSemester() { return semester; }

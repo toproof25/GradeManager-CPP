@@ -42,6 +42,7 @@ void GradeManager::handleSelectSemesters()
 }
 void GradeManager::handleSelectCourse()
 {
+  /* 
   choiceCourse = consoleUIManager.displayCourseChoice(semesters[choiceSemester].getYear(), semesters[choiceSemester].getSemester());
   // 학기 선택으로 돌아가기
   if (choiceCourse == 0)
@@ -64,6 +65,7 @@ void GradeManager::handleSelectCourse()
   // 총 학점 보기
   else if (choiceCourse == 6)
     handleGpaSemester();
+  */
 }
 void GradeManager::handleSortAllCourse()
 {
@@ -102,25 +104,41 @@ void GradeManager::handleAddCourse()
   semesterJson.createJsonData(choiceSemester, c);
   consoleUIManager.displayMessage("✅ [" + c.courseName + "] 과목이 성공적으로 추가되었습니다! ✅");
 }
-void GradeManager::handleRemoveCourse()  
+void GradeManager::handleRemoveCourse(Semester& s, Course::Course& c)  
 {
-  Semester& s = semesters.at(choiceSemester);
-  const std::vector<Course::Course>& courses = s.getCourses();
+  // 기존에는 choiceSemester index번호로 Semester를 가져옴 -> GUI에서 Semester& 와 Course::Course&를 넘겨주어 사용
+  //Semester& s = semesters.at(choiceSemester);
 
-  if (courses.size() <= 0)
+  std::vector<Course::Course>& courses = s.getCourses();
+  std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), c);
+  
+  if (courses.size() <= 0 || it == courses.end())
   {
+    // GUI로 완전 변경 시 [제거] 버튼이 없으므로 해당 예외가 발생하지 않음 (일단 유지)
     consoleUIManager.displayMessage("\n❌ 제거할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌");
   }
   else
   {
+    // 기존에는 index번호로 제거 -> GUI에서 반복자로 제거하도록 변경
     consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
-    int removeIndex = consoleUIManager.promptChoiceCourseIndex(courses);
+    std::string removeName = it->courseName;
+    s.removeCourses(it); // 실제 제거 부분
+    semesterJson.saveJson(getSemesters());
+    consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
+
+    /* 
+    // 콘솔 UI 코드
+    
+    consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
+    //int removeIndex = consoleUIManager.promptChoiceCourseIndex(courses);
     std::string removeName = (courses.begin() + removeIndex)->courseName;
     semesters.at(choiceSemester).removeCourses(removeIndex); // 실제 제거 부분
     semesterJson.deleteJsonData(choiceSemester, removeIndex);
     consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
+    */
   }
 }
+
 void GradeManager::handleFixCourse()  
 {
   Semester& s = semesters.at(choiceSemester);

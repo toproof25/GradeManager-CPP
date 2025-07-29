@@ -30,10 +30,16 @@ namespace Course
     void setGrade(double grade);
     void setCategory(int category);
 
+    // 이진탐색 연산자 오버로딩
     bool operator<(const Course& otherCourse) const 
     {
         return grade < otherCourse.grade;
     }
+
+    // find 연산자 오버로딩
+    bool operator==(const Course& other) const {
+		    return (courseName == other.courseName) && (credits == other.credits) && (grade == other.grade) && (category == other.category);
+	  }
   };
 
   // 점수와 전공분류를 적절한 문자열로 반환

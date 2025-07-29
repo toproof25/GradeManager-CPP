@@ -11,9 +11,9 @@ void Semester::addCourses(Course::Course c)
 }
 
 // 과목 제거
-void Semester::removeCourses(int removeIndex)
+void Semester::removeCourses(std::vector<Course::Course>::iterator it)
 {
-  courses.erase(courses.begin() + removeIndex);
+  courses.erase(it);
 }
 
 double calculateGPA(const std::vector<Course::Course>& courses)

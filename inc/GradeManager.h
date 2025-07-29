@@ -38,16 +38,18 @@ class GradeManager
     void handleSelectCourse();    // 과목 선택 핸들링
     void handleSortAllCourse();  // 모든 과목 정렬
 
-    void handleAddCourse();       // 과목 추가
-    void handleRemoveCourse();    // 과목 제거
-    void handleFixCourse();       // 과목 수정
-    void handleSortCourse();      // 과목 정렬
-    void handleGpaSemester();
+
 
   public:
     GradeManager();
     ~GradeManager();
     void run();
+
+    void handleAddCourse();       // 과목 추가
+    void handleRemoveCourse(Semester& s, Course::Course& c);    // 과목 제거
+    void handleFixCourse();       // 과목 수정
+    void handleSortCourse();      // 과목 정렬
+    void handleGpaSemester();
     
     std::array<Semester, 8>& getSemesters() {return semesters;};
 };
