@@ -20,6 +20,7 @@ class SemesterJSON
     SemesterJSON(std::string filename);
 
     std::array<Semester, 8> loadJson();
+    void saveJson(const std::array<Semester, 8>& semesters);
 
     void createBasicJson();
 
@@ -32,6 +33,8 @@ class SemesterJSON
     void updateJsonData(int index, int course_index, const std::string& key, double updateValue);
 
     void sortJsonData(int index, int sort_index);
+
+    
   
 
 };

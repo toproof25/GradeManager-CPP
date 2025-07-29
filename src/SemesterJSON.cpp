@@ -93,6 +93,45 @@ std::array<Semester, 8> SemesterJSON::loadJson()
   return semesters;
 }
 
+// JSON 데이터 저장
+void SemesterJSON::saveJson(const std::array<Semester, 8>& semesters)
+{
+  // json 객체 생성
+  nlohmann::json create_json;
+  create_json["semesters"] = {};
+
+  // 1학년 1학기 ~ 4학년 2학기까지 json 파일 생성
+  for (Semester s : semesters)
+  {
+    int year = s.getYear();
+    int semester = s.getSemester();
+
+    std::vector<nlohmann::json> courses;
+    for (Course::Course& c : s.getCourses())
+    {
+      nlohmann::json cJson = courseToJson(c);
+      courses.push_back(cJson);
+    }
+
+    nlohmann::json semesters_json;
+    semesters_json = {
+      std::pair("year", year),
+      std::pair("semester", semester),
+      std::pair("courses", courses)
+    };
+
+    create_json["semesters"].push_back(semesters_json);
+  }
+
+  // filename으로  json파일 생성
+  std::ofstream save_file(filename);
+
+  // json파일에 데이터 입력
+  save_file << create_json.dump(4);
+  save_file.close();
+}
+
+
 Semester SemesterJSON::jsonToSemester(nlohmann::json& semester_json, int index)
 {
   // 학년, 학기 가져오기
