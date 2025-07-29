@@ -56,11 +56,12 @@ private:
   bool coursesListWindow = false;
   bool courseReadWindow = false;
 
+  bool isInit = false;
   bool courseFixWindow = false;
   
   Semester* semester = nullptr;
   Course::Course* course = nullptr;
-  Course::Course* fixCurse = nullptr;
+  Course::Course* fixCourse = nullptr;
 
 
 public:

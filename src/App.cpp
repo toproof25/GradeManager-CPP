@@ -11,19 +11,19 @@
 #include <iostream>
 
 // 과목 이름 입력 버퍼
-char courseNameBuffer[256] = "";
+static char courseNameBuffer[256] = "";
 
 // 이수학점 인덱스, 항목 목록
-int creditsItem = 0;
-const char* creditsitems[] = { "0", "1", "2", "3" };
+static int creditsItem = 0;
+static const char* creditsitems[] = { "0", "1", "2", "3" };
 
 // 받은 점수 인덱스, 항목 목록
-int gradeItem = 0;
-const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
+static int gradeItem = 0;
+static const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
 
 // 전공분류 인덱스, 항목 목록
-int categoryItem = 0;
-const char* categoryitems[] = { "전공선택", "복수전공", "부전공", "계열교양", "균형교양", "일반교양", "타전공" };
+static int categoryItem = 0;
+static const char* categoryitems[] = { "전공선택", "복수전공", "부전공", "계열교양", "균형교양", "일반교양", "타전공" };
 
 
 int GradeApp::start()
@@ -126,7 +126,7 @@ void GradeApp::run(MSG& msg, bool& done)
             displayInfomationCourseWindow( *course );
 
         if (courseFixWindow)
-            displayFixValueCourseWindow( *fixCurse );
+            displayFixValueCourseWindow( *fixCourse );
 
         // — 렌더링 단계 —
         ImGui::Render();                                  // 위젯 호출 기록으로 렌더 데이터를 생성
@@ -205,7 +205,8 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
             if (ImGui::Button("수정"))
             {
                 courseFixWindow = true;
-                fixCurse = &c;
+                isInit = false;
+                fixCourse = &c;
             }
 
             ImGui::TableSetColumnIndex(2);
@@ -291,63 +292,53 @@ void GradeApp::displayInfomationCourseWindow(const Course::Course& c)
 
 void GradeApp::displayFixValueCourseWindow(Course::Course& fixCourse)
 {
+    // 해다 함수(창)이 실행 시 한번만 과목의 정보를 입력폼에 넣고, 이후에는 변경해도 상관없도록
+    // 현재는 수정을 해도 계속 기존 과목 정보로 초기화가 됨
+
+
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Appearing);      // 창 실행 시 위치
     ImGui::SetNextWindowSize(ImVec2(400, 150), ImGuiCond_Appearing); // 창 실행 시 크기
     ImGui::Begin(('[' + fixCourse.courseName + "] 과목 정보 수정").c_str(), &courseFixWindow);
 
-    // 왼쪽 정렬 (기본)
-    auto alignLeft = [](const char* text) {
-        // Text/TextUnformatted는 기본적으로 왼쪽 정렬입니다.
-        ImGui::TextUnformatted(text);
-    };
-
-    // 가운데 정렬
-    auto alignCenter = [](const char* text) {
-        float columnWidth = ImGui::GetColumnWidth();
-        float textWidth = ImGui::CalcTextSize(text).x;
-        // 커서를 (열 너비 - 텍스트 너비)의 절반만큼 이동시켜 가운데 정렬 효과를 냅니다.
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (columnWidth - textWidth) * 0.5f);
-        ImGui::TextUnformatted(text);
-    };
-
-
-
-    // 1. 과목명 버퍼 초기화
-    // 기존 버퍼를 0으로 깨끗하게 지우고, fixCourse의 과목명을 안전하게 복사합니다.
-    memset(courseNameBuffer, 0, sizeof(courseNameBuffer));
-    strncpy(courseNameBuffer, fixCourse.courseName.c_str(), sizeof(courseNameBuffer) - 1);
-
-    // 2. 이수학점 콤보박스 인덱스 초기화
-    // fixCourse.credits(int)를 creditsitems(const char* [])의 인덱스로 직접 사용합니다.
-    // (creditsitems가 "0", "1", "2", "3" 순서로 되어있으므로 가능)
-    if (fixCourse.credits >= 0 && fixCourse.credits < IM_ARRAYSIZE(creditsitems)) 
+    if (!isInit)
     {
-        creditsItem = fixCourse.credits;
-    }
+        // 1. 과목명 버퍼 초기화
+        // 기존 버퍼를 0으로 깨끗하게 지우고, fixCourse의 과목명을 안전하게 복사합니다.
+        memset(courseNameBuffer, 0, sizeof(courseNameBuffer));
+        strncpy(courseNameBuffer, fixCourse.courseName.c_str(), sizeof(courseNameBuffer) - 1);
 
-    // 3. 받은 점수 콤보박스 인덱스 초기화
-    // Course::convertToGrade 함수를 사용해 double 점수를 "A+" 같은 문자열로 변환
-    std::string gradeStr = Course::convertToGrade(fixCourse.grade);
-    // 변환된 문자열과 일치하는 항목을 gradeItems 배열에서 찾아 인덱스를 설정
-    for (int i = 0; i < IM_ARRAYSIZE(gradeItems); ++i) 
-    {
-        if (gradeItems[i] == gradeStr) {
-            gradeItem = i;
-            break;
+        // 2. 이수학점 콤보박스 인덱스 초기화
+        // fixCourse.credits(int)를 creditsitems(const char* [])의 인덱스로 직접 사용합니다.
+        // (creditsitems가 "0", "1", "2", "3" 순서로 되어있으므로 가능)
+        if (fixCourse.credits >= 0 && fixCourse.credits < IM_ARRAYSIZE(creditsitems)) 
+        {
+            creditsItem = fixCourse.credits;
         }
-    }
-    
-    // 4. 전공분류 콤보박스 인덱스 초기화
-    std::string categoryStr = Course::convertToCategory(fixCourse.category);
-    // 변환된 문자열과 일치하는 항목을 categoryitems 배열에서 찾아 인덱스를 설정
-    for (int i = 0; i < IM_ARRAYSIZE(categoryitems); ++i) 
-    {
-        if (categoryitems[i] == categoryStr) {
-            categoryItem = i;
-            break;
-        }
-    }
 
+        // 3. 받은 점수 콤보박스 인덱스 초기화
+        // Course::convertToGrade 함수를 사용해 double 점수를 "A+" 같은 문자열로 변환
+        std::string gradeStr = Course::convertToGrade(fixCourse.grade);
+        // 변환된 문자열과 일치하는 항목을 gradeItems 배열에서 찾아 인덱스를 설정
+        for (int i = 0; i < IM_ARRAYSIZE(gradeItems); ++i) 
+        {
+            if (gradeItems[i] == gradeStr) {
+                gradeItem = i;
+                break;
+            }
+        }
+        
+        // 4. 전공분류 콤보박스 인덱스 초기화
+        std::string categoryStr = Course::convertToCategory(fixCourse.category);
+        // 변환된 문자열과 일치하는 항목을 categoryitems 배열에서 찾아 인덱스를 설정
+        for (int i = 0; i < IM_ARRAYSIZE(categoryitems); ++i) 
+        {
+            if (categoryitems[i] == categoryStr) {
+                categoryItem = i;
+                break;
+            }
+        }
+        isInit = true;
+    }
 
 
     // 2열 테이블
@@ -403,7 +394,7 @@ void GradeApp::displayFixValueCourseWindow(Course::Course& fixCourse)
 
         Course::Course fixedCourse = { courseNameBuffer, credit, grade, category };
 
-        //gm.handleFixCourse(*this->semester, *this->course, fixCourse);
+        gm.handleFixCourse(*this->semester, fixCourse, fixedCourse);
 
         std::cout << "입력된 과목명: " << fixedCourse.courseName
                   << ", 선택 학점: " << fixedCourse.credits

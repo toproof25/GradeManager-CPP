@@ -47,7 +47,7 @@ class GradeManager
 
     void handleAddCourse();       // 과목 추가
     void handleRemoveCourse(Semester& s, Course::Course& c);    // 과목 제거
-    void handleFixCourse();       // 과목 수정
+    void handleFixCourse(Semester& s, Course::Course& c, Course::Course& fixCourse);       // 과목 수정
     void handleSortCourse();      // 과목 정렬
     void handleGpaSemester();
     

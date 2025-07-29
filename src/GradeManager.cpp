@@ -139,65 +139,33 @@ void GradeManager::handleRemoveCourse(Semester& s, Course::Course& c)
   }
 }
 
-void GradeManager::handleFixCourse()  
+void GradeManager::handleFixCourse(Semester& s, Course::Course& c, Course::Course& fixCourse)  
 {
-  Semester& s = semesters.at(choiceSemester);
+  //Semester& s = semesters.at(choiceSemester);
   std::vector<Course::Course>& courses = s.getCourses();
+  std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), c);
 
-  if (courses.size() <= 0)
+  if (courses.size() <= 0 || it == courses.end())
   {
+    // GUI로 완전 변경 시 [제거] 버튼이 없으므로 해당 예외가 발생하지 않음 (일단 유지)
     consoleUIManager.displayMessage("\n❌ 수정할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌");
   }
   else
   {
+    // 기존에는 index번호로 제거 -> GUI에서 반복자로 제거하도록 변경
     consoleUIManager.displayMessage("\n--- 수정할 과목을 선택하세요 ---");
+    
+    it->setCourseName(fixCourse.courseName);
+    it->setCredits(fixCourse.credits);
+    it->setGrade(fixCourse.grade);
+    it->setCategory(fixCourse.category);
+    
+    consoleUIManager.displayMessage(it->courseName);
 
-    // 수정할 과목 Index를 설정
-    int fixIndex = consoleUIManager.promptChoiceCourseIndex(courses);
-    Course::Course& fixC = courses.at(fixIndex);
-
-    // 수정할 과목 value를 설정
-    int fixValue = consoleUIManager.promptFixValue(fixC);
-
-    // 각 데이터 (과목명, 이수학점, 점수, 전공분류)에 맞는 타입을 수정
-    if (fixValue == 1)
-    {
-      std::string fixName;
-      fixName = consoleUIManager.promptFixString("🏷️ 변경할 과목명을 입력하세요 (예: 컴퓨터구조)");
-      if (fixName == "") return;
-      fixC.setCourseName(fixName);
-      semesterJson.updateJsonData(choiceSemester, fixIndex, "courseName", fixName);
-    }
-    else if (fixValue == 2)
-    {
-      int fixCredits;
-      fixCredits = consoleUIManager.promptFixInt("🔢 변경할 이수학점을 입력하세요 (예: 3)", 0, 3);
-      if (fixCredits == -1) return;
-      fixC.setCredits(fixCredits);
-      semesterJson.updateJsonData(choiceSemester, fixIndex, "credits", fixCredits);
-    }
-    else if (fixValue == 3)
-    {
-      double fixGrade;
-      fixGrade = consoleUIManager.promptFixDouble("💯 변경할 최종점수를 입력하세요 (예: 1.0, 4.5)", 0.0, 4.5);
-      if (fixGrade == -1) return;
-      fixC.setGrade(fixGrade);
-      semesterJson.updateJsonData(choiceSemester, fixIndex, "grade", fixGrade);
-    }
-    else if (fixValue == 4)
-    {
-      int fixCategory;
-      fixCategory = consoleUIManager.promptFixInt("📚 변경할 전공 분류를 선택하세요:\n 1.전공 선택  2.복수 전공   3.기초(필수)  4.일반(선택)  5.균형교양  6.계열교양  7.타전공", 1, 7);
-      if (fixCategory == -1) return;
-      fixC.setCategory(fixCategory);
-      semesterJson.updateJsonData(choiceSemester, fixIndex, "category", fixCategory);
-    }
-
-
-    consoleUIManager.displayMessage("\n--- 수정된 과목의 정보 ---");
-    consoleUIManager.displayCourse(fixC);
-    consoleUIManager.displayMessage("----------------------------------------");
+    semesterJson.saveJson(getSemesters());
+    consoleUIManager.displayMessage("\n✅ [" + it->courseName + "] 과목이 성공적으로 수정되었습니다! ✅");
   }
+
 }
 void GradeManager::handleSortCourse()  
 {
