@@ -58,8 +58,9 @@ public:
   // 메인 창 - json불러와서 보여짐 - 1학기~8학기로 나열되어있고, 학기 눌렀을 때 해당 학기 정보(과목, 성적)이 나타남
   // 
 
-  void displayCourses(int year, int semester, std::vector<Course::Course>& courses);
+  void displaySemesters(std::array<Semester, 8>& semesters);
 
-  void displayInfomationCourse(const Course::Course& c);                   // 한 과목의 정보 출력
+  void displayCourses(int year, int semester, std::vector<Course::Course>& courses); // 한 학기의 과목 출력
+  void displayInfomationCourse(const Course::Course& c);                             // 한 과목의 정보 출력
 
 };

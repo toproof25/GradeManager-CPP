@@ -57,8 +57,6 @@ int GradeApp::start()
     int  counter     = 0;     // 버튼 클릭 횟수를 저장하는 변수
 
 
-    
-
     // 5) 메인 루프
     MSG msg;
     bool done = false;
@@ -77,57 +75,92 @@ int GradeApp::start()
 
 void GradeApp::run(MSG& msg, bool& done)
 {
-  while (!done)
-  {
-    // — Win32 메시지 처리 —
-    while (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-    {
-        ::TranslateMessage(&msg); // 가상 키 메시지를 문자 메시지로 변환
-        ::DispatchMessage(&msg);  // WndProc으로 실제 메시지 전달
-        if (msg.message == WM_QUIT)
-            done = true;          // WM_QUIT 수신 시 루프 탈출 예약
-    }
-    if (done) break;
-
-    // — ImGui 새 프레임 시작 —
-    ImGui_ImplDX11_NewFrame();   // DX11 관련 내부 타이밍/입력 처리
-    ImGui_ImplWin32_NewFrame();  // Win32 메시지를 ImGui에 업데이트
-    ImGui::NewFrame();           // ImGui 내부에서 위젯 준비 시작
-
-    
     std::array<Semester, 8>& semesters = gm.getSemesters();
-    semester = &semesters.at(4);
-    int year = semester->getYear();
-    int semesterNumber = semester->getSemester();
-    displayCourses(year, semesterNumber, semester->getCourses());
+    semester = &(semesters.at(0));
 
-    if (courseReadWindow)
+    while (!done)
     {
-        displayInfomationCourse( *course );
+        // — Win32 메시지 처리 —
+        while (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            ::TranslateMessage(&msg); // 가상 키 메시지를 문자 메시지로 변환
+            ::DispatchMessage(&msg);  // WndProc으로 실제 메시지 전달
+            if (msg.message == WM_QUIT)
+                done = true;          // WM_QUIT 수신 시 루프 탈출 예약
+        }
+        if (done) break;
+
+        // — ImGui 새 프레임 시작 —
+        ImGui_ImplDX11_NewFrame();   // DX11 관련 내부 타이밍/입력 처리
+        ImGui_ImplWin32_NewFrame();  // Win32 메시지를 ImGui에 업데이트
+        ImGui::NewFrame();           // ImGui 내부에서 위젯 준비 시작
+
+
+
+        /* ------------------------- UI 렌더링 부분 ------------------------- */
+        
+        displaySemesters(semesters);
+
+        displayCourses(semester->getYear(), semester->getSemester(), semester->getCourses());
+
+        if (courseReadWindow)
+            displayInfomationCourse( *course );
+
+
+        // — 렌더링 단계 —
+        ImGui::Render();                                  // 위젯 호출 기록으로 렌더 데이터를 생성
+        const float clear_col[4] = {0.5f, 0.5f, 0.5f, 1.0f};
+        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr); // 렌더 타겟 바인딩
+        g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_col); // 화면 클리어
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); // 렌더 데이터를 GPU에 제출
+
+        // — 화면 출력(VSync On) —
+        g_pSwapChain->Present(1, 0);  // 스왑 체인 Present: 화면에 렌더 결과 표시
     }
-
-
-    // — 렌더링 단계 —
-    ImGui::Render();                                  // 위젯 호출 기록으로 렌더 데이터를 생성
-    const float clear_col[4] = {0.1f, 0.1f, 0.1f, 1.0f};
-    g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr); // 렌더 타겟 바인딩
-    g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_col); // 화면 클리어
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); // 렌더 데이터를 GPU에 제출
-
-    // — 화면 출력(VSync On) —
-    g_pSwapChain->Present(1, 0);  // 스왑 체인 Present: 화면에 렌더 결과 표시
-  }
 }
 
-void GradeApp::displayCourses(int year, int semester, std::vector<Course::Course>& courses)
+// 모든 학기 윈도우
+void GradeApp::displaySemesters(std::array<Semester, 8>& semesters)
 {
-    std::string title = std::to_string(year) + "학년 " + std::to_string(semester) + "학기 과목 조회"; 
+    std::string title = "학기 조회"; 
+    ImGui::Begin(title.c_str());
+
+    if (ImGui::BeginTable("courseInfoTable", 1, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
+    {
+        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+
+        int buttonId = 10;
+        for (Semester& s : semesters)
+        {
+            ImGui::PushID(buttonId++); 
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+
+            std::string semesterTitle = std::to_string(s.getYear()) + "학년 " + std::to_string(s.getSemester()) + "학기";
+
+            if (ImGui::Button(semesterTitle.c_str()))
+            {
+                semester = &s;
+            }
+
+            ImGui::PopID();
+        }
+        ImGui::EndTable();
+    }
+    ImGui::End();   
+}
+
+// 학기 내 과목 윈도우
+void GradeApp::displayCourses(int year, int semesterNumber, std::vector<Course::Course>& courses)
+{
+    std::string title = std::to_string(year) + "학년 " + std::to_string(semesterNumber) + "학기 과목 조회"; 
     ImGui::Begin(title.c_str());
 
     if (ImGui::BeginTable("courseInfoTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
     {
         // 열 너비 설정: 첫 열은 고정, 두 번째 열은 나머지 공간 차지
-        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 300.0f);
+        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 350.0f);
         ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 50.f);
 
         int buttonId = 0;
@@ -137,7 +170,6 @@ void GradeApp::displayCourses(int year, int semester, std::vector<Course::Course
 
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
-            //ImGui::Text(c.courseName.c_str());
 
             std::string courseTitle = c.courseName + " / " + std::to_string(c.credits) + " / " + Course::convertToGrade(c.grade) + " / " + Course::convertToCategory(c.category);
 
@@ -146,12 +178,14 @@ void GradeApp::displayCourses(int year, int semester, std::vector<Course::Course
                 courseReadWindow = true;
                 course = &c;
             }
+
             ImGui::TableSetColumnIndex(1);
             if (ImGui::Button("수정"))
                 counter++;
+
             ImGui::TableSetColumnIndex(2);
             if (ImGui::Button("제거")) 
-                counter++;
+                gm.handleRemoveCourse(*this->semester, c);
 
             ImGui::PopID();
         }
@@ -160,11 +194,11 @@ void GradeApp::displayCourses(int year, int semester, std::vector<Course::Course
     ImGui::End();   
 }
 
-
+// 한 과목의 정보 출력 윈도우
 void GradeApp::displayInfomationCourse(const Course::Course& c)
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Appearing);      // 창 실행 시 위치
-    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing); // 창 실행 시 크기
+    ImGui::SetNextWindowSize(ImVec2(400, 150), ImGuiCond_Appearing); // 창 실행 시 크기
     ImGui::Begin(('[' + c.courseName + "] 정보 조회").c_str(), &courseReadWindow);
 
     // 왼쪽 정렬 (기본)
@@ -185,7 +219,7 @@ void GradeApp::displayInfomationCourse(const Course::Course& c)
     if (ImGui::BeginTable("courseInfoTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
     {
         // 열 너비 설정: 첫 열은 고정, 두 번째 열은 나머지 공간 차지
-        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 150.0f);
         ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
         // --- 과목명 행 ---
