@@ -117,10 +117,13 @@ void GradeApp::run(MSG& msg, bool& done)
 
         /* ------------------------- UI 렌더링 부분 ------------------------- */
         
+        
+
+
         displaySemestersWindow(semesters);
 
-        if (coursesListWindow)
-            displayCoursesWindow(semester->getYear(), semester->getSemester(), semester->getCourses());
+        //if (coursesListWindow)
+        displayCoursesWindow(semester->getYear(), semester->getSemester(), semester->getCourses());
 
         if (courseReadWindow)
             displayInfomationCourseWindow( *course );
@@ -143,8 +146,27 @@ void GradeApp::run(MSG& msg, bool& done)
 // 모든 학기 윈도우
 void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
 {
+    // 1. 프로그램 창의 전체 크기를 가져옵니다.
+    const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+    ImVec2 window_pos = main_viewport->WorkPos;
+    ImVec2 window_size = main_viewport->WorkSize;
+    window_size.x *= 0.5f;
+
+    // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always);
+
+    // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
+                                    ImGuiWindowFlags_NoResize | 
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_NoTitleBar |
+                                    ImGuiWindowFlags_NoBringToFrontOnFocus |
+                                    ImGuiWindowFlags_NoFocusOnAppearing;
+
+
     std::string title = "학기 조회"; 
-    ImGui::Begin(title.c_str());
+    ImGui::Begin(title.c_str(), nullptr, window_flags);
 
     if (ImGui::BeginTable("courseInfoTable", 1, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
     {
@@ -176,8 +198,50 @@ void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
 // 학기 내 과목 윈도우
 void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Course::Course>& courses)
 {
-    std::string title = std::to_string(year) + "학년 " + std::to_string(semesterNumber) + "학기 과목 조회"; 
-    ImGui::Begin(title.c_str(), &coursesListWindow);
+    // 1. 프로그램 창의 전체 크기를 가져옵니다.
+    const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+    ImVec2 window_pos = main_viewport->WorkPos;
+    ImVec2 window_size = main_viewport->WorkSize;
+    window_pos.x = main_viewport->GetCenter().x;
+    window_size.x *= 0.5f;
+
+    // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always);
+
+    // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
+                                    ImGuiWindowFlags_NoResize | 
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_NoTitleBar |
+                                    ImGuiWindowFlags_NoBringToFrontOnFocus |
+                                    ImGuiWindowFlags_NoFocusOnAppearing;
+
+    // 가운데 정렬
+    auto alignCenter = [](const char* text) {
+        float columnWidth = ImGui::GetColumnWidth();
+        float textWidth = ImGui::CalcTextSize(text).x;
+        // 커서를 (열 너비 - 텍스트 너비)의 절반만큼 이동시켜 가운데 정렬 효과를 냅니다.
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (columnWidth - textWidth) * 0.5f);
+        ImGui::TextUnformatted(text);
+    };
+
+    //ImGui::Begin(title.c_str());
+    ImGui::Begin("과목 조회", nullptr, window_flags);
+
+
+    std::string semesterTitle = std::to_string(year) + "학년 " + std::to_string(semesterNumber) + "학기 과목\n"; 
+
+    int allCredit = 0;
+    for (const Course::Course& c : courses)
+    {
+        allCredit += c.credits;
+    }
+    double gpa = calculateGPA(courses);
+
+    std::string  coursesTitle = "이수학점(" + std::to_string(allCredit) + ") / 최종점수(" + std::to_string(gpa) + ")";
+    alignCenter(semesterTitle.c_str());
+    alignCenter(coursesTitle.c_str());
 
     if (ImGui::BeginTable("courseInfoTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
     {
@@ -297,7 +361,7 @@ void GradeApp::displayFixValueCourseWindow(Course::Course& fixCourse)
 
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Appearing);      // 창 실행 시 위치
-    ImGui::SetNextWindowSize(ImVec2(400, 150), ImGuiCond_Appearing); // 창 실행 시 크기
+    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing); // 창 실행 시 크기
     ImGui::Begin(('[' + fixCourse.courseName + "] 과목 정보 수정").c_str(), &courseFixWindow);
 
     if (!isInit)
