@@ -88,81 +88,51 @@ void GradeManager::handleSortAllCourse()
 }
 
 
-void GradeManager::handleAddCourse() 
+void GradeManager::handleAddCourse(Semester& s, Course::Course& newCourse) 
 {
-  Course::Course c;
-  try
-  {
-    c = consoleUIManager.createAddCourse();
-  }
-  catch(const std::exception& e)
-  {
-    consoleUIManager.displayMessage(e.what());
-    return;
-  }
-  semesters.at(choiceSemester).addCourses(c);
-  semesterJson.createJsonData(choiceSemester, c);
-  consoleUIManager.displayMessage("✅ [" + c.courseName + "] 과목이 성공적으로 추가되었습니다! ✅");
+  std::vector<Course::Course>& courses = s.getCourses();
+  s.addCourses(newCourse);
+  semesterJson.saveJson(getSemesters());
+  consoleUIManager.displayMessage("✅ [" + newCourse.courseName + "] 과목이 성공적으로 추가되었습니다! ✅");
 }
+
 void GradeManager::handleRemoveCourse(Semester& s, Course::Course& c)  
 {
   // 기존에는 choiceSemester index번호로 Semester를 가져옴 -> GUI에서 Semester& 와 Course::Course&를 넘겨주어 사용
-  //Semester& s = semesters.at(choiceSemester);
-
   std::vector<Course::Course>& courses = s.getCourses();
   std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), c);
   
-  if (courses.size() <= 0 || it == courses.end())
-  {
-    // GUI로 완전 변경 시 [제거] 버튼이 없으므로 해당 예외가 발생하지 않음 (일단 유지)
-    consoleUIManager.displayMessage("\n❌ 제거할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌");
-  }
-  else
-  {
-    // 기존에는 index번호로 제거 -> GUI에서 반복자로 제거하도록 변경
-    consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
-    std::string removeName = it->courseName;
-    s.removeCourses(it); // 실제 제거 부분
-    semesterJson.saveJson(getSemesters());
-    consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
+  // 기존에는 index번호로 제거 -> GUI에서 반복자로 제거하도록 변경
+  consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
+  std::string removeName = it->courseName;
+  s.removeCourses(it); // 실제 제거 부분
+  semesterJson.saveJson(getSemesters());
+  consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
 
-    /* 
-    // 콘솔 UI 코드
-
-    consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
-    //int removeIndex = consoleUIManager.promptChoiceCourseIndex(courses);
-    std::string removeName = (courses.begin() + removeIndex)->courseName;
-    semesters.at(choiceSemester).removeCourses(removeIndex); // 실제 제거 부분
-    semesterJson.deleteJsonData(choiceSemester, removeIndex);
-    consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
-    */
-  }
 }
 
 void GradeManager::handleFixCourse(Semester& s, Course::Course& c, Course::Course& fixCourse)  
 {
-  //Semester& s = semesters.at(choiceSemester);
+  // c를 바탕으로 수정할 과목의 반복자를 찾음
   std::vector<Course::Course>& courses = s.getCourses();
   std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), c);
 
   if (courses.size() <= 0 || it == courses.end())
   {
-    // GUI로 완전 변경 시 [제거] 버튼이 없으므로 해당 예외가 발생하지 않음 (일단 유지)
+    // GUI로 완전 변경 시 [수정] 버튼이 없으므로 해당 예외가 발생하지 않음 (일단 유지)
     consoleUIManager.displayMessage("\n❌ 수정할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌");
   }
   else
   {
-    // 기존에는 index번호로 제거 -> GUI에서 반복자로 제거하도록 변경
-    consoleUIManager.displayMessage("\n--- 수정할 과목을 선택하세요 ---");
-    
+    // 수정할 과목 값을 변경
     it->setCourseName(fixCourse.courseName);
     it->setCredits(fixCourse.credits);
     it->setGrade(fixCourse.grade);
     it->setCategory(fixCourse.category);
     
-    consoleUIManager.displayMessage(it->courseName);
-
+    // 수정된 후에 수정된 데이터를 바탕으로 저장
     semesterJson.saveJson(getSemesters());
+
     consoleUIManager.displayMessage("\n✅ [" + it->courseName + "] 과목이 성공적으로 수정되었습니다! ✅");
   }
 

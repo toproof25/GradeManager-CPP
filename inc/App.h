@@ -53,15 +53,26 @@ private:
   GradeManager gm;
 
   // — 앱 상태 변수 —
-  bool coursesListWindow = false;
-  bool courseReadWindow = false;
+  bool m_showAddWindow = false;
+  bool m_showEditWindow = false;
+
+  bool m_courseReadWindow = false;
 
   bool isInit = false;
   bool courseFixWindow = false;
-  
+
   Semester* semester = nullptr;
   Course::Course* course = nullptr;
-  Course::Course* fixCourse = nullptr;
+
+  std::string toastMessege;
+
+  // --- 프레임 계산 ---
+  bool m_showToastMessege = false;
+  int start_frame = 0; // 알림이 시작된 프레임 번호
+  const int VISIBLE_FRAMES = 180;  // 완전히 보이는 프레임 수 (약 1초)
+  const int FADE_FRAMES = 240;    // 사라지는 데 걸리는 프레임 수 (약 2초)
+
+  void displayToastMessege_(const char* messege);
 
 
 public:
@@ -76,6 +87,14 @@ public:
   void displayCoursesWindow(int year, int semester, std::vector<Course::Course>& courses); // 한 학기의 과목 출력
   void displayInfomationCourseWindow(const Course::Course& c);                             // 한 과목의 정보 출력
 
-  void displayFixValueCourseWindow(Course::Course& fixCourse);
+  void promptValueCourseWindow(
+    Course::Course& fixCourse, 
+    bool isInit, 
+    const std::function<void(Course::Course&)>& onClickSave,
+    bool& m_showWindow    
+  );
+
+
+  void displayToastMessege(std::string messege);
 
 };
