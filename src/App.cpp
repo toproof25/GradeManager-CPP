@@ -113,7 +113,6 @@ void GradeApp::run(MSG& msg, bool& done)
         ImGui::NewFrame();           // ImGui 내부에서 위젯 준비 시작
 
 
-
         /* ------------------------- UI 렌더링 부분 ------------------------- */
 
         // 토스트 메시지
@@ -127,12 +126,10 @@ void GradeApp::run(MSG& msg, bool& done)
 
         // 각 학기 내 과목 윈도우
         displayCoursesWindow(semester->getYear(), semester->getSemester(), semester->getCourses());
+
+        // 과정 정보 윈도우
         displayInfomationCourseWindow( *course );
-        //// 과목 상세정보
-        //if (m_courseReadWindow)
-        //{
-        //    displayInfomationCourseWindow( *course );
-        //}
+
 
         // 과목 수정 윈도우 
         if (m_showEditWindow)
@@ -238,8 +235,8 @@ void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
     window_size.x *= 0.5f;
 
     // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
-    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Appearing );
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Appearing );
 
     // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
@@ -303,8 +300,8 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
     window_size.x *= 0.5f; window_size.y *= 0.5f;
 
     // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
-    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Appearing );
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Appearing );
 
     // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
@@ -422,10 +419,6 @@ void GradeApp::displayInfomationCourseWindow(const Course::Course& c)
     ImVec2 window_size = main_viewport->WorkSize;
     window_size.x *= 0.5f; window_size.y *= 0.5f;
 
-    // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
-    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always);
-
     // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
                                     ImGuiWindowFlags_NoResize | 
@@ -511,9 +504,8 @@ void GradeApp::promptValueCourseWindow(
 {
     // 해다 함수(창)이 실행 시 한번만 과목의 정보를 입력폼에 넣고, 이후에는 변경해도 상관없도록
     // 현재는 수정을 해도 계속 기존 과목 정보로 초기화가 됨
-
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Appearing);      // 창 실행 시 위치
-    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing); // 창 실행 시 크기
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing , ImVec2(0.5f, 0.5f));      // 창 실행 시 위치
+    ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing ); // 창 실행 시 크기
     ImGui::Begin(('[' + course.courseName + "] 과목 정보 입력").c_str(), &m_showWindow);
 
     // 수정 시 초기값을 설정
