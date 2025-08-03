@@ -35,22 +35,37 @@ void SemesterJSON::createBasicJson()
   create_json["semesters"] = {};
 
   // 과목 json
-  nlohmann::json courses_json;
-  courses_json = {};
+  nlohmann::json course_json;
+  course_json["courseName"] = "빈과목";
+  course_json["credits"] = 0;
+  course_json["grade"] = 0.0;
+  course_json["category"] = 0;
 
   // 1학년 1학기 ~ 4학년 2학기까지 json 파일 생성
   int year = 1;
   int semester = 1;
-  std::vector<int> v(0);
+  Course::Course c = {"", 0, 0.0, 0};
+  std::vector<nlohmann::json> v = {course_json};
   while(year <= 4)
   {
     // 학기 json
     nlohmann::json semesters_json;
-    semesters_json = {
-      std::pair("year", year),
-      std::pair("semester", semester),
-      std::pair("courses", v)
-    };
+    if (year == 1 && semester == 1)
+    {
+      semesters_json = {
+        std::pair("year", year),
+        std::pair("semester", semester),
+        std::pair("courses", v)
+      };
+    }
+    else
+    {
+      semesters_json = {
+        std::pair("year", year),
+        std::pair("semester", semester),
+        std::pair("courses", std::vector<int>(0))
+      };
+    }
 
     if (++semester == 3)
     {
