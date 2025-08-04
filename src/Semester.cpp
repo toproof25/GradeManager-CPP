@@ -18,6 +18,11 @@ void Semester::removeCourses(std::vector<Course::Course>::iterator it)
 
 double calculateGPA(const std::vector<Course::Course>& courses)
 {
+  if (courses.empty())
+  {
+    return 0.0;
+  }
+
   double credits = 0;
   double grade = 0;
 
@@ -26,6 +31,9 @@ double calculateGPA(const std::vector<Course::Course>& courses)
     credits += c.credits;
     grade += (c.grade*c.credits);
   }
+
+  if (grade == 0.0 || credits == 0.0)
+    return 0.0;
   return grade / credits;
 }
 
