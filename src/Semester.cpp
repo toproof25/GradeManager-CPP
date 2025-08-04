@@ -23,11 +23,13 @@ double calculateGPA(const std::vector<Course::Course>& courses)
     return 0.0;
   }
 
-  double credits = 0;
-  double grade = 0;
+  double credits = 0.0;
+  double grade = 0.0;
 
   for(const Course::Course& c : courses)
   {
+    if (c.credits == 0 || c.grade == 0.0)
+      continue;
     credits += c.credits;
     grade += (c.grade*c.credits);
   }
