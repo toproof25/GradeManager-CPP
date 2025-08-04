@@ -3,7 +3,7 @@
   "configurePresets": [
     {
       "name": "gcc-mingw64-debug",
-      "displayName": "GCC 14.2.0 x86_64-w64-mingw32 (mingw64)",
+      "displayName": "gcc",
       "description": "컴파일러를 사용하는 중: C = C:\\msys64\\mingw64\\bin\\gcc.exe, CXX = C:\\msys64\\mingw64\\bin\\g++.exe",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
