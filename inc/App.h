@@ -15,20 +15,10 @@
 // — 전역 변수 —
 // DirectX11 장치 및 렌더 타겟 관련 객체를 전역으로 보관하여
 // 어디서나 접근 가능하게 함. 애플리케이션 수명 동안 유지되어야 함.
-static ID3D11Device*           g_pd3dDevice = nullptr;           // GPU 연산과 리소스 생성을 담당하는 핵심 객체
-static ID3D11DeviceContext*    g_pd3dDeviceContext = nullptr;    // GPU에 렌더링 명령을 발행하는 컨텍스트
-static IDXGISwapChain*         g_pSwapChain = nullptr;           // 화면에 이미지를 표시하기 위한 전/후면 버퍼 관리 객체
-static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr; // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
-
-// 함수 전방 선언
-// 구현부를 아래로 내려서 가독성을 높이기 위해 미리 선언함.
-bool CreateDeviceD3D(HWND hWnd);
-void CleanupDeviceD3D();
-void CreateRenderTarget();
-void CleanupRenderTarget();
-LRESULT WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
-
-
+extern ID3D11Device*           g_pd3dDevice;           // GPU 연산과 리소스 생성을 담당하는 핵심 객체
+extern ID3D11DeviceContext*    g_pd3dDeviceContext;    // GPU에 렌더링 명령을 발행하는 컨텍스트
+extern IDXGISwapChain*         g_pSwapChain;           // 화면에 이미지를 표시하기 위한 전/후면 버퍼 관리 객체
+extern ID3D11RenderTargetView* g_mainRenderTargetView; // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
 
 // 과목 이름 입력 버퍼
 extern char courseNameBuffer[256];
@@ -98,3 +88,11 @@ public:
   void displayToastMessege(std::string messege);
 
 };
+
+
+// ImGui에 필요한 함수들
+bool CreateDeviceD3D(HWND hWnd);
+void CleanupDeviceD3D();
+void CreateRenderTarget();
+void CleanupRenderTarget();
+LRESULT WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);

@@ -9,7 +9,16 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <functional> // std::function을 사용하기 위해 헤더 추가
+#include <functional>              // std::function을 사용하기 위해 헤더 추가
+
+
+// — 전역 변수 —
+// DirectX11 장치 및 렌더 타겟 관련 객체를 전역으로 보관하여
+// 어디서나 접근 가능하게 함. 애플리케이션 수명 동안 유지되어야 함.
+static ID3D11Device*           g_pd3dDevice = nullptr;           // GPU 연산과 리소스 생성을 담당하는 핵심 객체
+static ID3D11DeviceContext*    g_pd3dDeviceContext = nullptr;    // GPU에 렌더링 명령을 발행하는 컨텍스트
+static IDXGISwapChain*         g_pSwapChain = nullptr;           // 화면에 이미지를 표시하기 위한 전/후면 버퍼 관리 객체
+static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr; // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
 
 // 과목 이름 입력 버퍼
 static char courseNameBuffer[256] = "";
