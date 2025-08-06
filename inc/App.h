@@ -45,7 +45,6 @@ private:
   // — 앱 상태 변수 —
   bool m_showAddWindow = false;
   bool m_showEditWindow = false;
-
   bool m_courseReadWindow = false;
 
   bool isInit = false;
@@ -56,7 +55,7 @@ private:
 
   std::string toastMessege;
 
-  // --- 프레임 계산 ---
+  // --- Toast Messege 프레임 계산 ---
   bool m_showToastMessege = false;
   int start_frame = 0; // 알림이 시작된 프레임 번호
   const int VISIBLE_FRAMES = 180;  // 완전히 보이는 프레임 수 (약 1초)
@@ -69,8 +68,6 @@ public:
   int start();
   void run(MSG& msg, bool& done);
 
-  // 메인 창 - json불러와서 보여짐 - 1학기~8학기로 나열되어있고, 학기 눌렀을 때 해당 학기 정보(과목, 성적)이 나타남
-  // 
 
   void displaySemestersWindow(std::array<Semester, 8>& semesters);  // 모든 학기 윈도우
 
@@ -86,6 +83,8 @@ public:
 
 
   void displayToastMessege(std::string messege);
+
+  void handleOptionBar();
 
 };
 
