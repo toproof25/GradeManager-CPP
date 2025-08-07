@@ -20,6 +20,7 @@ class SemesterJSON
     SemesterJSON(std::string filename);
 
     std::array<Semester, 8> loadJson();
+    std::array<Semester, 8> loadJson(std::string filePath);
     void saveJson(const std::array<Semester, 8>& semesters);
 
     void createBasicJson();

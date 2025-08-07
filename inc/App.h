@@ -66,7 +66,7 @@ private:
 
 public:
   int start();
-  void run(MSG& msg, bool& done);
+  void run(MSG& msg, bool& done, HWND& hwnd);
 
 
   void displaySemestersWindow(std::array<Semester, 8>& semesters);  // 모든 학기 윈도우

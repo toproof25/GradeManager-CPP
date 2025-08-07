@@ -108,6 +108,39 @@ std::array<Semester, 8> SemesterJSON::loadJson()
   return semesters;
 }
 
+std::array<Semester, 8> SemesterJSON::loadJson(std::string filePath)
+{
+  /* 
+  std::ifstream check_json(filePath);
+  if (!check_json.is_open())
+  {
+    check_json.close();
+    throw "파일이 존재하지 않습니다";
+  }
+  check_json.close();
+  */
+  std::ifstream read_json(filePath);
+  nlohmann::json json;
+  read_json >> json;  
+  read_json.close();
+
+  std::array<Semester, 8> semesters
+  {
+    jsonToSemester(json["semesters"], 0),
+    jsonToSemester(json["semesters"], 1),
+    jsonToSemester(json["semesters"], 2),
+    jsonToSemester(json["semesters"], 3),
+    jsonToSemester(json["semesters"], 4),
+    jsonToSemester(json["semesters"], 5),
+    jsonToSemester(json["semesters"], 6),
+    jsonToSemester(json["semesters"], 7)
+  };
+
+  return semesters;
+}
+
+
+
 // JSON 데이터 저장
 void SemesterJSON::saveJson(const std::array<Semester, 8>& semesters)
 {

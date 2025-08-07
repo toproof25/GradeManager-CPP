@@ -10,7 +10,7 @@
 #include <string>
 #include <iostream>
 #include <functional>              // std::function을 사용하기 위해 헤더 추가
-
+#include <Windows.h>
 
 // — 전역 변수 —
 // DirectX11 장치 및 렌더 타겟 관련 객체를 전역으로 보관하여
@@ -20,24 +20,15 @@ static ID3D11DeviceContext*    g_pd3dDeviceContext = nullptr;    // GPU에 렌�
 static IDXGISwapChain*         g_pSwapChain = nullptr;           // 화면에 이미지를 표시하기 위한 전/후면 버퍼 관리 객체
 static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr; // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
 
-// 과목 이름 입력 버퍼
-//static char courseNameBuffer[256] = "";
-
-// 이수학점 인덱스, 항목 목록
-//static int creditsItem = 0;
 static const char* creditsitems[] = { "0", "1", "2", "3" };
-
-// 받은 점수 인덱스, 항목 목록
-//static int gradeItem = 0;
 static const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
-
-// 전공분류 인덱스, 항목 목록
-//static int categoryItem = 0;
 static const char* categoryitems[] = { "전공선택", "복수전공", "부전공", "계열교양", "균형교양", "일반교양", "타전공" };
-
 
 int GradeApp::start()
 {
+
+    FreeConsole();
+
     // 1) Win32 창 등록 & 생성
     // WNDCLASSEXW: 윈도우 클래스를 정의하는 구조체
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0, 0,
@@ -84,7 +75,7 @@ int GradeApp::start()
     // 5) 메인 루프
     MSG msg;
     bool done = false;
-    run(msg, done);
+    run(msg, done, hwnd);
 
     // 6) 정리
     ImGui_ImplDX11_Shutdown();         // DX11 백엔드 정리
@@ -97,7 +88,7 @@ int GradeApp::start()
 }
 
 
-void GradeApp::run(MSG& msg, bool& done)
+void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
 {
     // semester 초기값 설정
     std::array<Semester, 8>& semesters = gm.getSemesters();
@@ -123,6 +114,59 @@ void GradeApp::run(MSG& msg, bool& done)
 
 
         /* ------------------------- UI 렌더링 부분 ------------------------- */
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        if (ImGui::BeginMainMenuBar())
+        {
+            float window_witdh = ImGui::GetWindowWidth() / 3;
+            const ImVec2 item_width = ImVec2(window_witdh, 0); // 가로 180px, 세로는 자동
+            
+            if (ImGui::Selectable("학기 파일 불러오기", false, 0, item_width))
+            {
+                OPENFILENAME ofn;       // 공용 대화상자 구조체
+                char szFile[260] = { 0, }; // 선택된 파일 경로를 저장할 버퍼 (유니코드)
+
+                // 구조체 초기화
+                ZeroMemory(&ofn, sizeof(ofn));
+                ofn.lStructSize = sizeof(ofn);
+                ofn.hwndOwner = NULL; // 부모 윈도우 핸들
+                ofn.lpstrFile = szFile;
+                ofn.nMaxFile = sizeof(szFile) / sizeof(wchar_t);
+                ofn.lpstrFilter = "All Files (*.*)\0*.*\0Text Files (*.txt)\0*.txt\0"; // 파일 형식 필터
+                ofn.nFilterIndex = 1;
+                ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+                // GetOpenFileNameA 함수는 ANSI 버전입니다.
+                std::string filePath = "";
+                if (GetOpenFileNameA(&ofn) == TRUE)
+                {
+                    filePath = std::string(ofn.lpstrFile);
+                    displayToastMessege(filePath);
+                }
+                gm.handleLoadJson(filePath);
+
+                // semester 초기값 설정
+                std::array<Semester, 8>& semesters = gm.getSemesters();
+                semester = &(semesters.at(0));
+                course = &((semester->getCourses()).at(0));
+                
+                displayToastMessege("학기 데이터를 불러왔습니다");
+            }
+            if (ImGui::Selectable("현재 상태 저장", false, 0, item_width))
+            {
+                gm.handleSaveJson();
+                displayToastMessege("저장되었습니다");
+            }
+            if (ImGui::Selectable("설정창", false, 0, item_width))
+            {
+                displayToastMessege("설정창 실행");
+            }
+
+            ImGui::EndMainMenuBar();
+        }
+        ImGui::PopStyleVar();
+        
+
 
         // 토스트 메시지
         if (m_showToastMessege)
@@ -150,7 +194,7 @@ void GradeApp::run(MSG& msg, bool& done)
             
             promptValueCourseWindow( *course, this->isInit, editHandler, m_showEditWindow);
         }
-        // 과목 추가 윈도우 (수정 혹은 추가)
+        // 과목 추가 윈도우
         if (m_showAddWindow)
         {
             auto addHandler = [&](Course::Course& addedCourse) {
@@ -159,7 +203,7 @@ void GradeApp::run(MSG& msg, bool& done)
             };
 
             Course::Course newCourse = {"", 0, 0.0, 0};
-            promptValueCourseWindow(newCourse, this->isInit, addHandler, m_showAddWindow);
+            promptValueCourseWindow( newCourse, this->isInit, addHandler, m_showAddWindow);
         }
 
         // — 렌더링 단계 —
@@ -231,8 +275,6 @@ void GradeApp::displayToastMessege_(const char* messege)
     alignCenter(messege);
     ImGui::End();
 }
-
-
 
 // 모든 학기 윈도우
 void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
@@ -412,7 +454,7 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
         m_courseReadWindow = false;
 
         m_showAddWindow = true;
-        this->isInit = true;
+        this->isInit = false;
     }
 
 
@@ -501,7 +543,6 @@ void GradeApp::displayInfomationCourseWindow(const Course::Course& c)
     ImGui::End();                            
 }
 
-
 // Course::Course& course :  수정할 과목을 참조
 // bool isInit : 입력 폼을 course로 초기값을 설정
 void GradeApp::promptValueCourseWindow(
@@ -526,8 +567,6 @@ void GradeApp::promptValueCourseWindow(
     // 수정 시 초기값을 설정
     if (isInit)
     {
-        displayToastMessege("초기화 시작");
-
         // 과목명 버퍼 초기화
         strncpy(tempCourseNameBuffer, course.courseName.c_str(), sizeof(tempCourseNameBuffer) - 1);
 
@@ -617,7 +656,6 @@ void GradeApp::promptValueCourseWindow(
 
     ImGui::End();
 }
-
 
 // ------------------ DirectX11 헬퍼 함수 구현 ------------------
 

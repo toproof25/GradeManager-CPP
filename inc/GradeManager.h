@@ -24,6 +24,7 @@ class GradeManager
 
     // 1학년 1학기 ~ 4학년 2학기
     std::array<Semester, 8> semesters;
+    void setSemesters(std::array<Semester, 8> semesters);
 
     // 메뉴 선택, 학기 선택, 과목 선택 변수
     int menu = 1;
@@ -50,6 +51,9 @@ class GradeManager
     void handleFixCourse(Semester& s, Course::Course& c, Course::Course& fixCourse);       // 과목 수정
     void handleSortCourse();      // 과목 정렬
     void handleGpaSemester();
+
+    void handleLoadJson(std::string& filePath);
+    void handleSaveJson();
     
-    std::array<Semester, 8>& getSemesters() {return semesters;};
+    std::array<Semester, 8>& getSemesters() {return this->semesters;};
 };

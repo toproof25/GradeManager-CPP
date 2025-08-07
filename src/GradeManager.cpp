@@ -10,10 +10,31 @@
 #include <string>
 
 GradeManager::GradeManager() : semesters(semesterJson.loadJson()) {}
-
 GradeManager::~GradeManager()
 {
   semesterJson.saveJson(getSemesters());
+}
+
+void GradeManager::handleLoadJson(std::string& filePath)
+{
+  if (filePath.empty())
+  {
+    setSemesters(semesterJson.loadJson(filePath));
+  }
+  else
+  {
+    setSemesters(semesterJson.loadJson());
+  }
+}
+
+void GradeManager::handleSaveJson() 
+{
+  semesterJson.saveJson(getSemesters());
+}
+
+void GradeManager::setSemesters(std::array<Semester, 8> semesters)
+{
+  this->semesters = semesters;
 }
 
 // 정렬할 과목 벡터와 정렬 번호를 통해 정렬
