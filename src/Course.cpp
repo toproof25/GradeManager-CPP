@@ -10,26 +10,19 @@ namespace Course
 
   std::string convertToGrade(const double& grade)
   {
-    if (grade > 4.5) return "X";
+    if (grade > 4.5) return "OVER";
     else if (grade >= 4.5) return "A+";
-    else if (grade >= 4.0)
-      return "A";
-    else if (grade >= 3.5)
-      return "B+";
-    else if (grade >= 3.0)
-      return "B";
-    else if (grade >= 2.5)
-      return "C+";
-    else if (grade >= 2.0)
-      return "C";
-    else if (grade >= 1.5)
-      return "D+";
-    else if (grade >= 1.0)
-      return "D";
-    else if (grade >= 0.0)
-      return "P";
-    else
-      return "X";
+    else if (grade >= 4.0) return "A";
+    else if (grade >= 3.5) return "B+";
+    else if (grade >= 3.0) return "B";
+    else if (grade >= 2.5) return "C+";
+    else if (grade >= 2.0) return "C";
+    else if (grade >= 1.5) return "D+";
+    else if (grade >= 1.0) return "D";
+    else if (grade >= 0.0) return "P";
+    else if (grade >= -1.0) return "NP";
+    else if (grade >= -2.0) return "F";
+    else return "ERROR";
   }
 
   std::string convertToCategory(const int& category)
@@ -81,9 +74,10 @@ namespace Course
       if (grade_str == "D+")    return 1.5;
       if (grade_str == "D")     return 1.0;
       if (grade_str == "P")     return 0.0;
-      if (grade_str == "NP")    return 0.0;
-      
-      // 그 외 "X", "F" 또는 잘못된 입력은 0.0으로 처리
+      if (grade_str == "NP")    return -1.0; 
+      if (grade_str == "F")     return -2.0; 
+
+      // 그 외 잘못된 입력은 0.0으로 처리
       return 0.0;
   }
 
