@@ -21,19 +21,19 @@ extern IDXGISwapChain*         g_pSwapChain;           // 화면에 이미지를
 extern ID3D11RenderTargetView* g_mainRenderTargetView; // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
 
 // 과목 이름 입력 버퍼
-extern char courseNameBuffer[256];
+//extern char courseNameBuffer[256];
 
 // 이수학점 인덱스, 항목 목록
-extern int creditsItem;
+//extern int creditsItem;
 extern const char* creditsitems[];
 
 // 받은 점수 인덱스, 항목 목록
-extern int gradeItem;
+//extern int gradeItem;
 extern const char* gradeItems[];
 
 
 // 전공분류 인덱스, 항목 목록
-extern int categoryItem;
+//extern int categoryItem;
 extern const char* categoryitems[];
 
 
@@ -84,7 +84,7 @@ public:
 
   void displayToastMessege(std::string messege);
 
-  void handleOptionBar();
+  //void handleOptionBar();
 
 };
 

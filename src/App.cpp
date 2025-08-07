@@ -21,18 +21,18 @@ static IDXGISwapChain*         g_pSwapChain = nullptr;           // 화면에 �
 static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr; // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
 
 // 과목 이름 입력 버퍼
-static char courseNameBuffer[256] = "";
+//static char courseNameBuffer[256] = "";
 
 // 이수학점 인덱스, 항목 목록
-static int creditsItem = 0;
+//static int creditsItem = 0;
 static const char* creditsitems[] = { "0", "1", "2", "3" };
 
 // 받은 점수 인덱스, 항목 목록
-static int gradeItem = 0;
+//static int gradeItem = 0;
 static const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
 
 // 전공분류 인덱스, 항목 목록
-static int categoryItem = 0;
+//static int categoryItem = 0;
 static const char* categoryitems[] = { "전공선택", "복수전공", "부전공", "계열교양", "균형교양", "일반교양", "타전공" };
 
 
@@ -517,18 +517,22 @@ void GradeApp::promptValueCourseWindow(
     ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing ); // 창 실행 시 크기
     ImGui::Begin(('[' + course.courseName + "] 과목 정보 입력").c_str(), &m_showWindow);
 
+    // 과목 정보 입력값
+    static char tempCourseNameBuffer[256] = "";
+    static int tempCreditsItem = 0;
+    static int tempGradeItem = 0;
+    static int tempCategoryItem = 0;
+
     // 수정 시 초기값을 설정
     if (isInit)
     {
+        displayToastMessege("초기화 시작");
+
         // 과목명 버퍼 초기화
-        memset(courseNameBuffer, 0, sizeof(courseNameBuffer));
-        strncpy(courseNameBuffer, course.courseName.c_str(), sizeof(courseNameBuffer) - 1);
+        strncpy(tempCourseNameBuffer, course.courseName.c_str(), sizeof(tempCourseNameBuffer) - 1);
 
         // 이수학점 콤보박스 인덱스 초기화
-        if (course.credits >= 0 && course.credits < IM_ARRAYSIZE(creditsitems)) 
-        {
-            creditsItem = course.credits;
-        }
+        tempCreditsItem = course.credits;
 
         // 받은 점수 콤보박스 인덱스 초기화
         std::string gradeStr = Course::convertToGrade(course.grade);
@@ -536,7 +540,7 @@ void GradeApp::promptValueCourseWindow(
         for (int i = 0; i < IM_ARRAYSIZE(gradeItems); ++i) 
         {
             if (gradeItems[i] == gradeStr) {
-                gradeItem = i;
+                tempGradeItem = i;
                 break;
             }
         }
@@ -546,7 +550,7 @@ void GradeApp::promptValueCourseWindow(
         for (int i = 0; i < IM_ARRAYSIZE(categoryitems); ++i) 
         {
             if (categoryitems[i] == categoryStr) {
-                categoryItem = i;
+                tempCategoryItem = i;
                 break;
             }
         }
@@ -567,7 +571,7 @@ void GradeApp::promptValueCourseWindow(
         ImGui::Text("과목명");
         ImGui::TableSetColumnIndex(1);
         ImGui::PushItemWidth(-1);
-        ImGui::InputText("##CourseName", courseNameBuffer, IM_ARRAYSIZE(courseNameBuffer));
+        ImGui::InputText("##CourseName", tempCourseNameBuffer, IM_ARRAYSIZE(tempCourseNameBuffer));
         ImGui::PopItemWidth();
 
         // — 2행 이수학점 —
@@ -575,21 +579,21 @@ void GradeApp::promptValueCourseWindow(
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("이수학점");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Combo("##Credits", &creditsItem, creditsitems, IM_ARRAYSIZE(creditsitems));
+        ImGui::Combo("##Credits", &tempCreditsItem, creditsitems, IM_ARRAYSIZE(creditsitems));
 
         // — 3행 받은 점수 —
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("받은 점수");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Combo("##Grade", &gradeItem, gradeItems, IM_ARRAYSIZE(gradeItems));
+        ImGui::Combo("##Grade", &tempGradeItem, gradeItems, IM_ARRAYSIZE(gradeItems));
 
         // — 4행 전공분류 —
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("전공분류");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Combo("##Category", &categoryItem, categoryitems, IM_ARRAYSIZE(categoryitems));
+        ImGui::Combo("##Category", &tempCategoryItem, categoryitems, IM_ARRAYSIZE(categoryitems));
 
         ImGui::EndTable();
     }
@@ -601,10 +605,10 @@ void GradeApp::promptValueCourseWindow(
     ImGui::SetCursorPosX((region - txtW) * 0.5f);
     if (ImGui::Button(label))
     {
-        int credit = std::stoi(creditsitems[creditsItem]);
-        double grade = Course::gradeToConvert(gradeItems[gradeItem]);
-        int category = Course::categoryToConvert(categoryitems[categoryItem]);
-        Course::Course inputCourse = { courseNameBuffer, credit, grade, category };
+        int credit = std::stoi(creditsitems[tempCreditsItem]);
+        double grade = Course::gradeToConvert(gradeItems[tempGradeItem]);
+        int category = Course::categoryToConvert(categoryitems[tempCategoryItem]);
+        Course::Course inputCourse = { tempCourseNameBuffer, credit, grade, category };
 
         onClickSave(inputCourse);
 
