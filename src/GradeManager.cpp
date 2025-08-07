@@ -13,7 +13,7 @@ GradeManager::GradeManager() : semesters(semesterJson.loadJson()) {}
 
 GradeManager::~GradeManager()
 {
-  
+  semesterJson.saveJson(getSemesters());
 }
 
 // 정렬할 과목 벡터와 정렬 번호를 통해 정렬
@@ -92,7 +92,7 @@ void GradeManager::handleAddCourse(Semester& s, Course::Course& newCourse)
 {
   std::vector<Course::Course>& courses = s.getCourses();
   s.addCourses(newCourse);
-  semesterJson.saveJson(getSemesters());
+  //semesterJson.saveJson(getSemesters());
   consoleUIManager.displayMessage("✅ [" + newCourse.courseName + "] 과목이 성공적으로 추가되었습니다! ✅");
 }
 
@@ -106,7 +106,7 @@ void GradeManager::handleRemoveCourse(Semester& s, Course::Course& c)
   consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
   std::string removeName = it->courseName;
   s.removeCourses(it); // 실제 제거 부분
-  semesterJson.saveJson(getSemesters());
+  //semesterJson.saveJson(getSemesters());
   consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
 
 }
@@ -131,7 +131,7 @@ void GradeManager::handleFixCourse(Semester& s, Course::Course& c, Course::Cours
     it->setCategory(fixCourse.category);
     
     // 수정된 후에 수정된 데이터를 바탕으로 저장
-    semesterJson.saveJson(getSemesters());
+    //semesterJson.saveJson(getSemesters());
 
     consoleUIManager.displayMessage("\n✅ [" + it->courseName + "] 과목이 성공적으로 수정되었습니다! ✅");
   }
@@ -142,7 +142,7 @@ void GradeManager::handleSortCourse()
   Semester& s = semesters.at(choiceSemester);
   int choiceSort = consoleUIManager.displaySortChoice();
   sortCourse(s.getCourses(), choiceSort);
-  semesterJson.sortJsonData(choiceSemester, choiceSort);
+  //semesterJson.sortJsonData(choiceSemester, choiceSort);
 }
 void GradeManager::handleGpaSemester()
 {
