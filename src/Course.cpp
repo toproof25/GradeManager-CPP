@@ -84,12 +84,12 @@ namespace Course
   int categoryToConvert(const std::string& category_str)
   {
       if (category_str == "전공선택")   return 0;       // MajorRequired
-      if (category_str == "복수전공")   return 1;       // DoubleMajor
-      if (category_str == "기초(필수)") return 2;       // Minor
-      if (category_str == "일반(선택)") return 3;       // Division
-      if (category_str == "균형교양")   return 4;       // GeneralElective
-      if (category_str == "계열교양")   return 5;       // Elective
-      if (category_str == "타전공")     return 6;       // OtherMajor
+      else if (category_str == "복수전공")   return 1;       // DoubleMajor
+      else if (category_str == "기초(필수)") return 2;       // Minor
+      else if (category_str == "일반(선택)") return 3;       // Division
+      else if (category_str == "균형교양")   return 4;       // GeneralElective
+      else if (category_str == "계열교양")   return 5;       // Elective
+      else if (category_str == "타전공")     return 6;       // OtherMajor
 
       // 그 외 "ERROR" 또는 잘못된 입력은 0 (전공선택)으로 처리
       return 0;
