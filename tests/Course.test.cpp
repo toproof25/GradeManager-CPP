@@ -104,7 +104,7 @@ Assert  :
     - 기대하는 정렬 (오름차순)으로 정렬이 되는 지 확인
 */
 TEST_F(CourseSortTest, NameSort_SortsCoursesByNameAscendingly) {
-  std::sort(courses.begin(), courses.end(), Course::courseNameCompare);
+  std::sort(courses.begin(), courses.end(), Course::courseNameCompareAscendingOrder);
 
   int size = courses.size();
   for (int i=0; i<size; ++i)
@@ -113,7 +113,7 @@ TEST_F(CourseSortTest, NameSort_SortsCoursesByNameAscendingly) {
   }
 }
 TEST_F(CourseSortTest, CreditsSort_SortsCoursesByCreditsAscendingly) {
-  std::sort(courses.begin(), courses.end(), Course::courseCreditsCompare);
+  std::sort(courses.begin(), courses.end(), Course::courseCreditsCompareAscendingOrder);
 
   int size = courses.size();
   for (int i=0; i<size; ++i)
