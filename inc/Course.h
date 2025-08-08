@@ -49,10 +49,14 @@ namespace Course
   double gradeToConvert(const std::string& grade);
   int categoryToConvert(const std::string& category);
 
-  bool courseNameCompare(const Course& lhs, const Course& rhs);
-  bool courseCreditsCompare(const Course& lhs, const Course& rhs);
-  bool courseGradeCompare(const Course& lhs, const Course& rhs);
-  bool courseCategoryCompare(const Course& lhs, const Course& rhs);
+  bool courseNameCompareAscendingOrder(const Course& lhs, const Course& rhs);
+  bool courseCreditsCompareAscendingOrder(const Course& lhs, const Course& rhs);
+  bool courseGradeCompareAscendingOrder(const Course& lhs, const Course& rhs);
+  bool courseCategoryCompareAscendingOrder(const Course& lhs, const Course& rhs);
 
-
+  // 내림차순 정렬을 위한 사용자 정의 규칙
+  bool courseNameCompareDescendingOrder(const Course& lhs, const Course& rhs);
+  bool courseCreditsCompareDescendingOrder(const Course& lhs, const Course& rhs);
+  bool courseGradeCompareDescendingOrder(const Course& lhs, const Course& rhs);
+  bool courseCategoryCompareDescendingOrder(const Course& lhs, const Course& rhs);
 }

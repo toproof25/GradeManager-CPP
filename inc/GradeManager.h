@@ -31,6 +31,12 @@ class GradeManager
     int choiceSemester = 1;
     int choiceCourse = 1;
 
+    // 정렬 기준
+    bool isNameAscending = false;
+    bool isCreditAscending = false;
+    bool isGradeAscending = false;
+    bool isCategoryAscending = false;
+
     std::vector<Course::Course> getAllCourseVector();
 
     void sortCourse(std::vector<Course::Course>& courses, int choiceSort);
@@ -49,7 +55,7 @@ class GradeManager
     void handleAddCourse(Semester& s, Course::Course& newCourse);       // 과목 추가
     void handleRemoveCourse(Semester& s, Course::Course& c);    // 과목 제거
     void handleFixCourse(Semester& s, Course::Course& c, Course::Course& fixCourse);       // 과목 수정
-    void handleSortCourse();      // 과목 정렬
+    void handleSortCourse(Semester& s, int choiceSort);      // 과목 정렬
     void handleGpaSemester();
 
     void handleLoadJson(std::string& filePath);

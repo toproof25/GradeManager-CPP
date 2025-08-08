@@ -42,7 +42,7 @@ int GradeApp::start()
         wc.lpszClassName,           // 등록된 클래스 이름으로 창 생성
         L"ImGui - Grade Manager",         // 창 제목
         dwStyle,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
-        100, 100, 1000, 670,         // 위치(100,100) 크기(800x600)
+        100, 100, 1200, 800,         // 위치(100,100) 크기(800x600)
         nullptr, nullptr, wc.hInstance, nullptr);
 
     // 2) DirectX11 초기화 (SwapChain, Device, Context, RenderTarget 생성)
@@ -205,29 +205,27 @@ void GradeApp::handleLoadJsonFile(HWND& hwnd)
 
 void GradeApp::displayOptionBar(HWND& hwnd)
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
     if (ImGui::BeginMainMenuBar())
     {
-        float window_witdh = ImGui::GetWindowWidth() / 3;
-        const ImVec2 item_width = ImVec2(window_witdh, 0); // 가로 180px, 세로는 자동
-        
-        if (ImGui::Selectable("학기 파일 불러오기", false, 0, item_width))
+        if (ImGui::BeginMenu("파일"))
         {
-            handleLoadJsonFile(hwnd);
-        }
-        if (ImGui::Selectable("현재 상태 저장", false, 0, item_width))
-        {
-            gm.handleSaveJson();
-            displayToastMessege("저장되었습니다");
-        }
-        if (ImGui::Selectable("설정창", false, 0, item_width))
-        {
-            displayToastMessege("설정창 실행");
+            if (ImGui::MenuItem("학기 파일 불러오기"))
+            {
+                handleLoadJsonFile(hwnd);
+            }
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("현재 상태 저장"))
+            {
+                gm.handleSaveJson();
+                displayToastMessege("저장되었습니다");
+            }
+            ImGui::EndMenu();
         }
 
         ImGui::EndMainMenuBar();
     }
-    ImGui::PopStyleVar();
 }
 
 void GradeApp::displayToastMessege(std::string messege)
@@ -298,8 +296,8 @@ void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
     window_size.x *= 0.5f;
 
     // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
-    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Appearing );
-    ImGui::SetNextWindowSize(window_size, ImGuiCond_Appearing );
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always );
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always );
 
     // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
@@ -363,8 +361,8 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
     window_size.x *= 0.5f; window_size.y *= 0.5f;
 
     // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
-    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Appearing );
-    ImGui::SetNextWindowSize(window_size, ImGuiCond_Appearing );
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always );
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always );
 
     // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
@@ -399,6 +397,7 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
     ImGui::Begin("과목 조회", nullptr, window_flags);
     std::string semesterTitle = std::to_string(year) + "학년 " + std::to_string(semesterNumber) + "학기 과목\n"; 
 
+
     int allCredit = 0;
     for (const Course::Course& c : courses)
     {
@@ -410,29 +409,66 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
     alignCenter(semesterTitle.c_str());
     alignCenter(coursesTitle.c_str());
 
-
-    if (ImGui::BeginTable("courseInfoTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
+    if (ImGui::BeginTable("courseInfoTable", 6, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
     {
-        // 열 너비 설정: 첫 열은 고정, 두 번째 열은 나머지 공간 차지
-        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 350.0f);
-        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 50.f);
+        ImGui::TableSetupColumn("과목명", ImGuiTableColumnFlags_WidthStretch, 4.0f);
+        ImGui::TableSetupColumn("학점", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+        ImGui::TableSetupColumn("점수", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+        ImGui::TableSetupColumn("분류", ImGuiTableColumnFlags_WidthFixed, 50.0f); // 너비 약간 조절
+        ImGui::TableSetupColumn("수정", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+        ImGui::TableSetupColumn("제거", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        if(ImGui::Button("과목이름"))
+        {
+            gm.handleSortCourse(*semester, 1);
+        }
+        ImGui::TableSetColumnIndex(1);
+        if(ImGui::Button("이수학점"))
+        {
+            gm.handleSortCourse(*semester, 2);
+        }
+        ImGui::TableSetColumnIndex(2);
+        if(ImGui::Button("받은점수"))
+        {
+            gm.handleSortCourse(*semester, 3);
+        }
+        ImGui::TableSetColumnIndex(3);
+        if(ImGui::Button("전공분류"))
+        {
+            gm.handleSortCourse(*semester, 4);
+        }
+
 
         int buttonId = 0;
         for (Course::Course& c : courses)
         {
             ImGui::PushID(buttonId++); 
             ImGui::TableNextRow();
+
+
             ImGui::TableSetColumnIndex(0);
-
-            std::string courseTitle = c.courseName + " / " + std::to_string(c.credits) + " / " + Course::convertToGrade(c.grade) + " / " + Course::convertToCategory(c.category);
-
-            if (ImGui::Button(courseTitle.c_str()))
+            if (ImGui::Button(c.courseName.c_str()))
             {
                 m_courseReadWindow = true;
                 course = &c;
             }
 
+
             ImGui::TableSetColumnIndex(1);
+            ImGui::Text(std::to_string(c.credits).c_str());
+            
+            ImGui::TableSetColumnIndex(2);
+            std::string grade = Course::convertToGrade(c.grade);
+            ImGui::Text(grade.c_str());
+            
+            ImGui::TableSetColumnIndex(3);
+            std::string category = Course::convertToCategory(c.category);
+            ImGui::Text(category.c_str());
+
+
+            ImGui::TableSetColumnIndex(4);
             if (centerAlignButton("수정"))
             {
                 m_showEditWindow = true;
@@ -442,7 +478,7 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
                 course = &c;
             }
 
-            ImGui::TableSetColumnIndex(2);
+            ImGui::TableSetColumnIndex(5);
             if (centerAlignButton("제거")) 
             {
                 std::string cName = c.courseName;
@@ -466,7 +502,7 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
         m_courseReadWindow = false;
 
         m_showAddWindow = true;
-        this->isInit = false;
+        this->isInit = true;
     }
 
 
@@ -491,8 +527,8 @@ void GradeApp::displayInfomationCourseWindow(const Course::Course& c)
                                     ImGuiWindowFlags_NoFocusOnAppearing;
 
 
-    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Appearing);      // 창 실행 시 위치
-    ImGui::SetNextWindowSize(window_size, ImGuiCond_Appearing); // 창 실행 시 크기
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);      // 창 실행 시 위치
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always); // 창 실행 시 크기
     ImGui::Begin(('[' + c.courseName + "] 정보 조회").c_str(), &m_courseReadWindow, window_flags);
 
     // 왼쪽 정렬 (기본)
@@ -568,7 +604,10 @@ void GradeApp::promptValueCourseWindow(
     // 현재는 수정을 해도 계속 기존 과목 정보로 초기화가 됨
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing , ImVec2(0.5f, 0.5f));      // 창 실행 시 위치
     ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing ); // 창 실행 시 크기
-    ImGui::Begin(('[' + course.courseName + "] 과목 정보 입력").c_str(), &m_showWindow);
+
+    std::string title = course.courseName.empty() ? "추가할 과목 정보 입력" : '[' + course.courseName + "] 과목 정보 입력";
+
+    ImGui::Begin(title.c_str(), &m_showWindow);
 
     // 과목 정보 입력값
     static char tempCourseNameBuffer[256] = "";

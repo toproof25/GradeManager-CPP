@@ -101,12 +101,16 @@ namespace Course
   void Course::setGrade(double grade) { this->grade = grade; }
   void Course::setCategory(int category) { this->category = category; }
 
-  // 정렬을 위한 사용자 정의 규칙
-  bool courseNameCompare(const Course& lhs, const Course& rhs) { return lhs.courseName < rhs.courseName; }
-  bool courseCreditsCompare(const Course& lhs, const Course& rhs) { return lhs.credits < rhs.credits; }
-  bool courseGradeCompare(const Course& lhs, const Course& rhs) { return lhs.grade < rhs.grade; }
-  bool courseCategoryCompare(const Course& lhs, const Course& rhs) { return lhs.category < rhs.category; }
+  // 오름차순 정렬을 위한 사용자 정의 규칙
+  bool courseNameCompareAscendingOrder(const Course& lhs, const Course& rhs) { return lhs.courseName < rhs.courseName; }
+  bool courseCreditsCompareAscendingOrder(const Course& lhs, const Course& rhs) { return lhs.credits < rhs.credits; }
+  bool courseGradeCompareAscendingOrder(const Course& lhs, const Course& rhs) { return lhs.grade < rhs.grade; }
+  bool courseCategoryCompareAscendingOrder(const Course& lhs, const Course& rhs) { return lhs.category < rhs.category; }
 
-
+  // 내림차순 정렬을 위한 사용자 정의 규칙
+  bool courseNameCompareDescendingOrder(const Course& lhs, const Course& rhs) { return lhs.courseName > rhs.courseName; }
+  bool courseCreditsCompareDescendingOrder(const Course& lhs, const Course& rhs) { return lhs.credits > rhs.credits; }
+  bool courseGradeCompareDescendingOrder(const Course& lhs, const Course& rhs) { return lhs.grade > rhs.grade; }
+  bool courseCategoryCompareDescendingOrder(const Course& lhs, const Course& rhs) { return lhs.category > rhs.category; }
   
 }

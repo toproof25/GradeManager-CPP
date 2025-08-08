@@ -40,14 +40,32 @@ void GradeManager::setSemesters(std::array<Semester, 8> semesters)
 // 정렬할 과목 벡터와 정렬 번호를 통해 정렬
 void GradeManager::sortCourse(std::vector<Course::Course>& courses, int choiceSort)
 {
-  if (choiceSort == 1)
-    std::sort(courses.begin(), courses.end(), Course::courseNameCompare);
-  else if (choiceSort == 2)
-    std::sort(courses.begin(), courses.end(), Course::courseCreditsCompare);
-  else if (choiceSort == 3)
-    std::sort(courses.begin(), courses.end(), Course::courseGradeCompare);
-  else if (choiceSort == 4)
-    std::sort(courses.begin(), courses.end(), Course::courseCategoryCompare);
+  switch(choiceSort)
+  {
+    case 1:
+      if(isNameAscending) std::sort(courses.begin(), courses.end(), Course::courseNameCompareAscendingOrder);
+      else std::sort(courses.begin(), courses.end(), Course::courseNameCompareDescendingOrder);
+      isNameAscending = !isNameAscending;
+      break;
+
+    case 2:
+      if(isCreditAscending) std::sort(courses.begin(), courses.end(), Course::courseCreditsCompareAscendingOrder);
+      else std::sort(courses.begin(), courses.end(), Course::courseCreditsCompareDescendingOrder);
+      isCreditAscending = !isCreditAscending;
+      break;
+
+    case 3:
+      if(isGradeAscending) std::sort(courses.begin(), courses.end(), Course::courseGradeCompareAscendingOrder);
+      else std::sort(courses.begin(), courses.end(), Course::courseGradeCompareDescendingOrder);
+      isGradeAscending = !isGradeAscending;
+      break;
+
+    case 4:
+      if(isCategoryAscending) std::sort(courses.begin(), courses.end(), Course::courseCategoryCompareAscendingOrder);
+      else std::sort(courses.begin(), courses.end(), Course::courseCategoryCompareDescendingOrder);
+      isCategoryAscending = !isCategoryAscending;
+      break;
+  }
 }
 
 
@@ -158,10 +176,10 @@ void GradeManager::handleFixCourse(Semester& s, Course::Course& c, Course::Cours
   }
 
 }
-void GradeManager::handleSortCourse()  
+void GradeManager::handleSortCourse(Semester& s, int choiceSort)  
 {
-  Semester& s = semesters.at(choiceSemester);
-  int choiceSort = consoleUIManager.displaySortChoice();
+  //Semester& s = semesters.at(choiceSemester);
+  //int choiceSort = consoleUIManager.displaySortChoice();
   sortCourse(s.getCourses(), choiceSort);
   //semesterJson.sortJsonData(choiceSemester, choiceSort);
 }
