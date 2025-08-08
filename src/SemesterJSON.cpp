@@ -110,15 +110,6 @@ std::array<Semester, 8> SemesterJSON::loadJson()
 
 std::array<Semester, 8> SemesterJSON::loadJson(std::string filePath)
 {
-  /* 
-  std::ifstream check_json(filePath);
-  if (!check_json.is_open())
-  {
-    check_json.close();
-    throw "파일이 존재하지 않습니다";
-  }
-  check_json.close();
-  */
   std::ifstream read_json(filePath);
   nlohmann::json json;
   read_json >> json;  

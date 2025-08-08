@@ -84,7 +84,8 @@ public:
 
   void displayToastMessege(std::string messege);
 
-  //void handleOptionBar();
+  void displayOptionBar(HWND& hwnd);
+  void handleLoadJsonFile(HWND& hwnd);
 
 };
 

@@ -8,7 +8,7 @@
 class SemesterJSON
 {
   private:
-    std::string filename = "semesters.json";
+    const std::string filename = "./semesters.json";
     Semester jsonToSemester(nlohmann::json& semester_json, int index);
     nlohmann::json getSemesterJson();
 

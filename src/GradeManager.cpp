@@ -19,11 +19,11 @@ void GradeManager::handleLoadJson(std::string& filePath)
 {
   if (filePath.empty())
   {
-    setSemesters(semesterJson.loadJson(filePath));
+    setSemesters(semesterJson.loadJson());
   }
   else
   {
-    setSemesters(semesterJson.loadJson());
+    setSemesters(semesterJson.loadJson(filePath));
   }
 }
 

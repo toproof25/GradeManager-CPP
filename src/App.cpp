@@ -22,12 +22,12 @@ static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr; // 백 버퍼�
 
 static const char* creditsitems[] = { "0", "1", "2", "3" };
 static const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
-static const char* categoryitems[] = { "전공선택", "복수전공", "부전공", "계열교양", "균형교양", "일반교양", "타전공" };
+static const char* categoryitems[] = { "전공선택", "복수전공", "기초(필수)", "일반(선택)", "균형교양", "계열교양", "타전공" };
 
 int GradeApp::start()
 {
 
-    FreeConsole();
+    //FreeConsole();
 
     // 1) Win32 창 등록 & 생성
     // WNDCLASSEXW: 윈도우 클래스를 정의하는 구조체
@@ -114,59 +114,7 @@ void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
 
 
         /* ------------------------- UI 렌더링 부분 ------------------------- */
-
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-        if (ImGui::BeginMainMenuBar())
-        {
-            float window_witdh = ImGui::GetWindowWidth() / 3;
-            const ImVec2 item_width = ImVec2(window_witdh, 0); // 가로 180px, 세로는 자동
-            
-            if (ImGui::Selectable("학기 파일 불러오기", false, 0, item_width))
-            {
-                OPENFILENAME ofn;       // 공용 대화상자 구조체
-                char szFile[260] = { 0, }; // 선택된 파일 경로를 저장할 버퍼 (유니코드)
-
-                // 구조체 초기화
-                ZeroMemory(&ofn, sizeof(ofn));
-                ofn.lStructSize = sizeof(ofn);
-                ofn.hwndOwner = NULL; // 부모 윈도우 핸들
-                ofn.lpstrFile = szFile;
-                ofn.nMaxFile = sizeof(szFile) / sizeof(wchar_t);
-                ofn.lpstrFilter = "All Files (*.*)\0*.*\0Text Files (*.txt)\0*.txt\0"; // 파일 형식 필터
-                ofn.nFilterIndex = 1;
-                ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-                // GetOpenFileNameA 함수는 ANSI 버전입니다.
-                std::string filePath = "";
-                if (GetOpenFileNameA(&ofn) == TRUE)
-                {
-                    filePath = std::string(ofn.lpstrFile);
-                    displayToastMessege(filePath);
-                }
-                gm.handleLoadJson(filePath);
-
-                // semester 초기값 설정
-                std::array<Semester, 8>& semesters = gm.getSemesters();
-                semester = &(semesters.at(0));
-                course = &((semester->getCourses()).at(0));
-                
-                displayToastMessege("학기 데이터를 불러왔습니다");
-            }
-            if (ImGui::Selectable("현재 상태 저장", false, 0, item_width))
-            {
-                gm.handleSaveJson();
-                displayToastMessege("저장되었습니다");
-            }
-            if (ImGui::Selectable("설정창", false, 0, item_width))
-            {
-                displayToastMessege("설정창 실행");
-            }
-
-            ImGui::EndMainMenuBar();
-        }
-        ImGui::PopStyleVar();
-        
-
+        displayOptionBar(hwnd);
 
         // 토스트 메시지
         if (m_showToastMessege)
@@ -216,6 +164,70 @@ void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
         // — 화면 출력(VSync On) —
         g_pSwapChain->Present(1, 0);  // 스왑 체인 Present: 화면에 렌더 결과 표시
     }
+}
+
+void GradeApp::handleLoadJsonFile(HWND& hwnd)
+{
+    OPENFILENAME ofn;       // 공용 대화상자 구조체
+    char szFile[260] = { 0, }; // 선택된 파일 경로를 저장할 버퍼
+
+    // 구조체 초기화
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hwnd; // 부모 윈도우 핸들
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile) / sizeof(wchar_t);
+
+    // JSON 파일만
+    ofn.lpstrFilter = 
+        "JSON 파일만 가능 (*.json)\0"   // 드롭다운에서 보여질 텍스트
+        "*.json\0"                      // 실제로 매칭할 패턴
+            "\0";                    
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST  | OFN_NOCHANGEDIR;
+
+    // GetOpenFileNameA 함수는 ANSI 버전입니다.
+    std::string filePath = "";
+    if (GetOpenFileNameA(&ofn) == TRUE)
+    {
+        filePath = std::string(ofn.lpstrFile);
+        displayToastMessege(filePath);
+    }
+    gm.handleLoadJson(filePath);
+
+    // semester 초기값 설정
+    std::array<Semester, 8>& semesters = gm.getSemesters();
+    semester = &(semesters.at(0));
+    course = &((semester->getCourses()).at(0));
+    
+    displayToastMessege("학기 데이터를 불러왔습니다");
+}
+
+void GradeApp::displayOptionBar(HWND& hwnd)
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+    if (ImGui::BeginMainMenuBar())
+    {
+        float window_witdh = ImGui::GetWindowWidth() / 3;
+        const ImVec2 item_width = ImVec2(window_witdh, 0); // 가로 180px, 세로는 자동
+        
+        if (ImGui::Selectable("학기 파일 불러오기", false, 0, item_width))
+        {
+            handleLoadJsonFile(hwnd);
+        }
+        if (ImGui::Selectable("현재 상태 저장", false, 0, item_width))
+        {
+            gm.handleSaveJson();
+            displayToastMessege("저장되었습니다");
+        }
+        if (ImGui::Selectable("설정창", false, 0, item_width))
+        {
+            displayToastMessege("설정창 실행");
+        }
+
+        ImGui::EndMainMenuBar();
+    }
+    ImGui::PopStyleVar();
 }
 
 void GradeApp::displayToastMessege(std::string messege)
