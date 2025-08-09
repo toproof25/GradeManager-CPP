@@ -41,7 +41,7 @@ int GradeApp::start()
     HWND hwnd = ::CreateWindowW(
         wc.lpszClassName,           // 등록된 클래스 이름으로 창 생성
         L"ImGui - Grade Manager",         // 창 제목
-        dwStyle,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
+        NULL,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
         100, 100, 1200, 800,         // 위치(100,100) 크기(800x600)
         nullptr, nullptr, wc.hInstance, nullptr);
 
@@ -64,7 +64,7 @@ int GradeApp::start()
         io.Fonts->GetGlyphRangesKorean()
     );
     io.FontDefault = fontKorean;  // 이후 PushFont 없이도 전체 UI에 적용
-    io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui::StyleColorsDark();              // 다크 테마 스타일 적용
 
@@ -114,6 +114,25 @@ void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
         ImGui::NewFrame();           // ImGui 내부에서 위젯 준비 시작
 
 
+
+        // --- 1. 전체 화면을 덮는 보이지 않는 창을 만들고, 그 안을 도킹 공간으로 설정합니다. ---
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        ImGui::Begin("DockSpaceDemo", nullptr, window_flags);
+        ImGui::PopStyleVar(2);
+
+        // 도킹 공간 생성!
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
         /* ------------------------- UI 렌더링 부분 ------------------------- */
         displayOptionBar(hwnd);
 
@@ -157,6 +176,9 @@ void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
             promptValueCourseWindow( newCourse, this->isInit, addHandler, m_showAddWindow);
         }
 
+        // Dockspace를 위한 ImGui::End()
+        ImGui::End();
+
         // — 렌더링 단계 —
         ImGui::Render();                                  // 위젯 호출 기록으로 렌더 데이터를 생성
         const float clear_col[4] = {0.5f, 0.5f, 0.5f, 1.0f};
@@ -182,6 +204,7 @@ void GradeApp::displayTotalGradeGraph()
         totalGrade[index++] = gpa;
     }
 
+    /*
     // 1. 프로그램 창의 전체 크기를 가져옵니다.
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     ImVec2 window_pos = main_viewport->GetCenter();
@@ -199,9 +222,9 @@ void GradeApp::displayTotalGradeGraph()
 
     ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);      // 창 실행 시 위치
     ImGui::SetNextWindowSize(window_size, ImGuiCond_Always); // 창 실행 시 크기
+    */
 
-
-    ImGui::Begin("Graph", nullptr, window_flags);
+    ImGui::Begin("Graph"/*, nullptr, window_flags*/);
 
     ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); 
     ImGui::PlotLines("총 학점", totalGrade, 8, 0, "1학기~8학기 점수 그래프", 0.0f, 5.5f, ImVec2(0, 300));
@@ -334,6 +357,7 @@ void GradeApp::displayToastMessege_(const char* messege)
 // 모든 학기 윈도우
 void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
 {
+    /*
     // 1. 프로그램 창의 전체 크기를 가져옵니다.
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     ImVec2 window_pos = main_viewport->WorkPos;
@@ -351,6 +375,8 @@ void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
                                     ImGuiWindowFlags_NoTitleBar |
                                     ImGuiWindowFlags_NoBringToFrontOnFocus |
                                     ImGuiWindowFlags_NoFocusOnAppearing;
+    */
+
 
     // 가운데 정렬
     auto alignCenter = [](const char* text) {
@@ -362,7 +388,7 @@ void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
     };         
 
     std::string title = "학기 조회"; 
-    ImGui::Begin(title.c_str(), nullptr, window_flags);
+    ImGui::Begin(title.c_str() /*, nullptr, window_flags*/);
 
     alignCenter("강남대학교 ICT융합공학부 가상현실전공");
     alignCenter("201904022 김상옥");
@@ -398,6 +424,7 @@ void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
 // 학기 내 과목 윈도우
 void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Course::Course>& courses)
 {
+    /* 
     // 1. 프로그램 창의 전체 크기를 가져옵니다.
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     ImVec2 window_pos = main_viewport->WorkPos;
@@ -416,7 +443,7 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
                                     ImGuiWindowFlags_NoTitleBar |
                                     ImGuiWindowFlags_NoBringToFrontOnFocus |
                                     ImGuiWindowFlags_NoFocusOnAppearing;
-
+    */
     // 가운데 정렬
     auto alignCenter = [](const char* text) {
         float columnWidth = ImGui::GetColumnWidth();
@@ -439,7 +466,7 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
         return ImGui::Button(label);
     };
 
-    ImGui::Begin("과목 조회", nullptr, window_flags);
+    ImGui::Begin("과목 조회"/*, nullptr, window_flags*/);
     std::string semesterTitle = std::to_string(year) + "학년 " + std::to_string(semesterNumber) + "학기 과목\n"; 
 
 
@@ -557,6 +584,7 @@ void GradeApp::displayCoursesWindow(int year, int semesterNumber, std::vector<Co
 // 한 과목의 정보 출력 윈도우
 void GradeApp::displayInfomationCourseWindow(const Course::Course& c)
 {
+    /*
     // 1. 프로그램 창의 전체 크기를 가져옵니다.
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     ImVec2 window_pos = main_viewport->GetCenter();
@@ -574,7 +602,9 @@ void GradeApp::displayInfomationCourseWindow(const Course::Course& c)
 
     ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);      // 창 실행 시 위치
     ImGui::SetNextWindowSize(window_size, ImGuiCond_Always); // 창 실행 시 크기
-    ImGui::Begin(('[' + c.courseName + "] 정보 조회").c_str(), &m_courseReadWindow, window_flags);
+    */
+    ImGui::Begin(('[' + c.courseName + "] 정보 조회").c_str(), &m_courseReadWindow/*, window_flags*/);
+    
 
     // 왼쪽 정렬 (기본)
     auto alignLeft = [](const char* text) {
