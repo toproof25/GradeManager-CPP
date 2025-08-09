@@ -64,6 +64,7 @@ int GradeApp::start()
         io.Fonts->GetGlyphRangesKorean()
     );
     io.FontDefault = fontKorean;  // 이후 PushFont 없이도 전체 UI에 적용
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
 
     ImGui::StyleColorsDark();              // 다크 테마 스타일 적용
 
@@ -116,6 +117,7 @@ void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
         /* ------------------------- UI 렌더링 부분 ------------------------- */
         displayOptionBar(hwnd);
 
+
         // 토스트 메시지
         if (m_showToastMessege)
         {
@@ -129,7 +131,8 @@ void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
         displayCoursesWindow(semester->getYear(), semester->getSemester(), semester->getCourses());
 
         // 과정 정보 윈도우
-        displayInfomationCourseWindow( *course );
+        displayTotalGradeGraph();
+        //displayInfomationCourseWindow( *course );
 
 
         // 과목 수정 윈도우 
@@ -164,6 +167,48 @@ void GradeApp::run(MSG& msg, bool& done, HWND& hwnd)
         // — 화면 출력(VSync On) —
         g_pSwapChain->Present(1, 0);  // 스왑 체인 Present: 화면에 렌더 결과 표시
     }
+}
+
+
+void GradeApp::displayTotalGradeGraph()
+{
+    std::array<Semester, 8>& semesters = gm.getSemesters();
+
+    static float totalGrade[8] = {0};
+    int index = 0;
+    for (Semester& s : semesters)
+    {
+        float gpa = calculateGPA(s.getCourses());
+        totalGrade[index++] = gpa;
+    }
+
+    // 1. 프로그램 창의 전체 크기를 가져옵니다.
+    const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+    ImVec2 window_pos = main_viewport->GetCenter();
+    ImVec2 window_size = main_viewport->WorkSize;
+    window_size.x *= 0.5f; window_size.y *= 0.5f;
+
+    // 3. 창 이동, 크기 조절, 접기 등 모든 상호작용을 비활성화하는 플래그
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | 
+                                    ImGuiWindowFlags_NoResize | 
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_NoTitleBar |
+                                    ImGuiWindowFlags_NoBringToFrontOnFocus |
+                                    ImGuiWindowFlags_NoFocusOnAppearing;
+
+
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);      // 창 실행 시 위치
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Always); // 창 실행 시 크기
+
+
+    ImGui::Begin("Graph", nullptr, window_flags);
+
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); 
+    ImGui::PlotLines("총 학점", totalGrade, 8, 0, "1학기~8학기 점수 그래프", 0.0f, 5.5f, ImVec2(0, 300));
+    ImGui::PopStyleColor(); 
+
+    ImGui::End();
+
 }
 
 void GradeApp::handleLoadJsonFile(HWND& hwnd)
@@ -293,7 +338,7 @@ void GradeApp::displaySemestersWindow(std::array<Semester, 8>& semesters)
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     ImVec2 window_pos = main_viewport->WorkPos;
     ImVec2 window_size = main_viewport->WorkSize;
-    window_size.x *= 0.5f;
+    window_size.x *= 0.3f;
 
     // 2. ImGui 창의 위치와 크기를 전체 창 크기에 맞게 고정시킵니다.
     ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always );

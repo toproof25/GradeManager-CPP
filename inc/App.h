@@ -87,6 +87,8 @@ public:
   void displayOptionBar(HWND& hwnd);
   void handleLoadJsonFile(HWND& hwnd);
 
+  void displayTotalGradeGraph();
+
 };
 
 
