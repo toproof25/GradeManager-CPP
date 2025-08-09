@@ -34,14 +34,15 @@ int GradeApp::start()
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0, 0,
                         GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr,
                         L"MinimalImGui", nullptr };
-    // 크기 조절이 불가능한 윈도우 스타일 조합
-    DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+    
+    // 윈도우 스타일 조합
+    DWORD dwStyle = WS_OVERLAPPEDWINDOW;
 
     ::RegisterClassExW(&wc); // 윈도우 클래스를 OS에 등록하여 CreateWindow 호출 준비
     HWND hwnd = ::CreateWindowW(
         wc.lpszClassName,           // 등록된 클래스 이름으로 창 생성
         L"ImGui - Grade Manager",         // 창 제목
-        NULL,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
+        dwStyle,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
         100, 100, 1200, 800,         // 위치(100,100) 크기(800x600)
         nullptr, nullptr, wc.hInstance, nullptr);
 
