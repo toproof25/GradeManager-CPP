@@ -19,7 +19,7 @@ Application::Application() :
 
 int Application::start()
 {
-  FreeConsole();
+  //FreeConsole();
 
   // 1) Win32 창 등록 & 생성
   // WNDCLASSEXW: 윈도우 클래스를 정의하는 구조체

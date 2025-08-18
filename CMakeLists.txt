@@ -37,7 +37,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # main cpp 파일을 실행 파일로 만드는 과정
     # add_executable(실행파일명 .cpp 파일 경로)   
-    add_executable(GradeManagerApp src/grade_manager.cpp)       
+    #add_executable(GradeManagerApp src/grade_manager.cpp)       
+    add_executable(GradeManagerApp WIN32 src/grade_manager.cpp)     
 
 
 # 실행 파일에 위에서 만든 라이브러리를 링크
