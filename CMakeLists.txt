@@ -17,6 +17,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
     list(REMOVE_ITEM SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/grade_manager.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/test_imgui.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/App.cpp"
     )
 
     # 최종적으로 src/ 에 grade_manager.cpp을 제외하고 모두 라이브러리에 등록
