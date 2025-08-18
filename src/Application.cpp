@@ -87,31 +87,9 @@ int Application::start()
       ImGui_ImplWin32_NewFrame();  // Win32 메시지를 ImGui에 업데이트
       ImGui::NewFrame();           // ImGui 내부에서 위젯 준비 시작
 
-      
-      // --- 1. 전체 화면을 덮는 보이지 않는 창을 만들고, 그 안을 도킹 공간으로 설정합니다. ---
-      ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-      const ImGuiViewport* viewport = ImGui::GetMainViewport();
-      ImGui::SetNextWindowPos(viewport->WorkPos);
-      ImGui::SetNextWindowSize(viewport->WorkSize);
-      ImGui::SetNextWindowViewport(viewport->ID);
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-      window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-      window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-      ImGui::Begin("DockSpaceDemo", nullptr, window_flags);
-      ImGui::PopStyleVar(2);
-
-      // 도킹 공간 생성!
-      ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-      ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
-
       /* --------------------- UI Manager 렌더링 설정 부분 --------------------- */
                                 uiManager.render(msg, hwnd);
       /* ----------------------------------------------------------------------- */
-
-      // Dockspace를 위한 ImGui::End()
-      ImGui::End();
 
       // — 렌더링 단계 —
       ImGui::Render();                                  // 위젯 호출 기록으로 렌더 데이터를 생성

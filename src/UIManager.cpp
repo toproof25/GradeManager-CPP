@@ -43,6 +43,25 @@ void UIManager::alignCenter(const char* text) {
 
 void UIManager::render(MSG& msg, HWND& hwnd)
 {
+  // --- 1. 전체 화면을 덮는 보이지 않는 창을 만들고, 그 안을 도킹 공간으로 설정합니다. ---
+  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+  const ImGuiViewport* viewport = ImGui::GetMainViewport();
+  ImGui::SetNextWindowPos(viewport->WorkPos);
+  ImGui::SetNextWindowSize(viewport->WorkSize);
+  ImGui::SetNextWindowViewport(viewport->ID);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+  window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+  window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+  ImGui::Begin("DockSpaceDemo", nullptr, window_flags);
+  ImGui::PopStyleVar(2);
+
+  // 도킹 공간 생성!
+  ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+  ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+
   /* ------------------------- UI 렌더링 부분 ------------------------- */
   displayOptionBar(hwnd);
 
@@ -83,6 +102,9 @@ void UIManager::render(MSG& msg, HWND& hwnd)
       promptValueCourseWindow( newCourse, this->isInit, addHandler, m_showAddWindow);
   }
 
+
+  // Dockspace를 위한 ImGui::End()
+  ImGui::End();
 }
 
 
