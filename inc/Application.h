@@ -17,10 +17,10 @@ class Application
 {
   
 private:
-  ID3D11Device*           g_pd3dDevice           = nullptr;   // GPU 연산과 리소스 생성을 담당하는 핵심 객체
-  ID3D11DeviceContext*    g_pd3dDeviceContext    = nullptr;   // GPU에 렌더링 명령을 발행하는 컨텍스트
-  IDXGISwapChain*         g_pSwapChain           = nullptr;   // 화면에 이미지를 표시하기 위한 전/후면 버퍼 관리 객체
-  ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;   // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
+  ID3D11Device*           m_pd3dDevice           = nullptr;   // GPU 연산과 리소스 생성을 담당하는 핵심 객체
+  ID3D11DeviceContext*    m_pd3dDeviceContext    = nullptr;   // GPU에 렌더링 명령을 발행하는 컨텍스트
+  IDXGISwapChain*         m_pSwapChain           = nullptr;   // 화면에 이미지를 표시하기 위한 전/후면 버퍼 관리 객체
+  ID3D11RenderTargetView* m_mainRenderTargetView = nullptr;   // 백 버퍼를 렌더링 대상으로 바인딩할 뷰
   
   // Composition으로 관리
   GradeManager gradeManager;

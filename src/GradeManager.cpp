@@ -19,10 +19,16 @@ GradeManager::GradeManager() : semesters(semesterJson.loadJson())
 GradeManager::~GradeManager() { semesterJson.saveJson(getSemesters()); }
 
 void GradeManager::setSemesters(std::array<Semester, 8> semesters){ this->semesters = semesters; }
+
 void GradeManager::setSelectSemester(Semester& semester){ this->semester = &semester; }
 void GradeManager::setSelectCourse(Course::Course& course) { this->course = &course; }
 Semester& GradeManager::getSelectSemester() { return *semester; }
 Course::Course& GradeManager::getSelectCourse() { return *course; }
+
+void GradeManager::setShowAddWindow(bool isShow) { m_showAddWindow = isShow; }
+void GradeManager::setShowEditWindow(bool isShow) { m_showEditWindow = isShow; }
+bool& GradeManager::getShowAddWindow() { return m_showAddWindow; }
+bool& GradeManager::getShowEditWindow() { return m_showEditWindow; }
 
 void GradeManager::handleLoadJson(std::string& filePath)
 {

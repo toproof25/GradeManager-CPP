@@ -1,5 +1,4 @@
 #pragma once
-
 #include "json.hpp"
 #include "Semester.h"
 #include "Course.h"

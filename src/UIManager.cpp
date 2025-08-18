@@ -75,7 +75,7 @@ void UIManager::render(MSG& msg, HWND& hwnd)
   displayTotalGradeGraph();
 
   // 과목 수정 윈도우 
-  if (m_showEditWindow)
+  if (gm.getShowEditWindow())
   {
       auto editHandler = [&](Course::Course& editedCourse) {
         // 핸들러만 호출하기
@@ -83,17 +83,17 @@ void UIManager::render(MSG& msg, HWND& hwnd)
           displayToastMessege(editedCourse.courseName + " 과목을 수정했습니다");
       };
       
-      promptValueCourseWindow(this->isInit, editHandler, m_showEditWindow);
+      promptValueCourseWindow(this->isInit, editHandler, gm.getShowEditWindow());
   }
   // 과목 추가 윈도우
-  if (m_showAddWindow)
+  if (gm.getShowAddWindow())
   {
       auto addHandler = [&](Course::Course& addedCourse) {
           gm.handleAddCourse(addedCourse);
           displayToastMessege(addedCourse.courseName + " 과목을 추가했습니다");
       };
 
-      promptValueCourseWindow(false, addHandler, m_showAddWindow);
+      promptValueCourseWindow(this->isInit, addHandler, gm.getShowAddWindow());
   }
 
   // Dockspace를 위한 ImGui::End()
@@ -296,7 +296,6 @@ void UIManager::displayCoursesWindow()
             ImGui::TableSetColumnIndex(0);
             if (ImGui::Button(c.courseName.c_str()))
             {
-                m_courseReadWindow = true;
                 gm.setSelectCourse(c);
             }
 
@@ -317,9 +316,8 @@ void UIManager::displayCoursesWindow()
             if (centerAlignButton("수정"))
             {
                 gm.setSelectCourse(c);
-                m_showEditWindow = true;
-                m_showAddWindow = false;
-                m_courseReadWindow = false;
+                gm.setShowEditWindow(true);
+                gm.setShowAddWindow(false);
                 this->isInit = true;
             }
 
@@ -344,9 +342,8 @@ void UIManager::displayCoursesWindow()
     ImGui::SetCursorPosX((region - txtW) * 0.5f);
     if (ImGui::Button(label))
     {
-        m_showEditWindow = false;
-        m_courseReadWindow = false;
-        m_showAddWindow = true;
+        gm.setShowEditWindow(false);
+        gm.setShowAddWindow(true);
         this->isInit = false;
     }
 

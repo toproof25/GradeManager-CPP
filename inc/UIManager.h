@@ -17,15 +17,10 @@ private:
     GradeManager& gm;
 
     // — 앱 상태 변수 —
-    bool m_showAddWindow = false;
-    bool m_showEditWindow = false;
-    bool m_courseReadWindow = false;
+    //bool m_showAddWindow = false;
+    //bool m_showEditWindow = false;
 
     bool isInit = false;
-    bool courseFixWindow = false;
-
-    //Semester* semester = nullptr;
-    //Course::Course* course = nullptr;
 
     std::string toastMessege;
 

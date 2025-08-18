@@ -19,7 +19,7 @@ Application::Application() :
 
 int Application::start()
 {
-  //FreeConsole();
+  FreeConsole();
 
   // 1) Win32 창 등록 & 생성
   // WNDCLASSEXW: 윈도우 클래스를 정의하는 구조체
@@ -62,7 +62,7 @@ int Application::start()
 
   // 4) 플랫폼/렌더러 백엔드 초기화
   ImGui_ImplWin32_Init(hwnd);            // Win32 이벤트(키/마우스)를 ImGui로 전달 설정
-  ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext); // DX11에 드로우 데이터를 렌더링하도록 설정
+  ImGui_ImplDX11_Init(m_pd3dDevice, m_pd3dDeviceContext); // DX11에 드로우 데이터를 렌더링하도록 설정
 
 
   MSG msg;
@@ -91,12 +91,12 @@ int Application::start()
       // — 렌더링 단계 —
       ImGui::Render();                                  // 위젯 호출 기록으로 렌더 데이터를 생성
       const float clear_col[4] = {0.5f, 0.5f, 0.5f, 1.0f};
-      g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr); // 렌더 타겟 바인딩
-      g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_col); // 화면 클리어
+      m_pd3dDeviceContext->OMSetRenderTargets(1, &m_mainRenderTargetView, nullptr); // 렌더 타겟 바인딩
+      m_pd3dDeviceContext->ClearRenderTargetView(m_mainRenderTargetView, clear_col); // 화면 클리어
       ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); // 렌더 데이터를 GPU에 제출
 
       // — 화면 출력(VSync On) —
-      g_pSwapChain->Present(1, 0);  // 스왑 체인 Present: 화면에 렌더 결과 표시
+      m_pSwapChain->Present(1, 0);  // 스왑 체인 Present: 화면에 렌더 결과 표시
   }
 
   // 정리
@@ -127,7 +127,7 @@ bool Application::CreateDeviceD3D(HWND hWnd)
     if (D3D11CreateDeviceAndSwapChain(
           nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
           nullptr, 0, D3D11_SDK_VERSION, &sd,
-          &g_pSwapChain, &g_pd3dDevice, nullptr, &g_pd3dDeviceContext) != S_OK)
+          &m_pSwapChain, &m_pd3dDevice, nullptr, &m_pd3dDeviceContext) != S_OK)
         return false;
 
     CreateRenderTarget(); // 백 버퍼에 대한 렌더 타겟 뷰 생성
@@ -138,22 +138,22 @@ bool Application::CreateDeviceD3D(HWND hWnd)
 void Application::CreateRenderTarget()
 {
     ID3D11Texture2D* pBackBuffer = nullptr;
-    g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)); // 백 버퍼 텍스처 가져오기
-    g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView); // 뷰 생성
+    m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)); // 백 버퍼 텍스처 가져오기
+    m_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &m_mainRenderTargetView); // 뷰 생성
     pBackBuffer->Release();                              // 참조 해제
 }
 
 // 3) 리소스 해제
 void Application::CleanupRenderTarget()
 {
-    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
+    if (m_mainRenderTargetView) { m_mainRenderTargetView->Release(); m_mainRenderTargetView = nullptr; }
 }
 void Application::CleanupDeviceD3D()
 {
     CleanupRenderTarget();                                   // 렌더 타겟 뷰 먼저 해제
-    if (g_pSwapChain)           { g_pSwapChain->Release();           g_pSwapChain = nullptr; }
-    if (g_pd3dDeviceContext)    { g_pd3dDeviceContext->Release();    g_pd3dDeviceContext = nullptr; }
-    if (g_pd3dDevice)           { g_pd3dDevice->Release();           g_pd3dDevice = nullptr; }
+    if (m_pSwapChain)           { m_pSwapChain->Release();           m_pSwapChain = nullptr; }
+    if (m_pd3dDeviceContext)    { m_pd3dDeviceContext->Release();    m_pd3dDeviceContext = nullptr; }
+    if (m_pd3dDevice)           { m_pd3dDevice->Release();           m_pd3dDevice = nullptr; }
 }
 
 
@@ -202,11 +202,11 @@ LRESULT Application::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
         return 0;
 
     case WM_SIZE:
-        if (g_pd3dDevice != nullptr && wParam != SIZE_MINIMIZED) {
+        if (m_pd3dDevice != nullptr && wParam != SIZE_MINIMIZED) {
             CleanupRenderTarget();
             UINT newW = (UINT)LOWORD(lParam);
             UINT newH = (UINT)HIWORD(lParam);
-            g_pSwapChain->ResizeBuffers(0, newW, newH, DXGI_FORMAT_UNKNOWN, 0);
+            m_pSwapChain->ResizeBuffers(0, newW, newH, DXGI_FORMAT_UNKNOWN, 0);
             CreateRenderTarget();
 
             D3D11_VIEWPORT vp;
@@ -216,7 +216,7 @@ LRESULT Application::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
             vp.MaxDepth = 1.0f;
             vp.TopLeftX = 0;
             vp.TopLeftY = 0;
-            g_pd3dDeviceContext->RSSetViewports(1, &vp);
+            m_pd3dDeviceContext->RSSetViewports(1, &vp);
         }
         return 0;
     }

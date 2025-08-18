@@ -14,6 +14,9 @@ class GradeManager
     Semester* semester = nullptr;
     Course::Course* course = nullptr;
 
+    bool m_showAddWindow = false;
+    bool m_showEditWindow = false;
+
     // 1학년 1학기 ~ 4학년 2학기
     std::array<Semester, 8> semesters;
     void setSemesters(std::array<Semester, 8> semesters);
@@ -32,6 +35,12 @@ class GradeManager
     void setSelectCourse(Course::Course& course);
     Semester& getSelectSemester();
     Course::Course& getSelectCourse();
+
+    void setShowAddWindow(bool);
+    void setShowEditWindow(bool);
+    bool& getShowAddWindow();
+    bool& getShowEditWindow();
+
 
     void handleAddCourse(Course::Course& newCourse);       // 과목 추가
     void handleRemoveCourse();                             // 과목 제거
