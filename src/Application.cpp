@@ -19,7 +19,6 @@ Application::Application() :
 
 int Application::start()
 {
-
   //FreeConsole();
 
   // 1) Win32 창 등록 & 생성
@@ -31,11 +30,11 @@ int Application::start()
   // 윈도우 스타일 조합
   DWORD dwStyle = WS_OVERLAPPEDWINDOW;
 
-  ::RegisterClassExW(&wc); // 윈도우 클래스를 OS에 등록하여 CreateWindow 호출 준비
+  ::RegisterClassExW(&wc);  // 윈도우 클래스를 OS에 등록하여 CreateWindow 호출 준비
   HWND hwnd = ::CreateWindowW(
       wc.lpszClassName,           // 등록된 클래스 이름으로 창 생성
       L"ImGui - Grade Manager",         // 창 제목
-      dwStyle,        // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
+      dwStyle,                   // 기본적인 타이틀 바 + 크기 조절 가능한 윈도우 스타일
       100, 100, 1200, 800,         // 위치(100,100) 크기(800x600)
       nullptr, nullptr, wc.hInstance, this);
 
@@ -51,8 +50,7 @@ int Application::start()
   ImGuiIO& io = ImGui::GetIO();          // 입력/출력 설정에 접근
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // 키보드 내비게이션 활성화
 
-  // 한글 폰트 로드: 윈도우 기본 글꼴 gulim.ttc를 TTF처럼 로드
-  // GetGlyphRangesKorean()로 한글 글리프 범위만 텍스처에 올려 메모리 절약
+  // 한글 폰트 로드
   ImFont* fontKorean = io.Fonts->AddFontFromFileTTF(
       "C:\\Windows\\Fonts\\MalangmalangB.ttf", 16.0f, nullptr,
       io.Fonts->GetGlyphRangesKorean()
@@ -67,7 +65,6 @@ int Application::start()
   ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext); // DX11에 드로우 데이터를 렌더링하도록 설정
 
 
-  // 5) 메인 루프
   MSG msg;
   bool done = false;
   while (!done)
@@ -102,7 +99,7 @@ int Application::start()
       g_pSwapChain->Present(1, 0);  // 스왑 체인 Present: 화면에 렌더 결과 표시
   }
 
-  // 6) 정리
+  // 정리
   ImGui_ImplDX11_Shutdown();         // DX11 백엔드 정리
   ImGui_ImplWin32_Shutdown();        // Win32 백엔드 정리
   ImGui::DestroyContext();           // ImGui 컨텍스트 제거
@@ -160,11 +157,10 @@ void Application::CleanupDeviceD3D()
 }
 
 
+// ImGui_ImplWin32_WndProcHandler를 호출해야 키/마우스 입력이 ImGui로 전달됨
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 // — Win32 메시지 처리 함수 —
-// ImGui_ImplWin32_WndProcHandler를 호출해야
-// 키/마우스 입력이 ImGui로 전달됩니다.
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK Application::StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     // ImGui 메시지 핸들러 먼저 호출

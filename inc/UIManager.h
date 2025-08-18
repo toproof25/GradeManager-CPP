@@ -24,8 +24,8 @@ private:
     bool isInit = false;
     bool courseFixWindow = false;
 
-    Semester* semester = nullptr;
-    Course::Course* course = nullptr;
+    //Semester* semester = nullptr;
+    //Course::Course* course = nullptr;
 
     std::string toastMessege;
 
@@ -41,13 +41,12 @@ public:
 
 
 private:
-    void displaySemestersWindow(std::array<Semester, 8>& semesters);  // 모든 학기 윈도우
+    void displaySemestersWindow();  // 모든 학기 윈도우
 
-    void displayCoursesWindow(int year, int semester, std::vector<Course::Course>& courses); // 한 학기의 과목 출력
+    void displayCoursesWindow(); // 한 학기의 과목 출력
     void displayInfomationCourseWindow(const Course::Course& c);                             // 한 과목의 정보 출력
 
     void promptValueCourseWindow(
-      Course::Course& fixCourse, 
       bool isInit, 
       const std::function<void(Course::Course&)>& onClickSave,
       bool& m_showWindow    
@@ -57,7 +56,6 @@ private:
     void displayToastMessege_(const char* messege);
 
     void displayOptionBar(HWND& hwnd);
-    void handleLoadJsonFile(HWND& hwnd);
 
     void displayTotalGradeGraph();
 

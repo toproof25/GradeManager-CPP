@@ -1,6 +1,5 @@
 #include "Semester.h"
 #include "Course.h"
-#include "ConsoleUIManager.h"
 #include "GradeManager.h"
 #include "SemesterJSON.h"
 
@@ -8,12 +7,22 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <Windows.h>
 
-GradeManager::GradeManager() : semesters(semesterJson.loadJson()) {}
-GradeManager::~GradeManager()
+GradeManager::GradeManager() : semesters(semesterJson.loadJson()) 
 {
-  semesterJson.saveJson(getSemesters());
+  // semester 초기값 설정
+  std::array<Semester, 8>& semesters = getSemesters();
+  semester = &(semesters.at(0));
+  course = &((semester->getCourses()).at(0));
 }
+GradeManager::~GradeManager() { semesterJson.saveJson(getSemesters()); }
+
+void GradeManager::setSemesters(std::array<Semester, 8> semesters){ this->semesters = semesters; }
+void GradeManager::setSelectSemester(Semester& semester){ this->semester = &semester; }
+void GradeManager::setSelectCourse(Course::Course& course) { this->course = &course; }
+Semester& GradeManager::getSelectSemester() { return *semester; }
+Course::Course& GradeManager::getSelectCourse() { return *course; }
 
 void GradeManager::handleLoadJson(std::string& filePath)
 {
@@ -26,20 +35,40 @@ void GradeManager::handleLoadJson(std::string& filePath)
     setSemesters(semesterJson.loadJson(filePath));
   }
 }
-
 void GradeManager::handleSaveJson() 
 {
   semesterJson.saveJson(getSemesters());
 }
 
-void GradeManager::setSemesters(std::array<Semester, 8> semesters)
+void GradeManager::handleAddCourse(Course::Course& newCourse) 
 {
-  this->semesters = semesters;
+  semester->addCourses(newCourse);
 }
-
-// 정렬할 과목 벡터와 정렬 번호를 통해 정렬
-void GradeManager::sortCourse(std::vector<Course::Course>& courses, int choiceSort)
+void GradeManager::handleRemoveCourse()  
 {
+  // 기존에는 choiceSemester index번호로 Semester를 가져옴 -> GUI에서 Semester& 와 Course::Course&를 넘겨주어 사용
+  std::vector<Course::Course>& courses = semester->getCourses();
+  std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), *course);
+  
+  std::string removeName = it->courseName;
+  semester->removeCourses(it); // 실제 제거 부분
+
+}
+void GradeManager::handleFixCourse(Course::Course& fixCourse)  
+{
+  // c를 바탕으로 수정할 과목의 반복자를 찾음
+  std::vector<Course::Course>& courses = semester->getCourses();
+  std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), *course);
+
+  // 수정할 과목 값을 변경
+  it->setCourseName(fixCourse.courseName);
+  it->setCredits(fixCourse.credits);
+  it->setGrade(fixCourse.grade);
+  it->setCategory(fixCourse.category);
+}
+void GradeManager::handleSortCourse(int choiceSort)  
+{
+  std::vector<Course::Course>& courses = semester->getCourses();
   switch(choiceSort)
   {
     case 1:
@@ -69,161 +98,33 @@ void GradeManager::sortCourse(std::vector<Course::Course>& courses, int choiceSo
 }
 
 
-void GradeManager::handleSelectSemesters()
+std::string GradeManager::handleLoadJsonFile(HWND& hwnd)
 {
-  choiceSemester = consoleUIManager.displaySemesterChoice(semesters);
-  if (choiceSemester == -1)
-    menu = Menu::CourseSort;
-  else if (choiceSemester == 8)
-    menu = Menu::TotalGPA;
-  else
-    menu = Menu::CourseChoise;
-}
-void GradeManager::handleSelectCourse()
-{
-  /* 
-  choiceCourse = consoleUIManager.displayCourseChoice(semesters[choiceSemester].getYear(), semesters[choiceSemester].getSemester());
-  // 학기 선택으로 돌아가기
-  if (choiceCourse == 0)
-    menu = Menu::SemesterChoise;
-  // 과목 조회
-  else if (choiceCourse == 1) 
-    consoleUIManager.displayCoursesInSemester(semesters.at(choiceSemester));
-  // 과목 추가
-  else if (choiceCourse == 2) 
-    handleAddCourse();
-  // 과목 제거
-  else if (choiceCourse == 3) 
-    handleRemoveCourse();
-  // 과목 수정
-  else if (choiceCourse == 4)
-    handleFixCourse();
-  // 과목 정렬
-  else if (choiceCourse == 5)
-    handleSortCourse();
-  // 총 학점 보기
-  else if (choiceCourse == 6)
-    handleGpaSemester();
-  */
-}
-void GradeManager::handleSortAllCourse()
-{
-  // 모든 과목을 담을 벡터 생성 후 가져오기
-  std::vector<Course::Course> allCourse = getAllCourseVector();
+    OPENFILENAME ofn;       // 공용 대화상자 구조체
+    char szFile[260] = { 0, }; // 선택된 파일 경로를 저장할 버퍼
 
-  consoleUIManager.displayMessage("*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬전----------*\n");
-  for (Course::Course& c : allCourse)
-    consoleUIManager.displayCourse(c);
+    // 구조체 초기화
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hwnd; // 부모 윈도우 핸들
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile) / sizeof(wchar_t);
 
-  int choiceSort = consoleUIManager.displaySortChoice();;
-  sortCourse(allCourse, choiceSort);
+    // JSON 파일만
+    ofn.lpstrFilter = 
+        "JSON 파일만 가능 (*.json)\0"   // 드롭다운에서 보여질 텍스트
+        "*.json\0"                      // 실제로 매칭할 패턴
+            "\0";                    
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST  | OFN_NOCHANGEDIR;
 
-  consoleUIManager.displayMessage("*----------1학년 1학기 ~ 4학년 2학기 모든 과목 정렬후----------*\n");
-  for (Course::Course& c : allCourse)
-    consoleUIManager.displayCourse(c);
-
-  // 메인 메뉴로 돌아가기
-  menu = Menu::SemesterChoise;
-}
-
-
-void GradeManager::handleAddCourse(Semester& s, Course::Course& newCourse) 
-{
-  std::vector<Course::Course>& courses = s.getCourses();
-  s.addCourses(newCourse);
-  //semesterJson.saveJson(getSemesters());
-  consoleUIManager.displayMessage("✅ [" + newCourse.courseName + "] 과목이 성공적으로 추가되었습니다! ✅");
-}
-
-void GradeManager::handleRemoveCourse(Semester& s, Course::Course& c)  
-{
-  // 기존에는 choiceSemester index번호로 Semester를 가져옴 -> GUI에서 Semester& 와 Course::Course&를 넘겨주어 사용
-  std::vector<Course::Course>& courses = s.getCourses();
-  std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), c);
-  
-  // 기존에는 index번호로 제거 -> GUI에서 반복자로 제거하도록 변경
-  consoleUIManager.displayMessage("\n--- 제거할 과목을 선택하세요 ---");
-  std::string removeName = it->courseName;
-  s.removeCourses(it); // 실제 제거 부분
-  //semesterJson.saveJson(getSemesters());
-  consoleUIManager.displayMessage("\n✅ [" + removeName + "] 과목이 성공적으로 제거되었습니다! ✅");
-
-}
-
-void GradeManager::handleFixCourse(Semester& s, Course::Course& c, Course::Course& fixCourse)  
-{
-  // c를 바탕으로 수정할 과목의 반복자를 찾음
-  std::vector<Course::Course>& courses = s.getCourses();
-  std::vector<Course::Course>::iterator it = std::find(courses.begin(), courses.end(), c);
-
-  if (courses.size() <= 0 || it == courses.end())
-  {
-    // GUI로 완전 변경 시 [수정] 버튼이 없으므로 해당 예외가 발생하지 않음 (일단 유지)
-    consoleUIManager.displayMessage("\n❌ 수정할 과목이 없습니다. 과목을 먼저 추가해주세요. ❌");
-  }
-  else
-  {
-    // 수정할 과목 값을 변경
-    it->setCourseName(fixCourse.courseName);
-    it->setCredits(fixCourse.credits);
-    it->setGrade(fixCourse.grade);
-    it->setCategory(fixCourse.category);
-    
-    // 수정된 후에 수정된 데이터를 바탕으로 저장
-    //semesterJson.saveJson(getSemesters());
-
-    consoleUIManager.displayMessage("\n✅ [" + it->courseName + "] 과목이 성공적으로 수정되었습니다! ✅");
-  }
-
-}
-void GradeManager::handleSortCourse(Semester& s, int choiceSort)  
-{
-  //Semester& s = semesters.at(choiceSemester);
-  //int choiceSort = consoleUIManager.displaySortChoice();
-  sortCourse(s.getCourses(), choiceSort);
-  //semesterJson.sortJsonData(choiceSemester, choiceSort);
-}
-void GradeManager::handleGpaSemester()
-{
-  double GPA = calculateGPA(semesters.at(choiceSemester).getCourses());
-  consoleUIManager.displayMessage("총 학점은 [" + std::to_string(GPA) + "] 입니다.");
-}
-
-// 전체 학기 array에서 모든 과목을 추출하고 저장한 vector를 반환
-std::vector<Course::Course> GradeManager::getAllCourseVector()
-{
-  std::vector<Course::Course> allCourse;
-  for (Semester& s : semesters)
-  {
-    for (Course::Course& c : s.getCourses())
-      allCourse.push_back(c);
-  }
-  return allCourse;
-} 
-
-void GradeManager::run()
-{
-  while (true)
-  {
-    switch(menu)
+    // GetOpenFileNameA 함수는 ANSI 버전입니다.
+    std::string filePath = "";
+    if (GetOpenFileNameA(&ofn) == TRUE)
     {
-      case Menu::SemesterChoise:
-        handleSelectSemesters();
-        break;
-
-      case Menu::CourseChoise:
-        handleSelectCourse();
-        break;
-
-      case Menu::CourseSort:
-        handleSortAllCourse();
-
-      case Menu::TotalGPA:
-        std::vector<Course::Course> c = getAllCourseVector();
-        double GPA = calculateGPA(c);
-        consoleUIManager.displayMessage("모든 학기 총 학점은 [" + std::to_string(GPA) + "] 입니다.");
-        menu = Menu::SemesterChoise;
-        break;
+        filePath = std::string(ofn.lpstrFile);
     }
-  }
+    handleLoadJson(filePath);
+    
+    return "학기 데이터를 불러왔습니다";
 }
