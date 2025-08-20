@@ -11,7 +11,8 @@
 
 const char* creditsitems[] = { "0", "1", "2", "3" };
 const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
-const char* categoryitems[] = { "전공선택", "복수전공", "기초(필수)", "일반(선택)", "균형교양", "계열교양", "타전공" };
+const char* categoryitems[] = { "기초", "일반", "균형", "계열", "학부기초", "전공필수", "전공선택", "복전선택", "부전기초", "부전선택", "자선", "타전" };
+
 
 UIManager::UIManager(GradeManager& manager) : gm(manager) {}
 
@@ -125,9 +126,7 @@ void UIManager::displayTotalGradeGraph()
     }
 
     
-    ImGui::Begin("Graph");
-
-
+    ImGui::Begin("총 학점 그래프 및 졸업기준표");
         if (ImGui::CollapsingHeader("학기 그래프"))
         {
             // 현재 윈도우의 가로 길이를 얻고, 객체의 가로 길이를 이용하여 가운데로 위치
@@ -147,28 +146,43 @@ void UIManager::displayTotalGradeGraph()
 
         alignCenter(("총 이수 학점 : " + std::to_string(totalCredits)).c_str());
 
-        const int columes = 13;
+        static const int columes = 13;
         if (ImGui::BeginTable("GradeTable", columes, ImGuiTableFlags_Borders)) {
 
             // 배열 크기를 16으로 지정 (1열부터 16열까지 총 16개)
-            std::string colTitle[columes] = {
-                "기초(필수)",     // 1열
-                "일반(선택)",     // 2열
+            static const std::string colTitle[columes] = {
+                "기초",     // 1열
+                "일반",     // 2열
                 "균형",           // 3열
                 "계열",           // 4열
                 "학부기초",       // 5열
                 "전공필수",       // 6열
-                "전공선택\n(기초포함)",       // 8열
-                "복전선택\n(기초포함)",       // 10열
+                "전공선택",       // 8열
+                "복전선택",       // 10열
                 "부전기초",       // 11열
                 "부전선택",       // 12열
                 "자선",           // 13열
                 "타전",           // 15열
                 "총 취득 학점"    // 16열
             };
-            int colValue[columes] = {
+            static const int colValue[columes] = {
                 13, 0, 12, 6, 0, 0/*P*/, 51, 36, 0, 0, 0, 0, 130
             };
+            static int studentCredits[columes] = {0, };
+            for (int i=0; i<columes; ++i)
+            {
+                int credits = 0;
+                for (Semester& s : semesters)
+                {
+                    for (Course::Course& c : s.getCourses())
+                    {
+                        if (Course::convertToCategory(c.category) == colTitle[i])
+                            credits += c.credits;
+                    }
+                }
+                studentCredits[i] = credits;
+            }
+
 
             static std::map<std::string, int> testMap;
             for (int i=0; i<columes; ++i)
@@ -192,7 +206,14 @@ void UIManager::displayTotalGradeGraph()
             for (int i=0; i<columes; ++i)
             {
                 ImGui::TableSetColumnIndex(i); // 첫 번째 열로 이동
-                alignCenter("0");
+                if (i == columes-1)
+                {
+                    alignCenter(std::to_string(totalCredits).c_str());
+                }
+                else
+                {
+                    alignCenter(std::to_string(studentCredits[i]).c_str());
+                }
             } 
 
             // 세 번째 행 - 필요한 학점
@@ -200,7 +221,17 @@ void UIManager::displayTotalGradeGraph()
             for (int i=0; i<columes; ++i)
             {
                 ImGui::TableSetColumnIndex(i); // 첫 번째 열로 이동
-                alignCenter("0");
+
+                if (i == columes-1)
+                {
+                    alignCenter(std::to_string(colValue[i] - totalCredits).c_str());
+                }
+                else
+                { 
+                    int needCredit = colValue[i] - studentCredits[i];
+                    if (needCredit <= 0 ) needCredit = 0;
+                    alignCenter(std::to_string(needCredit).c_str());
+                }
             } 
             
             ImGui::EndTable(); // 테이블 생성 끝
