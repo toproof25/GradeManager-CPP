@@ -6,9 +6,20 @@
 #include <vector>
 #include <Windows.h>
 
+struct GradeGraphEditValue
+{
+    bool isShowGradeGraphEditWindow = false;
+    float col[4] = {0.0f, 1.0f, 0.0f, 1.0f};
+    float scale[2] = {0.0f, 5.5f};
+    float size[2] = {250, 250};
+};
+
+
 class GradeManager
 {
   private:
+    GradeGraphEditValue gradeGraphEditValue;
+
     SemesterJSON semesterJson;
 
     Semester* semester = nullptr;
@@ -30,6 +41,8 @@ class GradeManager
   public:
     GradeManager();
     ~GradeManager();
+
+    GradeGraphEditValue& getGradeGraphEditValue() { return gradeGraphEditValue; }
 
     void setSelectSemester(Semester& semester);
     void setSelectCourse(Course::Course& course);

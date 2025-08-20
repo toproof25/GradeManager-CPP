@@ -3,99 +3,105 @@
         {
             "courses": [
                 {
-                    "category": 3,
-                    "courseName": "Academic English I (upper intermediate)",
-                    "credits": 3.0,
-                    "grade": 1.0
+                    "category": 0,
+                    "courseName": "컴퓨터프로그래밍",
+                    "credits": 3,
+                    "grade": 4.5
                 },
                 {
-                    "category": 1,
-                    "courseName": "C프로그래밍 I",
-                    "credits": 3.0,
+                    "category": 2,
+                    "courseName": "인간생활과화학의역할",
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
                     "category": 6,
-                    "courseName": "복지와테크놀로지",
-                    "credits": 3.0,
-                    "grade": 4.0
-                },
-                {
-                    "category": 1,
-                    "courseName": "소프트웨어개론",
-                    "credits": 3.0,
-                    "grade": 4.0
-                },
-                {
-                    "category": 3,
-                    "courseName": "인성과학문I",
-                    "credits": 0.0,
-                    "grade": 0.0
-                },
-                {
-                    "category": 3,
-                    "courseName": "채플(인성교육)I",
-                    "credits": 0.0,
-                    "grade": 0.0
-                },
-                {
-                    "category": 3,
-                    "courseName": "컴퓨터프로그래밍",
-                    "credits": 3.0,
+                    "courseName": "C프로그래밍 I",
+                    "credits": 3,
                     "grade": 4.5
-                }
-            ],
-            "semester": 1,
-            "year": 1
-        },
-        {
-            "courses": [
-                {
-                    "category": 3,
-                    "courseName": "글쓰기",
-                    "credits": 2.0,
-                    "grade": 3.0
                 },
                 {
                     "category": 3,
-                    "courseName": "기독교와현대사회",
-                    "credits": 2.0,
-                    "grade": 3.0
+                    "courseName": "복지와테크놀로지",
+                    "credits": 3,
+                    "grade": 4.0
                 },
                 {
-                    "category": 3,
-                    "courseName": "채플(이웃사랑) II",
-                    "credits": 0.0,
-                    "grade": 0.0
+                    "category": 6,
+                    "courseName": "소프트웨어개론",
+                    "credits": 3,
+                    "grade": 4.0
                 },
                 {
-                    "category": 3,
-                    "courseName": "Academic English II (upper intermediate)",
-                    "credits": 3.0,
+                    "category": 0,
+                    "courseName": "Academic English I (upper intermediate)",
+                    "credits": 3,
                     "grade": 1.0
                 },
                 {
-                    "category": 3,
-                    "courseName": "인성과학문II",
-                    "credits": 0.0,
+                    "category": 0,
+                    "courseName": "채플(인성교육)I",
+                    "credits": 0,
                     "grade": 0.0
                 },
                 {
-                    "category": 5,
+                    "category": 0,
+                    "courseName": "인성과학문I",
+                    "credits": 0,
+                    "grade": 0.0
+                }
+            ],
+            "semester": 1,
+            "year": 1
+        },
+        {
+            "courses": [
+                {
+                    "category": 0,
+                    "courseName": "글쓰기",
+                    "credits": 2,
+                    "grade": 3.0
+                },
+                {
+                    "category": 0,
+                    "courseName": "기독교와현대사회",
+                    "credits": 2,
+                    "grade": 3.0
+                },
+                {
+                    "category": 0,
+                    "courseName": "채플(이웃사랑) II",
+                    "credits": 0,
+                    "grade": 0.0
+                },
+                {
+                    "category": 0,
+                    "courseName": "Academic English II (upper intermediate)",
+                    "credits": 3,
+                    "grade": 1.0
+                },
+                {
+                    "category": 0,
+                    "courseName": "인성과학문II",
+                    "credits": 0,
+                    "grade": 0.0
+                },
+                {
+                    "category": 2,
                     "courseName": "신화와철학",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.0
                 },
                 {
-                    "category": 2,
+                    "category": 7,
                     "courseName": "이산수학",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.0
                 },
                 {
-                    "category": 2,
+                    "category": 7,
                     "courseName": "C프로그래밍 II",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 }
             ],
@@ -105,195 +111,195 @@
         {
             "courses": [
                 {
-                    "category": 3,
+                    "category": 0,
                     "courseName": "채플(공동체리더십) III",
-                    "credits": 0.0,
+                    "credits": 0,
                     "grade": 0.0
                 },
                 {
-                    "category": 3,
+                    "category": 0,
                     "courseName": "인성과학문 III",
-                    "credits": 0.0,
+                    "credits": 0,
                     "grade": 0.0
                 },
                 {
-                    "category": 5,
+                    "category": 2,
                     "courseName": "프로그래밍콘텐츠디자인",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 5,
+                    "category": 2,
                     "courseName": "문화인류학의이해",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 1,
+                    "category": 6,
                     "courseName": "웹개발기초",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 1,
+                    "category": 6,
                     "courseName": "게임엔진기초",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 1,
+                    "category": 6,
                     "courseName": "메타버스프로그래밍",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 },
-                {
-                    "category": 2,
-                    "courseName": "디지털회로",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 2,
-                    "courseName": "자바프로그래밍",
-                    "credits": 3.0,
-                    "grade": 4.5
-                }
-            ],
-            "semester": 1,
-            "year": 2
-        },
-        {
-            "courses": [
-                {
-                    "category": 3,
-                    "courseName": "채플(행복나눔) IV",
-                    "credits": 0.0,
-                    "grade": 0.0
-                },
-                {
-                    "category": 3,
-                    "courseName": "인성과학문 IV",
-                    "credits": 0.0,
-                    "grade": 0.0
-                },
-                {
-                    "category": 1,
-                    "courseName": "3D모델링",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 1,
-                    "courseName": "가상현실프로그래밍",
-                    "credits": 3.0,
-                    "grade": 4.0
-                },
-                {
-                    "category": 1,
-                    "courseName": "웹개발응용",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 1,
-                    "courseName": "자료구조및알고리즘",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 2,
-                    "courseName": "객체지향프로그래밍",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 2,
-                    "courseName": "모바일프로그래밍",
-                    "credits": 3.0,
-                    "grade": 4.5
-                }
-            ],
-            "semester": 2,
-            "year": 2
-        },
-        {
-            "courses": [
-                {
-                    "category": 1,
-                    "courseName": "실감피지컬컴퓨팅",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 1,
-                    "courseName": "디지털영상처리",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 1,
-                    "courseName": "증강현실프로그래밍",
-                    "credits": 3.0,
-                    "grade": 4.0
-                },
-                {
-                    "category": 1,
-                    "courseName": "XR UI/UX프로그래밍",
-                    "credits": 3.0,
-                    "grade": 4.0
-                },
-                {
-                    "category": 2,
-                    "courseName": "인공지능개론",
-                    "credits": 3.0,
-                    "grade": 4.5
-                },
-                {
-                    "category": 2,
-                    "courseName": "컴퓨터구조",
-                    "credits": 3.0,
-                    "grade": 4.5
-                }
-            ],
-            "semester": 1,
-            "year": 3
-        },
-        {
-            "courses": [
                 {
                     "category": 7,
-                    "courseName": "딥러닝 II",
-                    "credits": 3.0,
+                    "courseName": "디지털회로",
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 1,
-                    "courseName": "데이터베이스",
-                    "credits": 3.0,
+                    "category": 7,
+                    "courseName": "자바프로그래밍",
+                    "credits": 3,
+                    "grade": 4.5
+                }
+            ],
+            "semester": 1,
+            "year": 2
+        },
+        {
+            "courses": [
+                {
+                    "category": 0,
+                    "courseName": "채플(행복나눔) IV",
+                    "credits": 0,
+                    "grade": 0.0
+                },
+                {
+                    "category": 0,
+                    "courseName": "인성과학문 IV",
+                    "credits": 0,
+                    "grade": 0.0
+                },
+                {
+                    "category": 6,
+                    "courseName": "3D모델링",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 6,
+                    "courseName": "가상현실프로그래밍",
+                    "credits": 3,
                     "grade": 4.0
                 },
                 {
-                    "category": 1,
-                    "courseName": "컴퓨터그래픽스",
-                    "credits": 3.0,
-                    "grade": 3.5
-                },
-                {
-                    "category": 1,
-                    "courseName": "게임프로그래밍",
-                    "credits": 3.0,
-                    "grade": 3.5
-                },
-                {
-                    "category": 1,
-                    "courseName": "디지털트윈프로그래밍",
-                    "credits": 3.0,
+                    "category": 6,
+                    "courseName": "웹개발응용",
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 2,
+                    "category": 6,
+                    "courseName": "자료구조및알고리즘",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 7,
+                    "courseName": "객체지향프로그래밍",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 7,
+                    "courseName": "모바일프로그래밍",
+                    "credits": 3,
+                    "grade": 4.5
+                }
+            ],
+            "semester": 2,
+            "year": 2
+        },
+        {
+            "courses": [
+                {
+                    "category": 6,
+                    "courseName": "실감피지컬컴퓨팅",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 6,
+                    "courseName": "디지털영상처리",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 6,
+                    "courseName": "증강현실프로그래밍",
+                    "credits": 3,
+                    "grade": 4.0
+                },
+                {
+                    "category": 6,
+                    "courseName": "XR UI/UX프로그래밍",
+                    "credits": 3,
+                    "grade": 4.0
+                },
+                {
+                    "category": 7,
+                    "courseName": "인공지능개론",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 7,
+                    "courseName": "컴퓨터구조",
+                    "credits": 3,
+                    "grade": 4.5
+                }
+            ],
+            "semester": 1,
+            "year": 3
+        },
+        {
+            "courses": [
+                {
+                    "category": 11,
+                    "courseName": "딥러닝 II",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 6,
+                    "courseName": "데이터베이스",
+                    "credits": 3,
+                    "grade": 4.0
+                },
+                {
+                    "category": 6,
+                    "courseName": "컴퓨터그래픽스",
+                    "credits": 3,
+                    "grade": 3.5
+                },
+                {
+                    "category": 6,
+                    "courseName": "게임프로그래밍",
+                    "credits": 3,
+                    "grade": 3.5
+                },
+                {
+                    "category": 6,
+                    "courseName": "디지털트윈프로그래밍",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 7,
                     "courseName": "기계학습",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 }
             ],
@@ -303,27 +309,27 @@
         {
             "courses": [
                 {
-                    "category": 1,
+                    "category": 6,
                     "courseName": "캡스톤디자인(VR) I",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 4,
+                    "category": 1,
                     "courseName": "행복심리학",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.0
                 },
                 {
-                    "category": 2,
+                    "category": 7,
                     "courseName": "네트워크",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 },
                 {
-                    "category": 2,
+                    "category": 7,
                     "courseName": "Linux서버",
-                    "credits": 3.0,
+                    "credits": 3,
                     "grade": 4.5
                 }
             ],
@@ -331,7 +337,32 @@
             "year": 4
         },
         {
-            "courses": [],
+            "courses": [
+                {
+                    "category": 6,
+                    "courseName": "캡스톤디자인(VR) II",
+                    "credits": 3,
+                    "grade": 4.5
+                },
+                {
+                    "category": 7,
+                    "courseName": "운영체제",
+                    "credits": 3,
+                    "grade": 4.0
+                },
+                {
+                    "category": 3,
+                    "courseName": "공학수학",
+                    "credits": 3,
+                    "grade": 1.0
+                },
+                {
+                    "category": 5,
+                    "courseName": "졸업평가",
+                    "credits": 0,
+                    "grade": 0.0
+                }
+            ],
             "semester": 2,
             "year": 4
         }

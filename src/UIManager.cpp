@@ -7,9 +7,12 @@
 #include <string>
 #include <functional>              // std::function을 사용하기 위해 헤더 추가
 
+#include <map>
+
 const char* creditsitems[] = { "0", "1", "2", "3" };
 const char* gradeItems[] = { "NP", "P", "F", "D", "D+", "C", "C+", "B", "B+", "A", "A+" };
-const char* categoryitems[] = { "전공선택", "복수전공", "기초(필수)", "일반(선택)", "균형교양", "계열교양", "타전공" };
+const char* categoryitems[] = { "기초", "일반", "균형", "계열", "학부기초", "전공필수", "전공선택", "복전선택", "부전기초", "부전선택", "자선", "타전" };
+
 
 UIManager::UIManager(GradeManager& manager) : gm(manager) {}
 
@@ -71,7 +74,7 @@ void UIManager::render(MSG& msg, HWND& hwnd)
   // 각 학기 내 과목 윈도우
   displayCoursesWindow();
 
-  // 과정 정보 윈도우
+  // 학기 그래프 윈도우
   displayTotalGradeGraph();
 
   // 과목 수정 윈도우 
@@ -105,22 +108,152 @@ void UIManager::displayTotalGradeGraph()
 {
     std::array<Semester, 8>& semesters = gm.getSemesters();
 
+    GradeGraphEditValue& editValue = gm.getGradeGraphEditValue();
+
     static float totalGrade[8] = {0};
+    int totalCredits = 0;
     int index = 0;
+
     for (Semester& s : semesters)
     {
         float gpa = calculateGPA(s.getCourses());
         totalGrade[index++] = gpa;
+        
+        for (Course::Course& c : s.getCourses())
+        {
+            totalCredits += c.credits;
+        }
     }
 
-    ImGui::Begin("Graph");
+    
+    ImGui::Begin("총 학점 그래프 및 졸업기준표");
+        if (ImGui::CollapsingHeader("학기 그래프"))
+        {
+            // 현재 윈도우의 가로 길이를 얻고, 객체의 가로 길이를 이용하여 가운데로 위치
+            float available_width = ImGui::GetContentRegionAvail().x;
+            float graph_width = editValue.size[0];
+            float start_pos_x = (available_width - graph_width) * 0.5f;
+            if (start_pos_x > 0.0f) ImGui::SetCursorPosX(start_pos_x);
+            
+            ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(editValue.col[0], editValue.col[1], editValue.col[2], editValue.col[3])); 
+            ImGui::PlotLines("총 학점", totalGrade, 8, 0, "1학기~8학기 점수 그래프", editValue.scale[0], editValue.scale[1], ImVec2(editValue.size[0], editValue.size[1]));
+            ImGui::PopStyleColor(); 
 
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); 
-    ImGui::PlotLines("총 학점", totalGrade, 8, 0, "1학기~8학기 점수 그래프", 0.0f, 5.5f, ImVec2(0, 300));
-    ImGui::PopStyleColor(); 
+            ImGui::Spacing(); 
+            ImGui::Separator();
+            ImGui::Spacing(); 
+        }
 
+        alignCenter(("총 이수 학점 : " + std::to_string(totalCredits)).c_str());
+
+        static const int columes = 13;
+        if (ImGui::BeginTable("GradeTable", columes, ImGuiTableFlags_Borders)) {
+
+            // 배열 크기를 16으로 지정 (1열부터 16열까지 총 16개)
+            static const std::string colTitle[columes] = {
+                "기초",     // 1열
+                "일반",     // 2열
+                "균형",           // 3열
+                "계열",           // 4열
+                "학부기초",       // 5열
+                "전공필수",       // 6열
+                "전공선택",       // 8열
+                "복전선택",       // 10열
+                "부전기초",       // 11열
+                "부전선택",       // 12열
+                "자선",           // 13열
+                "타전",           // 15열
+                "총 취득 학점"    // 16열
+            };
+            static const int colValue[columes] = {
+                13, 0, 12, 6, 0, 0/*P*/, 51, 36, 0, 0, 0, 0, 130
+            };
+            static int studentCredits[columes] = {0, };
+            for (int i=0; i<columes; ++i)
+            {
+                int credits = 0;
+                for (Semester& s : semesters)
+                {
+                    for (Course::Course& c : s.getCourses())
+                    {
+                        if (Course::convertToCategory(c.category) == colTitle[i])
+                            credits += c.credits;
+                    }
+                }
+                studentCredits[i] = credits;
+            }
+
+
+            static std::map<std::string, int> testMap;
+            for (int i=0; i<columes; ++i)
+            {
+                ImGui::TableSetupColumn(colTitle[i].c_str());
+                testMap.insert({colTitle[i], i+5});
+            }
+            ImGui::TableHeadersRow(); // 헤더 행을 표시
+            
+            // 첫 번째 행 - 졸업 기준
+            ImGui::TableNextRow();
+            for (int i=0; i<columes; ++i)
+            {
+                ImGui::TableSetColumnIndex(i); // 첫 번째 열로 이동
+                std::string value = std::to_string(colValue[i]);
+                alignCenter(value.c_str());
+            }
+
+            // 두 번째 행 - 취득 학점
+            ImGui::TableNextRow();
+            for (int i=0; i<columes; ++i)
+            {
+                ImGui::TableSetColumnIndex(i); // 첫 번째 열로 이동
+                if (i == columes-1)
+                {
+                    alignCenter(std::to_string(totalCredits).c_str());
+                }
+                else
+                {
+                    alignCenter(std::to_string(studentCredits[i]).c_str());
+                }
+            } 
+
+            // 세 번째 행 - 필요한 학점
+            ImGui::TableNextRow();
+            for (int i=0; i<columes; ++i)
+            {
+                ImGui::TableSetColumnIndex(i); // 첫 번째 열로 이동
+
+                if (i == columes-1)
+                {
+                    alignCenter(std::to_string(colValue[i] - totalCredits).c_str());
+                }
+                else
+                { 
+                    int needCredit = colValue[i] - studentCredits[i];
+                    if (needCredit <= 0 ) needCredit = 0;
+                    alignCenter(std::to_string(needCredit).c_str());
+                }
+            } 
+            
+            ImGui::EndTable(); // 테이블 생성 끝
+
+        }
     ImGui::End();
 
+
+    if (editValue.isShowGradeGraphEditWindow)
+    {
+        ImGui::Begin("GraphEdit", &editValue.isShowGradeGraphEditWindow);
+            ImGui::ColorPicker4("그래프 선 컬러", editValue.col);
+            ImGui::Spacing(); 
+            ImGui::Separator();
+            ImGui::Spacing(); 
+            ImGui::SliderFloat2("그래프 사이즈", editValue.size, 1.0f, 500.0f);
+            ImGui::Spacing(); 
+            ImGui::Separator();
+            ImGui::Spacing(); 
+            ImGui::SliderFloat2("최소값, 최대값", editValue.scale, 0.0f, 10.0f);
+        ImGui::End();
+    }
 }
 
 void UIManager::displayOptionBar(HWND& hwnd)
@@ -144,6 +277,21 @@ void UIManager::displayOptionBar(HWND& hwnd)
             ImGui::EndMenu();
         }
 
+        
+        if (ImGui::BeginMenu("설정창"))
+        {
+            if (ImGui::MenuItem("총 학점 그래프 설정창"))
+            {
+                GradeGraphEditValue& graphEditValue = gm.getGradeGraphEditValue();
+                graphEditValue.isShowGradeGraphEditWindow = true;
+            }
+
+            ImGui::Separator();
+
+            ImGui::EndMenu();
+        }
+
+        // 옵션 바 종료
         ImGui::EndMainMenuBar();
     }
 }

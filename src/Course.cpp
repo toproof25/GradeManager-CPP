@@ -27,41 +27,21 @@ namespace Course
 
   std::string convertToCategory(const int& category)
   {
-    switch (category)
-    {
-    case MajorRequired:
-      return "전공선택";
-      break;
-
-    case DoubleMajor:
-      return "복수전공";
-      break;
-
-    case Minor:
-      return "기초(필수)";
-      break;
-
-    case Division:
-      return "일반(선택)";
-      break;
-
-    case GeneralElective:
-      return "균형교양";
-      break;
-
-    case Elective:
-      return "계열교양";
-      break;
-
-    case OtherMajor:
-      return "타전공";
-      break;
-    
-    default:
-      return "ERROR";
-      break;
-    }
+      if      (category == BasicRequired)       return "기초";
+      else if (category == GeneralElective)     return "일반";
+      else if (category == Balance)             return "균형";
+      else if (category == Division)            return "계열";
+      else if (category == DepartmentBasic)     return "학부기초";
+      else if (category == MajorRequired)       return "전공필수";
+      else if (category == MajorElective)       return "전공선택";
+      else if (category == DoubleMajorElective) return "복전선택";
+      else if (category == MinorBasic)          return "부전기초";
+      else if (category == MinorElective)       return "부전선택";
+      else if (category == FreeElective)        return "자선";
+      else if (category == OtherMajor)          return "타전";
+      else return "ERROR";
   }
+
 
   double gradeToConvert(const std::string& grade_str)
   {
@@ -81,19 +61,23 @@ namespace Course
       return 0.0;
   }
 
-  int categoryToConvert(const std::string& category_str)
-  {
-      if (category_str == "전공선택")   return 0;       // MajorRequired
-      else if (category_str == "복수전공")   return 1;       // DoubleMajor
-      else if (category_str == "기초(필수)") return 2;       // Minor
-      else if (category_str == "일반(선택)") return 3;       // Division
-      else if (category_str == "균형교양")   return 4;       // GeneralElective
-      else if (category_str == "계열교양")   return 5;       // Elective
-      else if (category_str == "타전공")     return 6;       // OtherMajor
+int categoryToConvert(const std::string& category_str)
+{
+    if      (category_str == "기초")     return BasicRequired;
+    else if (category_str == "일반")     return GeneralElective;
+    else if (category_str == "균형")     return Balance;
+    else if (category_str == "계열")     return Division;
+    else if (category_str == "학부기초") return DepartmentBasic;
+    else if (category_str == "전공필수") return MajorRequired;
+    else if (category_str == "전공선택") return MajorElective;
+    else if (category_str == "복전선택") return DoubleMajorElective;
+    else if (category_str == "부전기초") return MinorBasic;
+    else if (category_str == "부전선택") return MinorElective;
+    else if (category_str == "자선")     return FreeElective;
+    else if (category_str == "타전")     return OtherMajor;
+    else return -1;
+}
 
-      // 그 외 "ERROR" 또는 잘못된 입력은 0 (전공선택)으로 처리
-      return 0;
-  }
 
   // 각 데이터를 변경하는 setter함수
   void Course::setCourseName(const std::string& name) { this->courseName = name; }

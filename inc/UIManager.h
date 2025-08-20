@@ -10,15 +10,13 @@
 #include <Windows.h>
 
 
+
+
 // UIManager.h
 class UIManager {
 
 private:
     GradeManager& gm;
-
-    // — 앱 상태 변수 —
-    //bool m_showAddWindow = false;
-    //bool m_showEditWindow = false;
 
     bool isInit = false;
 
