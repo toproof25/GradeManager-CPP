@@ -1,19 +1,26 @@
 #pragma once // 헤더 중복되지 않게 하는 설정
 #include <string>
 
+
 namespace Course 
 {
-  // 전공 분류
+  // 전공 및 교양 분류
   enum MajorClassification
   {
-    MajorRequired   = 0,  // 전선 (전공 필수 - Major Required)
-    DoubleMajor     = 1,  // 복전 (복수 전공 - Double Major)
-    Minor           = 2,  // 부전 (부전공 - Minor)
-    Division        = 3,  // 계열 (계열 필수/선택 - Division)
-    GeneralElective = 4,  // 교양 (교양 - General Elective)
-    Elective        = 5,  // 자선 (자유 선택 - Elective)
-    OtherMajor      = 6   // 타전 (타 전공 - Other Major)
+      BasicRequired        = 0,  // 기초(필수) - Basic Required
+      GeneralElective      = 1,  // 일반(선택) - General Elective
+      Balance              = 2,  // 균형 - Balance
+      Division             = 3,  // 계열 - Division
+      DepartmentBasic      = 4,  // 학부기초 - Department Basic
+      MajorRequired        = 5,  // 전공필수 - Major Required
+      MajorElective        = 6,  // 전공선택(기초포함) - Major Elective (including basic)
+      DoubleMajorElective  = 7,  // 복전선택(기초포함) - Double Major Elective (including basic)
+      MinorBasic           = 8,  // 부전기초 - Minor Basic
+      MinorElective        = 9,  // 부전선택 - Minor Elective
+      FreeElective         = 10, // 자선 - Free Elective
+      OtherMajor           = 11  // 타전 - Other Major
   };
+
 
   /* ---------- 과목 구조체, 사용자 정의 규칙 정렬, 숫자점수->문자점수 변환 ---------- */
 
