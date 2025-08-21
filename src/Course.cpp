@@ -8,7 +8,7 @@
 namespace Course 
 {
 
-  std::string convertToGrade(const double& grade)
+  std::string doubleToGradeString(const double& grade)
   {
     if (grade > 4.5) return "OVER";
     else if (grade >= 4.5) return "A+";
@@ -25,7 +25,7 @@ namespace Course
     else return "ERROR";
   }
 
-  std::string convertToCategory(const int& category)
+  std::string categoryToString(const int& category)
   {
       if      (category == BasicRequired)       return "기초";
       else if (category == GeneralElective)     return "일반";
@@ -43,7 +43,7 @@ namespace Course
   }
 
 
-  double gradeToConvert(const std::string& grade_str)
+  double stringToGradeDouble(const std::string& grade_str)
   {
       if (grade_str == "A+")    return 4.5;
       if (grade_str == "A")     return 4.0;
@@ -61,7 +61,7 @@ namespace Course
       return 0.0;
   }
 
-int categoryToConvert(const std::string& category_str)
+int stringToCategory(const std::string& category_str)
 {
     if      (category_str == "기초")     return BasicRequired;
     else if (category_str == "일반")     return GeneralElective;
