@@ -66,16 +66,20 @@ TEST(SemesterTest, RemoveCourses_DecreasesSizeAndMaintainsCorrectData) {
     s.addCourses(c);
     s.addCourses(c2);
 
+
+    std::vector<Course::Course>& courses = s.getCourses();
+    std::vector<Course::Course>::iterator it = courses.end()-1;
+
     // 1) 제거된 상태에서 크기가 제대로 줄어들었는지 확인
-    s.removeCourses(0);
+    s.removeCourses(it);
     ASSERT_EQ(1, s.getCourses().size());
 
     // 2) 두개의 과목 중 하나가 제거되고, 남은 과목 데이터가 일치하는지 확인
     const Course::Course& course = s.getCourses().back();
-    EXPECT_EQ(c2.courseName, course.courseName);
-    EXPECT_EQ(c2.credits, course.credits);
-    EXPECT_DOUBLE_EQ(c2.grade, course.grade);
-    EXPECT_EQ(c2.category, course.category);
+    EXPECT_EQ(c.courseName, course.courseName);
+    EXPECT_EQ(c.credits, course.credits);
+    EXPECT_DOUBLE_EQ(c.grade, course.grade);
+    EXPECT_EQ(c.category, course.category);
 }
 
 
@@ -89,7 +93,7 @@ Assert  :
 TEST(SemesterTest, CalculateGPA_GpaCalculatesCorrectlyGPA) {
 
     Semester s(1, 2);
-    Course::Course c = {"과목1", 3, 4.5, 1};
+    Course::Course c =  {"과목1", 3, 4.5, 1};
     Course::Course c2 = {"과목2", 2, 2.0, 3};
     Course::Course c3 = {"과목3", 1, 1.0, 2};
     Course::Course c4 = {"과목4", 3, 3.5, 6};

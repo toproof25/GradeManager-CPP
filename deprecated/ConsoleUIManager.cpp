@@ -246,8 +246,8 @@ void ConsoleUIManager::displayCourse(const Course::Course& c)
 {
   std::cout << "  - " << std::left << std::setw(50) << c.courseName // 과목명 (20칸 좌측 정렬)
             << " | 학점: " << std::setw(10) << c.credits       // 이수학점 (2칸)
-            << " | 점수: " << std::setw(10) << Course::convertToGrade(c.grade) // 점수 (4칸)
-            << " | 분류: " << std::left << std::setw(20) << Course::convertToCategory(c.category) // 분류 (10칸 좌측 정렬)
+            << " | 점수: " << std::setw(10) << Course::doubleToGradeString(c.grade) // 점수 (4칸)
+            << " | 분류: " << std::left << std::setw(20) << Course::categoryToString(c.category) // 분류 (10칸 좌측 정렬)
             << std::endl;
 }
 

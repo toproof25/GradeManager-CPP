@@ -176,7 +176,7 @@ void UIManager::displayTotalGradeGraph()
                 {
                     for (Course::Course& c : s.getCourses())
                     {
-                        if (Course::convertToCategory(c.category) == colTitle[i])
+                        if (Course::categoryToString(c.category) == colTitle[i])
                             credits += c.credits;
                     }
                 }
@@ -452,11 +452,11 @@ void UIManager::displayCoursesWindow()
             ImGui::Text(std::to_string(c.credits).c_str());
             
             ImGui::TableSetColumnIndex(2);
-            std::string grade = Course::convertToGrade(c.grade);
+            std::string grade = Course::doubleToGradeString(c.grade);
             ImGui::Text(grade.c_str());
             
             ImGui::TableSetColumnIndex(3);
-            std::string category = Course::convertToCategory(c.category);
+            std::string category = Course::categoryToString(c.category);
             ImGui::Text(category.c_str());
 
 
@@ -530,7 +530,7 @@ void UIManager::promptValueCourseWindow(
         tempCreditsItem = course.credits;
 
         // 받은 점수 콤보박스 인덱스 초기화
-        std::string gradeStr = Course::convertToGrade(course.grade);
+        std::string gradeStr = Course::doubleToGradeString(course.grade);
         // 변환된 문자열과 일치하는 항목을 gradeItems 배열에서 찾아 인덱스를 설정
         for (int i = 0; i < IM_ARRAYSIZE(gradeItems); ++i) 
         {
@@ -541,7 +541,7 @@ void UIManager::promptValueCourseWindow(
         }
         
         // 전공분류 콤보박스 인덱스 초기화
-        std::string categoryStr = Course::convertToCategory(course.category);
+        std::string categoryStr = Course::categoryToString(course.category);
         for (int i = 0; i < IM_ARRAYSIZE(categoryitems); ++i) 
         {
             if (categoryitems[i] == categoryStr) {
@@ -602,8 +602,8 @@ void UIManager::promptValueCourseWindow(
     if (ImGui::Button(label))
     {
         int credit = std::stoi(creditsitems[tempCreditsItem]);
-        double grade = Course::gradeToConvert(gradeItems[tempGradeItem]);
-        int category = Course::categoryToConvert(categoryitems[tempCategoryItem]);
+        double grade = Course::stringToGradeDouble(gradeItems[tempGradeItem]);
+        int category = Course::stringToCategory(categoryitems[tempCategoryItem]);
         Course::Course inputCourse = { tempCourseNameBuffer, credit, grade, category };
 
         onClickSave(inputCourse);
@@ -664,7 +664,7 @@ void UIManager::displayInfomationCourseWindow(const Course::Course& c)
         ImGui::TableSetColumnIndex(0);
         alignCenter("전공분류");
         ImGui::TableSetColumnIndex(1);
-        std::string categoryStr = Course::convertToCategory(c.category);
+        std::string categoryStr = Course::categoryToString(c.category);
         ImGui::TextUnformatted(categoryStr.c_str());
 
         ImGui::EndTable();

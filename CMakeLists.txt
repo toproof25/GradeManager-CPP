@@ -53,3 +53,43 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME}) # 실행파일명
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION}) # 실행파일버전
 include(CPack) # 기본적으로 build 경로에 실행파일을 생성함
+
+
+
+# ============================ GoogleTest 추가 =============================
+include(FetchContent)
+
+# GoogleTest v1.17.0 FetchContent 선언 (URL 방식)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+)
+# Windows CRT 런타임 충돌 방지
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+# 실제로 다운로드 및 컴파일 시 포함
+FetchContent_MakeAvailable(googletest)
+
+# CTest 기능 활성화
+enable_testing()
+
+# 테스트 실행 파일 추가
+#add_executable(SemesterJSONTest tests/SemesterJSON.test.cpp)
+add_executable(SemesterTest tests/Semester.test.cpp)
+add_executable(CourseTest tests/Course.test.cpp)
+
+# 테스트에서 인클루드할 헤더 경로 지정 (inc/)
+# target_include_directories(SemesterJSONTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+# target_include_directories(SemesterTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+# target_include_directories(CourseTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
+# 테스트용 바이너리에 GTest 및 프로젝트 라이브러리 링크
+#target_link_libraries(SemesterJSONTest PRIVATE GTest::gtest_main GradeManagerLib)
+target_link_libraries(SemesterTest PRIVATE GTest::gtest_main GradeManagerLib)
+target_link_libraries(CourseTest PRIVATE GTest::gtest_main GradeManagerLib)
+
+
+# 테스트 자동 등록
+include(GoogleTest)
+#gtest_discover_tests(SemesterJSONTest)
+gtest_discover_tests(SemesterTest)
+gtest_discover_tests(CourseTest)
