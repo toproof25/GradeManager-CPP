@@ -16,9 +16,11 @@ protected:
     const std::string test_filename = "test_json.json";
     SemesterJSON* semesterJson;
 
+    // 테스트 시작 시 호출되는 함수
     void SetUp() override {
       semesterJson = new SemesterJSON(test_filename);
     }
+    // 테스트 마무리 시 호출되는 함수
     void TearDown() override {
       delete semesterJson;
       semesterJson = nullptr;
