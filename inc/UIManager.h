@@ -10,6 +10,9 @@
 #include <Windows.h>
 
 
+extern const char* creditsitems[];
+extern const char* gradeItems[];
+extern const char* categoryitems[];
 
 
 // UIManager.h
@@ -26,7 +29,7 @@ private:
     bool m_showToastMessege = false;
     int start_frame = 0; // 알림이 시작된 프레임 번호
     const int VISIBLE_FRAMES = 180;  // 완전히 보이는 프레임 수 (약 1초)
-    const int FADE_FRAMES = 240;    // 사라지는 데 걸리는 프레임 수 (약 2초)
+    const int FADE_FRAMES = 240;    // 사라지는 데 걸리는 프레임 수 (약 2초)  
 
 public:
     UIManager(GradeManager& manager);
@@ -34,10 +37,8 @@ public:
 
 
 private:
-    void displaySemestersWindow();  // 모든 학기 윈도우
-
-    void displayCoursesWindow(); // 한 학기의 과목 출력
-    void displayInfomationCourseWindow(const Course::Course& c);                             // 한 과목의 정보 출력
+    void displaySemestersWindow();                                  // 모든 학기 윈도우
+    void displayCoursesWindow();                                    // 한 학기의 과목 출력
 
     void promptValueCourseWindow(
       bool isInit, 
@@ -47,9 +48,7 @@ private:
 
     void displayToastMessege(std::string messege);
     void displayToastMessege_(const char* messege);
-
     void displayOptionBar(HWND& hwnd);
-
     void displayTotalGradeGraph();
 
     void alignCenter(const char* text);

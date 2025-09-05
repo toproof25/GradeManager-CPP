@@ -287,7 +287,6 @@ void UIManager::displayOptionBar(HWND& hwnd)
             }
 
             ImGui::Separator();
-
             ImGui::EndMenu();
         }
 
@@ -413,22 +412,22 @@ void UIManager::displayCoursesWindow()
 
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        if(ImGui::Button("과목이름"))
+        if(centerAlignButton("과목이름"))
         {
             gm.handleSortCourse(1);
         }
         ImGui::TableSetColumnIndex(1);
-        if(ImGui::Button("이수학점"))
+        if(centerAlignButton("이수학점"))
         {
             gm.handleSortCourse(2);
         }
         ImGui::TableSetColumnIndex(2);
-        if(ImGui::Button("받은점수"))
+        if(centerAlignButton("받은점수"))
         {
             gm.handleSortCourse(3);
         }
         ImGui::TableSetColumnIndex(3);
-        if(ImGui::Button("전공분류"))
+        if(centerAlignButton("전공분류"))
         {
             gm.handleSortCourse(4);
         }
@@ -442,11 +441,7 @@ void UIManager::displayCoursesWindow()
 
 
             ImGui::TableSetColumnIndex(0);
-            if (ImGui::Button(c.courseName.c_str()))
-            {
-                gm.setSelectCourse(c);
-            }
-
+            ImGui::Text(c.courseName.c_str());
 
             ImGui::TableSetColumnIndex(1);
             ImGui::Text(std::to_string(c.credits).c_str());
@@ -618,58 +613,3 @@ void UIManager::promptValueCourseWindow(
 
     ImGui::End();
 }
-
-
-
-
-/*
-// 한 과목의 정보 출력 윈도우
-void UIManager::displayInfomationCourseWindow(const Course::Course& c)
-{
-    ImGui::Begin(('[' + c.courseName + "] 정보 조회").c_str(), &m_courseReadWindow);
-
-    if (ImGui::BeginTable("courseInfoTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg))
-    {
-        // 열 너비 설정: 첫 열은 고정, 두 번째 열은 나머지 공간 차지
-        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 150.0f);
-        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
-
-        // --- 과목명 행 ---
-        ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-        // 첫 번째 열의 텍스트도 가운데 정렬
-        alignCenter("과목명");
-        ImGui::TableSetColumnIndex(1);
-        ImGui::TextUnformatted(c.courseName.c_str());
-
-        // --- 이수학점 행 ---
-        ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-        alignCenter("이수학점");
-        ImGui::TableSetColumnIndex(1);
-        std::string creditsStr = std::to_string(c.credits);
-        ImGui::TextUnformatted(creditsStr.c_str());
-
-        // --- 받은점수 행 ---
-        ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-        alignCenter("받은점수");
-        ImGui::TableSetColumnIndex(1);
-        char gradeBuf[16];
-        snprintf(gradeBuf, sizeof(gradeBuf), "%.2f", c.grade);
-        ImGui::TextUnformatted(gradeBuf);
-
-        // --- 전공분류 행 ---
-        ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-        alignCenter("전공분류");
-        ImGui::TableSetColumnIndex(1);
-        std::string categoryStr = Course::categoryToString(c.category);
-        ImGui::TextUnformatted(categoryStr.c_str());
-
-        ImGui::EndTable();
-    }
-
-    ImGui::End();                            
-}
-*/
